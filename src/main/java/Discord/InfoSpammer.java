@@ -15,7 +15,6 @@ public class InfoSpammer implements Runnable{
 		String info = getInfo();
 		if (info == null) {
 			id = channel.sendMessage("Nothing is currently playing").complete().getId();
-			
 		} else {
 			id = channel.sendMessage("```Currently playing: " + player.getPlayingTrack().getInfo().title +
 					" by: " + player.getPlayingTrack().getInfo().author +
