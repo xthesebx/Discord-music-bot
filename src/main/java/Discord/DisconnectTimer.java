@@ -13,8 +13,6 @@ public class DisconnectTimer implements Runnable{
 		try {
 			Thread.sleep(300000);
 			main.jda.getGuildById(id).getAudioManager().closeAudioConnection();
-			Thread t = new Thread(new Shutdownhook(main, id));
-			t.start();
 		} catch (InterruptedException ignored) {
 		
 		}
