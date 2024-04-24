@@ -12,8 +12,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -32,8 +30,6 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Stack;
 
 
 public class Main extends ListenerAdapter {
@@ -45,7 +41,7 @@ public class Main extends ListenerAdapter {
 		new Main();
 	}
 	
-	public Main () throws InterruptedException {
+	public Main() throws InterruptedException {
 		File env = new File("apikey.env");
 		jda = JDABuilder.createDefault(read(env).toString().strip()).enableIntents(GatewayIntent.MESSAGE_CONTENT).enableIntents(GatewayIntent.GUILD_MESSAGES).enableIntents(GatewayIntent.GUILD_MESSAGE_TYPING).build();
 		jda.addEventListener(this);
@@ -56,34 +52,30 @@ public class Main extends ListenerAdapter {
 	}
 	
 	@Override
-	public void onButtonInteraction (ButtonInteractionEvent event) {
+	public void onButtonInteraction(ButtonInteractionEvent event) {
 		AudioPlayerManager playerManager = (AudioPlayerManager) map.get(event.getGuild().getId()).get("playerManager");
 		TrackScheduler trackScheduler = (TrackScheduler) map.get(event.getGuild().getId()).get("trackScheduler");
-		Stack<String> channelIds = (Stack<String>) map.get(event.getGuild().getId()).get("channelIds");
-		Stack<String> ids = (Stack<String>) map.get(event.getGuild().getId()).get("ids");
 		TextChannel channel = event.getChannel().asTextChannel();
 		String guildId = event.getGuild().getId();
 		playerManager.loadItem(((String[]) map.get(event.getGuild().getId()).get("ytResults"))[Integer.parseInt(event.getButton().getId())], new AudioLoadResultHandler() {
 			@Override
 			public void trackLoaded (AudioTrack audioTrack) {
 				trackScheduler.queue(audioTrack);
-				channelIds.push(channel.getId());
 				event.editMessage(new MessageEditBuilder().setContent("```Added " + audioTrack.getInfo().title + " by " + audioTrack.getInfo().author + " to Queue```").setReplace(true).build()).queue();
 				((Thread) map.get(guildId).get("dcThread")).interrupt();
 			}
 			
 			@Override
-			public void playlistLoaded (AudioPlaylist audioPlaylist) {
+			public void playlistLoaded(AudioPlaylist audioPlaylist) {
 				for (AudioTrack track : audioPlaylist.getTracks()) {
 					trackScheduler.queue(track);
-					channelIds.push(channel.getId());
 					event.editMessage(new MessageEditBuilder().setContent("```Added " + track.getInfo().title + " by " + track.getInfo().author + " to Queue```").setReplace(true).build()).queue();
 				}
 				((Thread) map.get(guildId).get("dcThread")).interrupt();
 			}
 			
 			@Override
-			public void noMatches () {
+			public void noMatches() {
 				String[][] ytResults = searchYT(event.getMessage().getContentRaw().substring(6));
 				MessageCreateAction message = channel.sendMessage("Which one?");
 				int i = 0;
@@ -99,22 +91,20 @@ public class Main extends ListenerAdapter {
 				}
 				map.get(guildId).put("ytResults", urls);
 				message.queue();
-							/*channelIds.push(channel.getId());
-							ids.push(channel.sendMessage("Nothing matching found").complete().getId());*/
+							/*
+							channel.sendMessage("Nothing matching found").queue();*/
 			}
-			
+
 			@Override
-			public void loadFailed (FriendlyException e) {
+			public void loadFailed(FriendlyException e) {
 				e.printStackTrace();
-				channelIds.push(channel.getId());
-				ids.push(event.editMessage(e.getMessage()).setReplace(true).complete().getId());
-				channel.deleteMessageById(event.getMessage().getId());
+				event.editMessage(e.getMessage()).setReplace(true).queue();
 			}
 		});
 	}
 	
 	@Override
-	public void onMessageReceived (MessageReceivedEvent event) {
+	public void onMessageReceived(MessageReceivedEvent event) {
 		if (!jda.getSelfUser().getName().equals(event.getAuthor().getName())) if (event.getAuthor().isBot()) return;
 		if (event.isFromType(ChannelType.PRIVATE)) {
 			if (jda.getSelfUser().getName().equals(event.getAuthor().getName()))
@@ -129,8 +119,6 @@ public class Main extends ListenerAdapter {
 				AudioPlayerHandler audioPlayerHandler;
 				InfoSpammer spammer;
 				Thread spammerThread;
-				Stack<String> ids;
-				Stack<String> channelIds;
 				String guildId = event.getGuild().getId();
 				String bind = "";
 				String volume = "";
@@ -149,8 +137,6 @@ public class Main extends ListenerAdapter {
 					serverMap.put("trackScheduler", trackScheduler);
 					serverMap.put("spammer", new InfoSpammer());
 					serverMap.put("spammerThread", new Thread((InfoSpammer) serverMap.get("spammer")));
-					serverMap.put("ids", new Stack<String>());
-					serverMap.put("channelIds", new Stack<String>());
 					serverMap.put("bind", bind);
 					serverMap.put("volume", volume);
 					map.put(guildId, serverMap);
@@ -158,8 +144,6 @@ public class Main extends ListenerAdapter {
 				playerManager = (AudioPlayerManager) map.get(guildId).get("playerManager");
 				spammer = (InfoSpammer) map.get(guildId).get("spammer");
 				spammerThread = (Thread) map.get(guildId).get("spammerThread");
-				ids = (Stack<String>) map.get(guildId).get("ids");
-				channelIds = (Stack<String>) map.get(guildId).get("channelIds");
 				player = (AudioPlayer) map.get(guildId).get("player");
 				if (!volume.isEmpty()) player.setVolume(Integer.parseInt(volume));
 				audioPlayerHandler = (AudioPlayerHandler) map.get(guildId).get("audioPlayerHandler");
@@ -171,19 +155,15 @@ public class Main extends ListenerAdapter {
 					bind = channel.getName();
 					map.get(guildId).put("bind", bind);
 					channel.sendMessage("bound Bot to this channel").queue();
-					channel.deleteMessageById(event.getMessageId()).queue();
 					binds.put(guildId, channel.getName());
 					writeBinds(binds.toString(), "bind");
 				} else if (message.equals("%unbind")) {
 					map.get(guildId).put("bind", "");
 					channel.sendMessage("unbound Bot from certain channels").queue();
-					channel.deleteMessageById(event.getMessageId()).queue();
 					binds.remove(guildId);
 					writeBinds(binds.toString(), "bind");
 				} else if (bind.isEmpty() || channel.getName().equals(bind)) {
-					
 					if (message.equals("%join")) {
-						channel.deleteMessageById(event.getMessageId()).queue();
 						try {
 							join(event, audioPlayerHandler);
 							if (player.getPlayingTrack() != null) return;
@@ -191,42 +171,31 @@ public class Main extends ListenerAdapter {
 							dcThread.start();
 							map.get(guildId).put("dcThread", dcThread);
 						} catch (ChannelNotFoundException e) {
-							channelIds.push(channel.getId());
-							ids.push(channel.sendMessage("You must be in a Voice-Channel for me to join your Channel!").complete().getId());
+							channel.sendMessage("You must be in a Voice-Channel for me to join your Channel!").queue();
 						}
 					} else if (message.equals("%leave")) {
-						channel.deleteMessageById(event.getMessageId()).queue();
 						leave(event, player);
 					} else if (message.equals("%pause")) {
-						channel.deleteMessageById(event.getMessageId()).queue();
-						channelIds.push(channel.getId());
-						ids.push(channel.sendMessage("Pausing the Music").complete().getId());
+						channel.sendMessage("Pausing the Music").queue();
 						player.setPaused(true);
 					} else if (message.equals("%resume")) {
-						channel.deleteMessageById(event.getMessageId()).queue();
-						channelIds.push(channel.getId());
-						ids.push(channel.sendMessage("Resuming the Music").complete().getId());
+						channel.sendMessage("Resuming the Music").queue();
 						player.setPaused(false);
 					} else if (message.contains("%volume")) {
-						channel.deleteMessageById(event.getMessageId()).queue();
 						try {
 							Integer.parseInt(message.substring(8));
-							channelIds.push(channel.getId());
-							ids.push(channel.sendMessage("Setting the volume to " + message.substring(8)).complete().getId());
+							channel.sendMessage("Setting the volume to " + message.substring(8)).queue();
 							player.setVolume(Integer.parseInt(message.substring(8)));
 							volume = message.substring(8);
 							map.get(guildId).put("volume", volume);
 							volumes.put(guildId, message.substring(8));
 							writeBinds(volumes.toString(), "volume");
 						} catch (Exception e) {
-							channelIds.push(channel.getId());
-							ids.push(channel.sendMessage("Please type a correct Volume Number between -2147483648 and 2147483647 after the %volume command").complete().getId());
+							channel.sendMessage("Please type a correct Volume Number between -2147483648 and 2147483647 after the %volume command").queue();
 						}
 					} else if (message.equals("%info")) {
-						channel.deleteMessageById(event.getMessageId()).queue();
 						if (player.getPlayingTrack() == null) {
-							channelIds.push(channel.getId());
-							ids.push(channel.sendMessage("Nothing is currently playing").complete().getId());
+							channel.sendMessage("Nothing is currently playing").queue();
 							return;
 						}
 						long poshour = (long) Math.floor((double) player.getPlayingTrack().getPosition() / 1000 / 60 / 60);
@@ -250,16 +219,12 @@ public class Main extends ListenerAdapter {
 							time = poshours + ":" + posmins + ":" + possecs + "/" + durhours + ":" + durmins + ":" + dursecs + "```";
 						else if (durmin > 0) time = posmins + ":" + possecs + "/" + durmins + ":" + dursecs + "```";
 						else time = possecs + "/" + dursecs + "```";
-						
-						channelIds.push(channel.getId());
-						ids.push(channel.sendMessage("```Currently playing: " + player.getPlayingTrack().getInfo().title +
+						channel.sendMessage("```Currently playing: " + player.getPlayingTrack().getInfo().title +
 								" by: " + player.getPlayingTrack().getInfo().author +
-								" " + time).complete().getId());
+								" " + time).queue();
 					} else if (message.equals("%queue")) {
-						channel.deleteMessageById(event.getMessageId()).queue();
 						if (trackScheduler.queue.isEmpty()) {
-							channelIds.push(channel.getId());
-							ids.push(channel.sendMessage("Queue is empty").complete().getId());
+							channel.sendMessage("Queue is empty").queue();
 							return;
 						}
 						String[] titles = new String[trackScheduler.queue.size()];
@@ -280,17 +245,14 @@ public class Main extends ListenerAdapter {
 							result.append(titles[j]).append(" by ").append(authors[j]).append(" ").append(length[j]).append("\n");
 						}
 						result.append("```");
-						channelIds.push(channel.getId());
-						ids.push(channel.sendMessage(result.toString()).complete().getId());
+						channel.sendMessage(result.toString()).queue();
 					} else if (message.equals("%stop")) {
-						channel.deleteMessageById(event.getMessageId()).queue();
 						if (player.getPlayingTrack() == null) return;
 						player.stopTrack();
 						Thread dcThread = new Thread(new DisconnectTimer(this, event.getGuild().getId()));
 						dcThread.start();
 						map.get(guildId).put("dcThread", dcThread);
 					} else if (message.equals("%infospam")) {
-						channel.deleteMessageById(event.getMessageId()).queue();
 						if (spammer.isRunning) {
 							spammer.stop();
 							spammerThread.interrupt();
@@ -299,18 +261,6 @@ public class Main extends ListenerAdapter {
 							spammer.init(channel, player);
 							spammerThread.start();
 						}
-					} else if (message.equals("%clear")) {
-						channel.deleteMessageById(event.getMessageId()).queue();
-						MessageHistory history = MessageHistory.getHistoryFromBeginning(channel).complete();
-						List<Message> messageList = history.getRetrievedHistory();
-						if (messageList.isEmpty()) return;
-						if (messageList.size() == 1) {
-							for (Message m : messageList) {
-								channel.deleteMessageById(m.getId()).queue();
-							}
-							return;
-						}
-						channel.deleteMessages(messageList).queue();
 					} else if (message.equals("%commands")) {
 						PrivateChannel privateChannel = event.getAuthor().openPrivateChannel().complete();
 						privateChannel.sendMessage("```Command List:\n%play [name or link] - Play a song from youtube with link or search by name\n" +
@@ -319,15 +269,12 @@ public class Main extends ListenerAdapter {
 								"%leave - leave the current voice Channel\n%pause - pause the current music\n" +
 								"%resume - resume the current music\n%stop - stops the music and empties the queue\n" +
 								"%info - shows current song and time in song\n%infospam - same as info but refrehsing every second\n" +
-								"%queue - show queue\n%clear - clear every message in this chat```").queue();
-						channel.deleteMessageById(event.getMessageId()).queue();
+								"%queue - show queue```").queue();
 					} else if (message.contains("%play")) {
-						channel.deleteMessageById(event.getMessageId()).queue();
 						try {
 							event.getMessage().getContentRaw().substring(6);
 						} catch (StringIndexOutOfBoundsException e) {
-							channelIds.push(channel.getId());
-							ids.push(channel.sendMessage("You must put a youtube link or song name behind the %play command").complete().getId());
+							channel.sendMessage("You must put a youtube link or song name behind the %play command").queue();
 							return;
 						}
 						AudioPlayerHandler finalAudioPlayerHandler = audioPlayerHandler;
@@ -335,28 +282,25 @@ public class Main extends ListenerAdapter {
 						try {
 							join(event, finalAudioPlayerHandler);
 						} catch (ChannelNotFoundException e) {
-							channelIds.push(channel.getId());
-							ids.push(channel.sendMessage("You must be in a Voice-Channel for me to join your Channel!").complete().getId());
+							channel.sendMessage("You must be in a Voice-Channel for me to join your Channel!").queue();
 						}
 						playerManager.loadItem(event.getMessage().getContentRaw().substring(6), new AudioLoadResultHandler() {
 							@Override
 							public void trackLoaded (AudioTrack audioTrack) {
 								finalTrackScheduler.queue(audioTrack);
-								channelIds.push(channel.getId());
-								ids.push(channel.sendMessage("```Added " + audioTrack.getInfo().title + " by " + audioTrack.getInfo().author + " to Queue```").complete().getId());
+								channel.sendMessage("```Added " + audioTrack.getInfo().title + " by " + audioTrack.getInfo().author + " to Queue```").queue();
 								((Thread) map.get(guildId).get("dcThread")).interrupt();
 							}
 							@Override
 							public void playlistLoaded (AudioPlaylist audioPlaylist) {
 								for (AudioTrack track : audioPlaylist.getTracks()) {
 									finalTrackScheduler.queue(track);
-									channelIds.push(channel.getId());
-									ids.push(channel.sendMessage("```Added " + track.getInfo().title + " by " + track.getInfo().author + " to Queue```").complete().getId());
+									channel.sendMessage("```Added " + track.getInfo().title + " by " + track.getInfo().author + " to Queue```").queue();
 								}
 								((Thread) map.get(guildId).get("dcThread")).interrupt();
 							}
 							@Override
-							public void noMatches () {
+							public void noMatches() {
 								String[][] ytResults = searchYT(event.getMessage().getContentRaw().substring(6));
 								MessageCreateAction message = channel.sendMessage("Which one?");
 								int i = 0;
@@ -372,14 +316,13 @@ public class Main extends ListenerAdapter {
 								}
 								map.get(guildId).put("ytResults", urls);
 								message.queue();
-								/*channelIds.push(channel.getId());
-								ids.push(channel.sendMessage("Nothing matching found").complete().getId());*/
+								/*
+								channel.sendMessage("Nothing matching found").queue();*/
 							}
 							@Override
 							public void loadFailed (FriendlyException e) {
 								e.printStackTrace();
-								channelIds.push(channel.getId());
-								ids.push(channel.sendMessage(e.getMessage()).complete().getId());
+								channel.sendMessage(e.getMessage()).queue();
 							}
 						});
 					}
@@ -390,12 +333,10 @@ public class Main extends ListenerAdapter {
 	
 	private void join (MessageReceivedEvent event, AudioPlayerHandler audioPlayerHandler) throws ChannelNotFoundException {
 		TextChannel channel = event.getChannel().asTextChannel();
-		Stack<String> channelIds = (Stack<String>) map.get(event.getGuild().getId()).get("channelIds");
-		Stack<String> ids = (Stack<String>) map.get(event.getGuild().getId()).get("ids");
 		if (!event.getGuild().getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT)) {
 			// The bot does not have permission to join any voice channel. Don't forget the .queue()!
-			channelIds.push(channel.getId());
-			ids.push(channel.sendMessage("I do not have permissions to join a voice channel!").complete().getId());
+			
+			channel.sendMessage("I do not have permissions to join a voice channel!").queue();
 			return;
 		}
 		// Creates a variable equal to the channel that the user is in.
@@ -412,25 +353,21 @@ public class Main extends ListenerAdapter {
 		// Connects to the channel.
 		audioManager.openAudioConnection(connectedChannel);
 		// Obviously people do not notice someone/something connecting.
-		channelIds.push(channel.getId());
-		ids.push(channel.sendMessage("Connected to the voice channel!").complete().getId());
+		
+		channel.sendMessage("Connected to the voice channel!").queue();
 	}
 	
 	
 	public void leave (MessageReceivedEvent event, AudioPlayer player) {
 		TextChannel channel = event.getChannel().asTextChannel();
-		Stack<String> channelIds = (Stack<String>) map.get(event.getGuild().getId()).get("channelIds");
-		Stack<String> ids = (Stack<String>) map.get(event.getGuild().getId()).get("ids");
 		// Checks if the bot is connected to a voice channel.
 		if (!event.getGuild().getAudioManager().isConnected()) return;
 		// Disconnect from the channel.
 		event.getGuild().getAudioManager().closeAudioConnection();
 		// Notify the user.
-		channelIds.push(channel.getId());
-		ids.push(channel.sendMessage("Disconnected from the voice channel!").complete().getId());
+		
+		channel.sendMessage("Disconnected from the voice channel!").queue();
 		player.stopTrack();
-		Thread thread = new Shutdownhook(this, event.getGuild().getId());
-		thread.start();
 	}
 	
 	
