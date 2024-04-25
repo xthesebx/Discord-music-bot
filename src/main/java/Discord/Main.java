@@ -1,5 +1,6 @@
 package Discord;
 
+import com.hawolt.logger.Logger;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -97,7 +98,7 @@ public class Main extends ListenerAdapter {
 
 			@Override
 			public void loadFailed(FriendlyException e) {
-				e.printStackTrace();
+				Logger.error(e);
 				event.editMessage(e.getMessage()).setReplace(true).queue();
 			}
 		});
@@ -326,7 +327,7 @@ public class Main extends ListenerAdapter {
 							}
 							@Override
 							public void loadFailed (FriendlyException e) {
-								e.printStackTrace();
+								Logger.error(e);
 								channel.sendMessage(e.getMessage()).queue();
 							}
 						});
@@ -455,7 +456,7 @@ public class Main extends ListenerAdapter {
 			inputStream.close();
 			return (list);
 		} catch (Exception e) {
-			e.printStackTrace();
+			Logger.error(e);
 		}
 		return null;
 	}

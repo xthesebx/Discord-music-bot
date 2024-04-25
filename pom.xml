@@ -34,6 +34,11 @@
             <artifactId>json</artifactId>
             <version>20231013</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.hawolt.hawolt-core</groupId>
+            <artifactId>Logger</artifactId>
+            <version>898c981f5b</version>
+        </dependency>
     </dependencies>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
