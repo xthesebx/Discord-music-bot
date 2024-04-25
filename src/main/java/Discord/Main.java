@@ -263,13 +263,19 @@ public class Main extends ListenerAdapter {
 						}
 					} else if (message.equals("%commands")) {
 						PrivateChannel privateChannel = event.getAuthor().openPrivateChannel().complete();
-						privateChannel.sendMessage("```Command List:\n%play [name or link] - Play a song from youtube with link or search by name\n" +
-								"%bind - bind the discord bot to this text channel\n%unbind - unbind the discord bot from text channels\n" +
-								"%join - Join your current voice Channel (must be in voice Channel for this)\n" +
-								"%leave - leave the current voice Channel\n%pause - pause the current music\n" +
-								"%resume - resume the current music\n%stop - stops the music and empties the queue\n" +
-								"%info - shows current song and time in song\n%infospam - same as info but refrehsing every second\n" +
-								"%queue - show queue```").queue();
+						privateChannel.sendMessage("""
+                                ```Command List:
+                                %play [name or link] - Play a song from youtube with link or search by name
+                                %bind - bind the discord bot to this text channel
+                                %unbind - unbind the discord bot from text channels
+                                %join - Join your current voice Channel (must be in voice Channel for this)
+                                %leave - leave the current voice Channel
+                                %pause - pause the current music
+                                %resume - resume the current music
+                                %stop - stops the music and empties the queue
+                                %info - shows current song and time in song
+                                %infospam - same as info but refrehsing every second
+                                %queue - show queue```""").queue();
 					} else if (message.contains("%play")) {
 						try {
 							event.getMessage().getContentRaw().substring(6);
@@ -277,10 +283,9 @@ public class Main extends ListenerAdapter {
 							channel.sendMessage("You must put a youtube link or song name behind the %play command").queue();
 							return;
 						}
-						AudioPlayerHandler finalAudioPlayerHandler = audioPlayerHandler;
 						TrackScheduler finalTrackScheduler = trackScheduler;
 						try {
-							join(event, finalAudioPlayerHandler);
+							join(event, audioPlayerHandler);
 						} catch (ChannelNotFoundException e) {
 							channel.sendMessage("You must be in a Voice-Channel for me to join your Channel!").queue();
 						}
