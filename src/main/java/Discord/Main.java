@@ -125,6 +125,7 @@ public class Main extends ListenerAdapter {
 				String volume = "";
 				if (!map.containsKey(guildId)) {
 					if (binds.has(guildId)) bind = binds.getString(guildId);
+					if (volumes.has(guildId)) volume = volumes.getString(guildId);
 					HashMap<String, Object> serverMap = new HashMap<>();
 					AudioPlayerManager audioPlayerManager = new DefaultAudioPlayerManager();
 					AudioSourceManagers.registerRemoteSources(audioPlayerManager);
