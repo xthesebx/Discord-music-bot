@@ -1,18 +1,18 @@
 package Discord;
 
+import net.dv8tion.jda.api.managers.AudioManager;
+
 public class DisconnectTimer implements Runnable{
 	
-	Main main;
-	String id;
-	public DisconnectTimer(Main main, String id) {
-		this.main = main;
-		this.id = id;
+	AudioManager audioManager;
+	public DisconnectTimer(AudioManager audioManager) {
+		this.audioManager = audioManager;
 	}
 	@Override
 	public void run () {
 		try {
 			Thread.sleep(300000);
-			main.jda.getGuildById(id).getAudioManager().closeAudioConnection();
+			audioManager.closeAudioConnection();
 		} catch (InterruptedException ignored) {
 		
 		}

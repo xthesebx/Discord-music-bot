@@ -4,6 +4,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import net.dv8tion.jda.api.managers.AudioManager;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -14,17 +15,14 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class TrackScheduler extends AudioEventAdapter {
 	private final AudioPlayer player;
 	public final BlockingQueue<AudioTrack> queue;
-	private final Main main;
-	private final String id;
-	
+	private final AudioManager audioManager;
 	/**
 	 * @param player The audio player this scheduler uses
 	 */
-	public TrackScheduler(AudioPlayer player, Main main, String id) {
+	public TrackScheduler(AudioPlayer player, AudioManager audioManager) {
 		this.player = player;
 		this.queue = new LinkedBlockingQueue<>();
-		this.main = main;
-		this.id = id;
+		this.audioManager = audioManager;
 	}
 	
 	/**
@@ -50,9 +48,9 @@ public class TrackScheduler extends AudioEventAdapter {
 		AudioTrack track = queue.poll();
 		player.startTrack(track, false);
 		if (track == null) {
-			Thread dcThread = new Thread(new DisconnectTimer(main, id));
+			Thread dcThread = new Thread(new DisconnectTimer(audioManager));
 			dcThread.start();
-			Main.map.get(id).put("dcThread", dcThread);
+			//map.get(id).put("dcThread", dcThread);
 		}
 	}
 	
