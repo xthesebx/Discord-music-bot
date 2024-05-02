@@ -198,15 +198,12 @@ public class Server {
 
             @Override
             public void trackLoaded (AudioTrack audioTrack) {
-                Logger.error(genericEvent instanceof ButtonInteractionEvent);
                 trackScheduler.queue(audioTrack);
                 dc.stopTimer();
                 text = "```Added " + audioTrack.getInfo().title + " by " + audioTrack.getInfo().author + " to Queue```";
                 if (!eventType) ((SlashCommandInteractionEvent) genericEvent).getHook().editOriginal(text).queue();
                 else {
-                    Logger.error("pre edit");
                     ((ButtonInteractionEvent) genericEvent).getHook().editOriginal(new MessageEditBuilder().setContent(text).build()).queue();
-                    Logger.error("post edit");
                 }
             }
 
