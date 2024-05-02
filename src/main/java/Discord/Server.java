@@ -49,7 +49,6 @@ public class Server {
         dc = new DisconnectTimer(audioManager);
         Thread dcThread = new Thread(dc);
         dcThread.start();
-        dc.stopTimer();
         player.setVolume(volume);
     }
 

@@ -1,10 +1,11 @@
 package Discord;
 
+import com.hawolt.logger.Logger;
 import net.dv8tion.jda.api.managers.AudioManager;
 
 public class DisconnectTimer implements Runnable{
 	int i = 0, loops = 300;
-	boolean active = true;
+	boolean active;
 	AudioManager audioManager;
 	public DisconnectTimer(AudioManager audioManager) {
 		this.audioManager = audioManager;
@@ -12,30 +13,26 @@ public class DisconnectTimer implements Runnable{
 
 	@Override
 	public void run () {
-		timer();
-	}
-
-	private void timer() {
 		while (true) {
-			if (active) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				Logger.error(e);
+			}
+			if (this.active) {
 				if (i < loops) {
-					try {
-						Thread.sleep(1000);
-						i++;
-					} catch (InterruptedException e) {
-
-					}
+					i++;
 				} else audioManager.closeAudioConnection();
 			}
 		}
 	}
 
 	public void stopTimer() {
-		active = false;
+		this.active = false;
 	}
 
 	public void startTimer() {
-		active = true;
+		this.active = true;
 		i = 0;
 	}
 }
