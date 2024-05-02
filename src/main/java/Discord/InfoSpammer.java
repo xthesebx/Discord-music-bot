@@ -3,6 +3,7 @@ package Discord;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
+@Deprecated
 public class InfoSpammer implements Runnable{
 	public boolean isRunning;
 	private TextChannel channel;
