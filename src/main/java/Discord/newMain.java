@@ -2,6 +2,7 @@ package Discord;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
@@ -28,10 +29,11 @@ public class newMain extends ListenerAdapter {
         jda = JDABuilder.createDefault(read(env).toString().strip()).enableIntents(GatewayIntent.MESSAGE_CONTENT).enableIntents(GatewayIntent.GUILD_MESSAGES).enableIntents(GatewayIntent.GUILD_MESSAGE_TYPING).build();
         jda.addEventListener(this);
         jda.awaitReady();
-        jda.getPresence().setActivity(Activity.customStatus("Playing some Banger Music"));
+        jda.getPresence().setStatus(OnlineStatus.OFFLINE);
         for (Guild guild : jda.getGuilds()) {
             map.put(guild.getId(), new Server(guild));
         }
+        jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.customStatus("Playing some Banger Music"));
     }
 
     public static StringBuilder read (File file) {
