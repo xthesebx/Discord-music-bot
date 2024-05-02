@@ -7,8 +7,8 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
  * command /help
  * sends all commands
  *
- * @author sebas
- * @version $Id: $Id
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
  */
 public class HelpCommand extends BasicCommand {
 

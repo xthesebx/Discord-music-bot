@@ -8,8 +8,8 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 /**
  * Abstract class for same code in every Command
  *
- * @author sebas
- * @version $Id: $Id
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
  */
 public abstract class BasicCommand {
     String cid;

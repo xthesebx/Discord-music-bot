@@ -18,8 +18,8 @@ import java.util.HashMap;
 /**
  * new Main Class after old one got deprecated
  *
- * @author sebas
- * @version $Id: $Id
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
  */
 public class NewMain extends ListenerAdapter {
 

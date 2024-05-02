@@ -6,8 +6,8 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 /**
  * command /pause pauses current queue
  *
- * @author sebas
- * @version $Id: $Id
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
  */
 public class PauseCommand extends BasicCommand {
     /**

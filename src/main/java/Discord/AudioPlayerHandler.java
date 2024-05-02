@@ -10,8 +10,8 @@ import java.nio.ByteBuffer;
  * handler for discord audio player which serves it the youtube music in parts (20ms)
  * its basically copy paste so i have not much clue whats happening in here
  *
- * @author sebas
- * @version $Id: $Id
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
  */
 public class AudioPlayerHandler implements AudioSendHandler {
 	private final AudioPlayer audioPlayer;

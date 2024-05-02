@@ -3,8 +3,8 @@ package Discord.commands;
 /**
  * enum for the different join-states
  *
- * @author sebas
- * @version $Id: $Id
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
  */
 public enum JoinStates {
     /**

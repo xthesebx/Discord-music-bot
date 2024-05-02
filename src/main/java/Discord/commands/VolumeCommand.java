@@ -11,8 +11,8 @@ import java.io.File;
  * command /volume
  * sets the volume for the server
  *
- * @author sebas
- * @version $Id: $Id
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
  */
 public class VolumeCommand extends BasicCommand {
 

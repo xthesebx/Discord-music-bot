@@ -54,7 +54,25 @@
                 <configuration>
                     <source>17</source>
                     <target>17</target>
+                    <defaultAuthor>xXTheSebXx</defaultAuthor>
+                    <defaultVersion>${project.version}</defaultVersion>
+                    <version>true</version>
+                    <author>true</author>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>update</id>
+                        <goals>
+                            <goal>fix</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>javadoc</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

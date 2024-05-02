@@ -28,8 +28,8 @@ import java.net.URL;
 /**
  * The class for every server
  *
- * @author sebas
- * @version $Id: $Id
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
  */
 public class Server {
 

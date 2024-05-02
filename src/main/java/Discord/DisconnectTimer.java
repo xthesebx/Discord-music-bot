@@ -6,8 +6,8 @@ import net.dv8tion.jda.api.managers.AudioManager;
 /**
  * Disconnect timer to disconnect after 5 minutes of silent in voice chat
  *
- * @author sebas
- * @version $Id: $Id
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
  */
 public class DisconnectTimer implements Runnable{
 	int i = 0, loops = 300;

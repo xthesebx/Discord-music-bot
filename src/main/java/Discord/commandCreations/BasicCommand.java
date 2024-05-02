@@ -6,8 +6,8 @@ import org.json.JSONObject;
 /**
  * <p>BasicCommand class.</p>
  *
- * @author sebas
- * @version $Id: $Id
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
  */
 public class BasicCommand extends JSONObject {
 

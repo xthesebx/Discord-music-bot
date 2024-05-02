@@ -7,8 +7,8 @@ import net.dv8tion.jda.api.managers.AudioManager;
 /**
  * /leave command leaves voicechat and clears queue
  *
- * @author sebas
- * @version $Id: $Id
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
  */
 public class LeaveCommand extends BasicCommand {
 

@@ -35,8 +35,8 @@ import java.util.HashMap;
 /**
  * <p>MainOld class.</p>
  *
- * @author sebas
- * @version $Id: $Id
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
  */
 @Deprecated
 public class MainOld extends ListenerAdapter {

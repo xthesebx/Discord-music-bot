@@ -6,8 +6,8 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 /**
  * <p>InfoSpammer class.</p>
  *
- * @author sebas
- * @version $Id: $Id
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
  */
 @Deprecated
 public class InfoSpammer implements Runnable{

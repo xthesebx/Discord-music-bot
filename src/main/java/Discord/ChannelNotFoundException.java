@@ -3,8 +3,8 @@ package Discord;
 /**
  * <p>ChannelNotFoundException class.</p>
  *
- * @author sebas
- * @version $Id: $Id
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
  */
 @Deprecated
 public class ChannelNotFoundException extends Exception{
