@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.managers.AudioManager;
 
 /**
- * /leave command
+ * /leave command leaves voicechat and clears queue
  */
 public class LeaveCommand extends BasicCommand {
 

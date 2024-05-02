@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 
 /**
  * Command /join
+ * Bot joins your VC
  */
 public class JoinCommand extends BasicCommand {
     /**

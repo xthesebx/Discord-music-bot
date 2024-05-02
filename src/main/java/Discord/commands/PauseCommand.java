@@ -4,7 +4,7 @@ import Discord.Server;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 /**
- * command /pause
+ * command /pause pauses current queue
  */
 public class PauseCommand extends BasicCommand {
     /**

@@ -7,7 +7,17 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
 import java.io.File;
 
+/**
+ * command /volume
+ * sets the volume for the server
+ */
 public class VolumeCommand extends BasicCommand {
+
+    /**
+     * in case of /command
+     * @param event received event to reply to it and handle the options
+     * @param server the server it came from to make things easier
+     */
     public VolumeCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
         OptionMapping optionMapping = event.getOption("volume");

@@ -15,18 +15,25 @@ import org.jetbrains.annotations.NotNull;
 import java.io.*;
 import java.util.HashMap;
 
+/**
+ * new Main Class after old one got deprecated
+ */
 public class NewMain extends ListenerAdapter {
 
-    JDA jda;
-    HashMap<String, Server> map = new HashMap<>();
+    private final JDA jda;
+    private final HashMap<String, Server> map = new HashMap<>();
 
     public static void main (String[] args) throws InterruptedException {
         new NewMain();
     }
 
+    /**
+     * basically just setting up jda
+     * @throws InterruptedException because of awaitReady
+     */
     public NewMain() throws InterruptedException {
         File env = new File("apikey.env");
-        jda = JDABuilder.createDefault(read(env).toString().strip()).enableIntents(GatewayIntent.MESSAGE_CONTENT).enableIntents(GatewayIntent.GUILD_MESSAGES).enableIntents(GatewayIntent.GUILD_MESSAGE_TYPING).setStatus(OnlineStatus.OFFLINE).build();
+        jda = JDABuilder.createDefault(read(env).strip()).enableIntents(GatewayIntent.MESSAGE_CONTENT).enableIntents(GatewayIntent.GUILD_MESSAGES).enableIntents(GatewayIntent.GUILD_MESSAGE_TYPING).setStatus(OnlineStatus.OFFLINE).build();
         jda.addEventListener(this);
         jda.awaitReady();
         for (Guild guild : jda.getGuilds()) {
@@ -35,7 +42,12 @@ public class NewMain extends ListenerAdapter {
         jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.customStatus("Playing some Banger Music"));
     }
 
-    public static StringBuilder read (File file) {
+    /**
+     * reads text of a file
+     * @param file the file to read from
+     * @return String builder with text from the File
+     */
+    public static String read (File file) {
         if (!file.exists()) {
             try {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
@@ -56,9 +68,14 @@ public class NewMain extends ListenerAdapter {
             reader.close();
         } catch (IOException ignored) {
         }
-        return text;
+        return text.toString();
     }
 
+    /**
+     * write text to a file
+     * @param text text to write
+     * @param file file to write the text to
+     */
     public static void write(String text, File file) {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
@@ -69,6 +86,10 @@ public class NewMain extends ListenerAdapter {
         }
     }
 
+    /**
+     * giving the command to corresponding server object
+     * @param event the event coming in from the command
+     */
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         super.onSlashCommandInteraction(event);
@@ -77,6 +98,10 @@ public class NewMain extends ListenerAdapter {
 
     }
 
+    /**
+     * giving the buttoninteraction to the corresponding server object
+     * @param event the event coming in from the button click
+     */
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         super.onButtonInteraction(event);
@@ -84,6 +109,10 @@ public class NewMain extends ListenerAdapter {
         map.get(event.getGuild().getId()).onButtonInteraction(event);
     }
 
+    /**
+     * adding new server object to map to add new guilds
+     * @param event event of guild joining to add guild to map
+     */
     @Override
     public void onGuildJoin(@NotNull GuildJoinEvent event) {
         super.onGuildJoin(event);

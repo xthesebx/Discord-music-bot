@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 
 /**
  * command /info
+ * gives info bout current song (name, author, position)
  */
 public class InfoCommand extends BasicCommand {
     /**
