@@ -63,13 +63,19 @@ public class newMain extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         super.onSlashCommandInteraction(event);
-        map.get(event.getGuild().getId()).onSlashCommandInteraction(event);
+        if (event.isFromGuild()) {
+            assert event.getGuild() != null;
+            map.get(event.getGuild().getId()).onSlashCommandInteraction(event);
+        }
     }
 
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         super.onButtonInteraction(event);
-        map.get(event.getGuild().getId()).onButtonInteraction(event);
+        if (event.isFromGuild()) {
+            assert event.getGuild() != null;
+            map.get(event.getGuild().getId()).onButtonInteraction(event);
+        }
     }
 
     @Override
