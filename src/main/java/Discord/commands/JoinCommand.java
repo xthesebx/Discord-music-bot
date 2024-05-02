@@ -3,8 +3,15 @@ package Discord.commands;
 import Discord.Server;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
+/**
+ * Command /join
+ */
 public class JoinCommand extends BasicCommand {
-
+    /**
+     *
+     * @param event received event to reply to it and handle the options
+     * @param server the server it came from to make things easier
+     */
     public JoinCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
         switch (server.join(event)) {
@@ -22,7 +29,7 @@ public class JoinCommand extends BasicCommand {
             }
             case JOINED -> event.reply("Connected to the voice channel!").queue();
         }
-        if (server.player.getPlayingTrack() != null) return;
-        server.dc.startTimer();
+        if (server.getPlayer().getPlayingTrack() != null) return;
+        server.getDc().startTimer();
     }
 }

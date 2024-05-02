@@ -7,6 +7,6 @@ public class ResumeCommand extends BasicCommand {
     public ResumeCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
         event.reply("Resuming the Music").queue();
-        server.player.setPaused(false);
+        server.getPlayer().setPaused(false);
     }
 }

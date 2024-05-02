@@ -1,5 +1,6 @@
 package Discord.commands;
 
+import Discord.NewMain;
 import Discord.Server;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -14,8 +15,8 @@ public class VolumeCommand extends BasicCommand {
         String volString = optionMapping.getAsString();
         int volumeInt = Integer.parseInt(volString);
         event.reply("Setting the volume to " + volString).queue();
-        server.player.setVolume(volumeInt);
-        server.volume = volumeInt;
-        server.write(volString, new File("volumes/" + server.guildId));
+        server.getPlayer().setVolume(volumeInt);
+        server.setVolume(volumeInt);
+        NewMain.write(volString, new File("volumes/" + server.getGuildId()));
     }
 }

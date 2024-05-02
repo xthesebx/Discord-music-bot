@@ -15,16 +15,16 @@ import org.jetbrains.annotations.NotNull;
 import java.io.*;
 import java.util.HashMap;
 
-public class newMain extends ListenerAdapter {
+public class NewMain extends ListenerAdapter {
 
     JDA jda;
     HashMap<String, Server> map = new HashMap<>();
 
     public static void main (String[] args) throws InterruptedException {
-        new newMain();
+        new NewMain();
     }
 
-    public newMain() throws InterruptedException {
+    public NewMain() throws InterruptedException {
         File env = new File("apikey.env");
         jda = JDABuilder.createDefault(read(env).toString().strip()).enableIntents(GatewayIntent.MESSAGE_CONTENT).enableIntents(GatewayIntent.GUILD_MESSAGES).enableIntents(GatewayIntent.GUILD_MESSAGE_TYPING).setStatus(OnlineStatus.OFFLINE).build();
         jda.addEventListener(this);
@@ -59,22 +59,29 @@ public class newMain extends ListenerAdapter {
         return text;
     }
 
+    public static void write(String text, File file) {
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
+            writer.write(text);
+            writer.close();
+        } catch (IOException ignored) {
+
+        }
+    }
+
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         super.onSlashCommandInteraction(event);
-        if (event.isFromGuild()) {
-            assert event.getGuild() != null;
-            map.get(event.getGuild().getId()).onSlashCommandInteraction(event);
-        }
+        assert event.getGuild() != null;
+        map.get(event.getGuild().getId()).onSlashCommandInteraction(event);
+
     }
 
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         super.onButtonInteraction(event);
-        if (event.isFromGuild()) {
-            assert event.getGuild() != null;
-            map.get(event.getGuild().getId()).onButtonInteraction(event);
-        }
+        assert event.getGuild() != null;
+        map.get(event.getGuild().getId()).onButtonInteraction(event);
     }
 
     @Override

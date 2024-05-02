@@ -1,21 +1,26 @@
 package Discord.commands;
 
 import Discord.Server;
+import Discord.TrackScheduler;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 public class QueueCommand extends BasicCommand {
+
+    TrackScheduler trackScheduler;
+
     public QueueCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
-        if (server.trackScheduler.queue.isEmpty()) {
+        this.trackScheduler = server.getTrackScheduler();
+        if (trackScheduler.queue.isEmpty()) {
             event.reply("Queue is empty").queue();
             return;
         }
-        String[] titles = new String[server.trackScheduler.queue.size()];
-        String[] authors = new String[server.trackScheduler.queue.size()];
-        String[] length = new String[server.trackScheduler.queue.size()];
+        String[] titles = new String[trackScheduler.queue.size()];
+        String[] authors = new String[trackScheduler.queue.size()];
+        String[] length = new String[trackScheduler.queue.size()];
         int i = 0;
-        for (AudioTrack e : server.trackScheduler.queue) {
+        for (AudioTrack e : trackScheduler.queue) {
             titles[i] = e.getInfo().title;
             authors[i] = e.getInfo().author;
             long duration = e.getDuration() / 1000;

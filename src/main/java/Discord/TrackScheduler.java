@@ -20,7 +20,7 @@ public class TrackScheduler extends AudioEventAdapter {
 	 * @param server The server to get everything from
 	 */
 	public TrackScheduler(Server server) {
-		this.player = server.player;
+		this.player = server.getPlayer();
 		this.queue = new LinkedBlockingQueue<>();
 		this.server = server;
 	}
@@ -48,7 +48,7 @@ public class TrackScheduler extends AudioEventAdapter {
 		AudioTrack track = queue.poll();
 		player.startTrack(track, false);
 		if (track == null) {
-			server.dc.startTimer();
+			server.getDc().startTimer();
 			//map.get(id).put("dcThread", dcThread);
 		}
 	}

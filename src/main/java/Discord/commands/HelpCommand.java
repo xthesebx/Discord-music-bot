@@ -3,7 +3,16 @@ package Discord.commands;
 import Discord.Server;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
+/**
+ * command /help
+ */
 public class HelpCommand extends BasicCommand {
+
+	/**
+	 *
+	 * @param event received event to reply to it and handle the options
+	 * @param server the server it came from to make things easier
+	 */
     public HelpCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
         event.reply("""
