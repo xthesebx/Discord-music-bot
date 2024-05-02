@@ -8,7 +8,7 @@ public class StopCommand extends BasicCommand {
         super(event, server);
         if (server.player.getPlayingTrack() == null) return;
         server.player.stopTrack();
-        server.dcThread.start();
+        server.dc.startTimer();
         event.reply("Stopped!").queue();
     }
 }

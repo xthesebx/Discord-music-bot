@@ -12,17 +12,18 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * This class schedules tracks for the audio player. It contains the queue of tracks.
  */
-public class TrackScheduler extends AudioEventAdapter {
+@Deprecated
+public class TrackSchedulerOld extends AudioEventAdapter {
 	private final AudioPlayer player;
 	public final BlockingQueue<AudioTrack> queue;
-	private final Server server;
+	private final AudioManager audioManager;
 	/**
-	 * @param server The server to get everything from
+	 * @param player The audio player this scheduler uses
 	 */
-	public TrackScheduler(Server server) {
-		this.player = server.player;
+	public TrackSchedulerOld(AudioPlayer player, AudioManager audioManager) {
+		this.player = player;
 		this.queue = new LinkedBlockingQueue<>();
-		this.server = server;
+		this.audioManager = audioManager;
 	}
 	
 	/**
@@ -48,7 +49,8 @@ public class TrackScheduler extends AudioEventAdapter {
 		AudioTrack track = queue.poll();
 		player.startTrack(track, false);
 		if (track == null) {
-			server.dc.startTimer();
+			Thread dcThread = new Thread(new DisconnectTimer(audioManager));
+			dcThread.start();
 			//map.get(id).put("dcThread", dcThread);
 		}
 	}

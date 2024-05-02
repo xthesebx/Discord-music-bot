@@ -36,7 +36,7 @@ public class Server {
     public final AudioManager audioManager;
     public final TrackScheduler trackScheduler;
     public final AudioPlayerHandler audioPlayerHandler = new AudioPlayerHandler(player);
-    public final Thread dcThread;
+    public final DisconnectTimer dc;
 
     public Server(Guild guild) {
         this.guild = guild;
@@ -44,9 +44,12 @@ public class Server {
         volume = readVolume();
         AudioSourceManagers.registerRemoteSources(audioPlayerManager);
         this.audioManager = guild.getAudioManager();
-        trackScheduler = new TrackScheduler(player, guild.getAudioManager());
+        trackScheduler = new TrackScheduler(this);
         player.addListener(trackScheduler);
-        dcThread = new Thread(new DisconnectTimer(audioManager));
+        dc = new DisconnectTimer(audioManager);
+        Thread dcThread = new Thread(dc);
+        dcThread.start();
+        dc.stopTimer();
         player.setVolume(volume);
     }
 
@@ -90,7 +93,7 @@ public class Server {
             @Override
             public void trackLoaded (AudioTrack audioTrack) {
                 trackScheduler.queue(audioTrack);
-                dcThread.interrupt();
+                dc.stopTimer();
                 text = "```Added " + audioTrack.getInfo().title + " by " + audioTrack.getInfo().author + " to Queue```";
                 if (!eventType) ((SlashCommandInteractionEvent) genericEvent).getHook().editOriginal(text).queue();
                 else ((ButtonInteractionEvent) genericEvent).getHook().editOriginal(new MessageEditBuilder().setContent(text).setReplace(true).build()).queue();
@@ -104,7 +107,7 @@ public class Server {
                     if (!eventType) ((SlashCommandInteractionEvent) genericEvent).getHook().editOriginal(text).queue();
                     else ((ButtonInteractionEvent) genericEvent).getHook().editOriginal(new MessageEditBuilder().setContent(text).setReplace(true).build()).queue();
                 }
-                dcThread.interrupt();
+                dc.stopTimer();
             }
 
             @Override

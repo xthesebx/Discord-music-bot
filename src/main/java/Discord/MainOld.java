@@ -55,13 +55,13 @@ public class MainOld extends ListenerAdapter {
     @Override
     public void onButtonInteraction(ButtonInteractionEvent event) {
         AudioPlayerManager playerManager = (AudioPlayerManager) map.get(event.getGuild().getId()).get("playerManager");
-        TrackScheduler trackScheduler = (TrackScheduler) map.get(event.getGuild().getId()).get("trackScheduler");
+        TrackSchedulerOld trackSchedulerOld = (TrackSchedulerOld) map.get(event.getGuild().getId()).get("trackScheduler");
         TextChannel channel = event.getChannel().asTextChannel();
         String guildId = event.getGuild().getId();
         playerManager.loadItem(((String[]) map.get(event.getGuild().getId()).get("ytResults"))[Integer.parseInt(event.getButton().getId())], new AudioLoadResultHandler() {
             @Override
             public void trackLoaded (AudioTrack audioTrack) {
-                trackScheduler.queue(audioTrack);
+                trackSchedulerOld.queue(audioTrack);
                 event.editMessage(new MessageEditBuilder().setContent("```Added " + audioTrack.getInfo().title + " by " + audioTrack.getInfo().author + " to Queue```").setReplace(true).build()).queue();
                 ((Thread) map.get(guildId).get("dcThread")).interrupt();
             }
@@ -69,7 +69,7 @@ public class MainOld extends ListenerAdapter {
             @Override
             public void playlistLoaded(AudioPlaylist audioPlaylist) {
                 for (AudioTrack track : audioPlaylist.getTracks()) {
-                    trackScheduler.queue(track);
+                    trackSchedulerOld.queue(track);
                     event.editMessage(new MessageEditBuilder().setContent("```Added " + track.getInfo().title + " by " + track.getInfo().author + " to Queue```").setReplace(true).build()).queue();
                 }
                 ((Thread) map.get(guildId).get("dcThread")).interrupt();
@@ -116,7 +116,7 @@ public class MainOld extends ListenerAdapter {
             else {
                 AudioPlayer player;
                 AudioPlayerManager playerManager;
-                TrackScheduler trackScheduler;
+                TrackSchedulerOld trackSchedulerOld;
                 AudioPlayerHandler audioPlayerHandler;
                 InfoSpammer spammer;
                 Thread spammerThread;
@@ -131,12 +131,12 @@ public class MainOld extends ListenerAdapter {
                     AudioSourceManagers.registerRemoteSources(audioPlayerManager);
                     player = audioPlayerManager.createPlayer();
                     audioPlayerHandler = new AudioPlayerHandler(player);
-                    trackScheduler = new TrackScheduler(player, jda.getGuildById(guildId).getAudioManager());
-                    player.addListener(trackScheduler);
+                    trackSchedulerOld = new TrackSchedulerOld(player, jda.getGuildById(guildId).getAudioManager());
+                    player.addListener(trackSchedulerOld);
                     serverMap.put("playerManager", audioPlayerManager);
                     serverMap.put("player", player);
                     serverMap.put("audioPlayerHandler", audioPlayerHandler);
-                    serverMap.put("trackScheduler", trackScheduler);
+                    serverMap.put("trackScheduler", trackSchedulerOld);
                     serverMap.put("spammer", new InfoSpammer());
                     serverMap.put("spammerThread", new Thread((InfoSpammer) serverMap.get("spammer")));
                     serverMap.put("bind", bind);
@@ -149,7 +149,7 @@ public class MainOld extends ListenerAdapter {
                 player = (AudioPlayer) map.get(guildId).get("player");
                 if (!volume.isEmpty()) player.setVolume(Integer.parseInt(volume));
                 audioPlayerHandler = (AudioPlayerHandler) map.get(guildId).get("audioPlayerHandler");
-                trackScheduler = (TrackScheduler) map.get(guildId).get("trackScheduler");
+                trackSchedulerOld = (TrackSchedulerOld) map.get(guildId).get("trackScheduler");
                 bind = (String) map.get(guildId).get("bind");
                 String message = event.getMessage().getContentRaw().toLowerCase();
                 TextChannel channel = event.getChannel().asTextChannel();
@@ -225,15 +225,15 @@ public class MainOld extends ListenerAdapter {
                                 " by: " + player.getPlayingTrack().getInfo().author +
                                 " " + time).queue();
                     } else if (message.equals("%queue")) {
-                        if (trackScheduler.queue.isEmpty()) {
+                        if (trackSchedulerOld.queue.isEmpty()) {
                             channel.sendMessage("Queue is empty").queue();
                             return;
                         }
-                        String[] titles = new String[trackScheduler.queue.size()];
-                        String[] authors = new String[trackScheduler.queue.size()];
-                        String[] length = new String[trackScheduler.queue.size()];
+                        String[] titles = new String[trackSchedulerOld.queue.size()];
+                        String[] authors = new String[trackSchedulerOld.queue.size()];
+                        String[] length = new String[trackSchedulerOld.queue.size()];
                         int i = 0;
-                        for (AudioTrack e : trackScheduler.queue) {
+                        for (AudioTrack e : trackSchedulerOld.queue) {
                             titles[i] = e.getInfo().title;
                             authors[i] = e.getInfo().author;
                             long duration = e.getDuration() / 1000;
@@ -285,7 +285,7 @@ public class MainOld extends ListenerAdapter {
                             channel.sendMessage("You must put a youtube link or song name behind the %play command").queue();
                             return;
                         }
-                        TrackScheduler finalTrackScheduler = trackScheduler;
+                        TrackSchedulerOld finalTrackSchedulerOld = trackSchedulerOld;
                         try {
                             join(event, audioPlayerHandler);
                         } catch (ChannelNotFoundException e) {
@@ -294,14 +294,14 @@ public class MainOld extends ListenerAdapter {
                         playerManager.loadItem(event.getMessage().getContentRaw().substring(6), new AudioLoadResultHandler() {
                             @Override
                             public void trackLoaded (AudioTrack audioTrack) {
-                                finalTrackScheduler.queue(audioTrack);
+                                finalTrackSchedulerOld.queue(audioTrack);
                                 channel.sendMessage("```Added " + audioTrack.getInfo().title + " by " + audioTrack.getInfo().author + " to Queue```").queue();
                                 ((Thread) map.get(guildId).get("dcThread")).interrupt();
                             }
                             @Override
                             public void playlistLoaded (AudioPlaylist audioPlaylist) {
                                 for (AudioTrack track : audioPlaylist.getTracks()) {
-                                    finalTrackScheduler.queue(track);
+                                    finalTrackSchedulerOld.queue(track);
                                     channel.sendMessage("```Added " + track.getInfo().title + " by " + track.getInfo().author + " to Queue```").queue();
                                 }
                                 ((Thread) map.get(guildId).get("dcThread")).interrupt();
@@ -380,29 +380,7 @@ public class MainOld extends ListenerAdapter {
 
     private JSONObject readBinds (String fileName) {
         File file = new File(fileName + ".json");
-        if (!file.exists()) {
-            try {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
-                writer.write("{}");
-                writer.close();
-            } catch (IOException ignored) {
-
-            }
-        }
-        StringBuilder text = new StringBuilder();
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(file.getAbsoluteFile()));
-            String temp;
-            while (true) {
-                temp = reader.readLine();
-                if (temp == null) break;
-                text.append(temp);
-            }
-            reader.close();
-        } catch (IOException ignored) {
-
-        }
-        return (new JSONObject(text.toString()));
+        return (new JSONObject(read(file).toString()));
     }
 
     private void writeBinds (String binds, String fileName) {

@@ -17,5 +17,6 @@ public class LeaveCommand extends BasicCommand {
         // Notify the user.
         event.reply("Disconnected from the voice channel!").queue();
         server.player.stopTrack();
+        server.dc.stopTimer();
     }
 }

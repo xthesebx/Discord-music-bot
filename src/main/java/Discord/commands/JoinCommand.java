@@ -23,6 +23,6 @@ public class JoinCommand extends BasicCommand {
             case JOINED -> event.reply("Connected to the voice channel!").queue();
         }
         if (server.player.getPlayingTrack() != null) return;
-        server.dcThread.start();
+        server.dc.startTimer();
     }
 }
