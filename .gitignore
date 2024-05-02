@@ -40,3 +40,5 @@ build/
 .DS_Store
 /volume.json
 /apikey.env
+/logs/
+/volumes/
