@@ -26,10 +26,9 @@ public class newMain extends ListenerAdapter {
 
     public newMain() throws InterruptedException {
         File env = new File("apikey.env");
-        jda = JDABuilder.createDefault(read(env).toString().strip()).enableIntents(GatewayIntent.MESSAGE_CONTENT).enableIntents(GatewayIntent.GUILD_MESSAGES).enableIntents(GatewayIntent.GUILD_MESSAGE_TYPING).build();
+        jda = JDABuilder.createDefault(read(env).toString().strip()).enableIntents(GatewayIntent.MESSAGE_CONTENT).enableIntents(GatewayIntent.GUILD_MESSAGES).enableIntents(GatewayIntent.GUILD_MESSAGE_TYPING).setStatus(OnlineStatus.OFFLINE).build();
         jda.addEventListener(this);
         jda.awaitReady();
-        jda.getPresence().setStatus(OnlineStatus.OFFLINE);
         for (Guild guild : jda.getGuilds()) {
             map.put(guild.getId(), new Server(guild));
         }
