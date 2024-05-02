@@ -6,9 +6,13 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 /**
  * Command /join
  * Bot joins your VC
+ *
+ * @author sebas
+ * @version $Id: $Id
  */
 public class JoinCommand extends BasicCommand {
     /**
+     * <p>Constructor for JoinCommand.</p>
      *
      * @param event received event to reply to it and handle the options
      * @param server the server it came from to make things easier

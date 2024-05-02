@@ -10,11 +10,15 @@ import java.io.File;
 /**
  * command /volume
  * sets the volume for the server
+ *
+ * @author sebas
+ * @version $Id: $Id
  */
 public class VolumeCommand extends BasicCommand {
 
     /**
      * in case of /command
+     *
      * @param event received event to reply to it and handle the options
      * @param server the server it came from to make things easier
      */

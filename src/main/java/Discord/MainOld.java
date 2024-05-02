@@ -32,16 +32,33 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 
+/**
+ * <p>MainOld class.</p>
+ *
+ * @author sebas
+ * @version $Id: $Id
+ */
 @Deprecated
 public class MainOld extends ListenerAdapter {
     JDA jda;
     JSONObject binds;
     JSONObject volumes;
     static HashMap<String, HashMap<String, Object>> map = new HashMap<>();
+    /**
+     * <p>main.</p>
+     *
+     * @param args an array of {@link java.lang.String} objects
+     * @throws java.lang.InterruptedException if any.
+     */
     public static void main (String[] args) throws InterruptedException {
         new MainOld();
     }
 
+    /**
+     * <p>Constructor for MainOld.</p>
+     *
+     * @throws java.lang.InterruptedException if any.
+     */
     public MainOld() throws InterruptedException {
         File env = new File("apikey.env");
         jda = JDABuilder.createDefault(read(env).toString().strip()).enableIntents(GatewayIntent.MESSAGE_CONTENT).enableIntents(GatewayIntent.GUILD_MESSAGES).enableIntents(GatewayIntent.GUILD_MESSAGE_TYPING).build();
@@ -52,6 +69,7 @@ public class MainOld extends ListenerAdapter {
         volumes = readBinds("volume");
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onButtonInteraction(ButtonInteractionEvent event) {
         AudioPlayerManager playerManager = (AudioPlayerManager) map.get(event.getGuild().getId()).get("playerManager");
@@ -104,6 +122,7 @@ public class MainOld extends ListenerAdapter {
         });
     }
 
+    /** {@inheritDoc} */
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         if (!jda.getSelfUser().getName().equals(event.getAuthor().getName())) if (event.getAuthor().isBot()) return;
@@ -365,6 +384,12 @@ public class MainOld extends ListenerAdapter {
     }
 
 
+    /**
+     * <p>leave.</p>
+     *
+     * @param event a {@link net.dv8tion.jda.api.events.message.MessageReceivedEvent} object
+     * @param player a {@link com.sedmelluq.discord.lavaplayer.player.AudioPlayer} object
+     */
     public void leave (MessageReceivedEvent event, AudioPlayer player) {
         TextChannel channel = event.getChannel().asTextChannel();
         // Checks if the bot is connected to a voice channel.

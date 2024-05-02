@@ -3,6 +3,12 @@ package Discord;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
+/**
+ * <p>InfoSpammer class.</p>
+ *
+ * @author sebas
+ * @version $Id: $Id
+ */
 @Deprecated
 public class InfoSpammer implements Runnable{
 	public boolean isRunning;
@@ -10,6 +16,12 @@ public class InfoSpammer implements Runnable{
 	private AudioPlayer player;
 	private String id;
 
+	/**
+	 * <p>init.</p>
+	 *
+	 * @param channel a {@link net.dv8tion.jda.api.entities.channel.concrete.TextChannel} object
+	 * @param player a {@link com.sedmelluq.discord.lavaplayer.player.AudioPlayer} object
+	 */
 	public void init(TextChannel channel, AudioPlayer player) {
 		this.channel = channel;
 		this.player = player;
@@ -23,6 +35,7 @@ public class InfoSpammer implements Runnable{
 		}
 	}
 	
+	/** {@inheritDoc} */
 	@Override
 	public void run () {
 		isRunning = true;
@@ -53,6 +66,9 @@ public class InfoSpammer implements Runnable{
 		}
 	}
 	
+	/**
+	 * <p>stop.</p>
+	 */
 	public void stop() {
 		if (!isRunning) return;
 		isRunning = false;

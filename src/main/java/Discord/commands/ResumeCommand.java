@@ -6,11 +6,15 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 /**
  * command /resume
  * resumes player after pause
+ *
+ * @author sebas
+ * @version $Id: $Id
  */
 public class ResumeCommand extends BasicCommand {
 
     /**
      * in case of /command
+     *
      * @param event received event to reply to it and handle the options
      * @param server the server it came from to make things easier
      */

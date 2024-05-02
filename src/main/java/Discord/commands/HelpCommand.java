@@ -6,14 +6,18 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 /**
  * command /help
  * sends all commands
+ *
+ * @author sebas
+ * @version $Id: $Id
  */
 public class HelpCommand extends BasicCommand {
 
-	/**
-	 *
-	 * @param event received event to reply to it and handle the options
-	 * @param server the server it came from to make things easier
-	 */
+    /**
+     * <p>Constructor for HelpCommand.</p>
+     *
+     * @param event received event to reply to it and handle the options
+     * @param server the server it came from to make things easier
+     */
     public HelpCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
         event.reply("""

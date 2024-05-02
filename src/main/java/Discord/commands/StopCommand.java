@@ -7,6 +7,9 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 /**
  * command /stop
  * stops the player and clears queue
+ *
+ * @author sebas
+ * @version $Id: $Id
  */
 public class StopCommand extends BasicCommand {
 
@@ -14,6 +17,7 @@ public class StopCommand extends BasicCommand {
 
     /**
      * in case of /command
+     *
      * @param event received event to reply to it and handle the options
      * @param server the server it came from to make things easier
      */

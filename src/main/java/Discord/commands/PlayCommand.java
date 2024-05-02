@@ -7,6 +7,9 @@ import net.dv8tion.jda.api.managers.AudioManager;
 
 /**
  * command /play plays the song mentioned or searches on yt
+ *
+ * @author sebas
+ * @version $Id: $Id
  */
 public class PlayCommand extends BasicCommand {
 
@@ -14,6 +17,7 @@ public class PlayCommand extends BasicCommand {
 
     /**
      * in case of /command
+     *
      * @param event received event to reply to it and handle the options
      * @param server the server it came from to make things easier
      */

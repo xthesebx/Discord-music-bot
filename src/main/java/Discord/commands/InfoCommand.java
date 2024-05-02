@@ -7,6 +7,9 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 /**
  * command /info
  * gives info bout current song (name, author, position)
+ *
+ * @author sebas
+ * @version $Id: $Id
  */
 public class InfoCommand extends BasicCommand {
     /**
@@ -14,6 +17,7 @@ public class InfoCommand extends BasicCommand {
      */
     AudioPlayer player;
     /**
+     * <p>Constructor for InfoCommand.</p>
      *
      * @param event received event to reply to it and handle the options
      * @param server the server it came from to make things easier

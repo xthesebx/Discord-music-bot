@@ -7,12 +7,16 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 
 /**
  * command /queue shows the current queue
+ *
+ * @author sebas
+ * @version $Id: $Id
  */
 public class QueueCommand extends BasicCommand {
 
     TrackScheduler trackScheduler;
     /**
      * in case of /command
+     *
      * @param event received event to reply to it and handle the options
      * @param server the server it came from to make things easier
      */

@@ -11,12 +11,20 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * This class schedules tracks for the audio player. It contains the queue of tracks.
+ *
+ * @author sebas
+ * @version $Id: $Id
  */
 public class TrackScheduler extends AudioEventAdapter {
 	private final AudioPlayer player;
+	/**
+	 * the queue for the server
+	 */
 	public final BlockingQueue<AudioTrack> queue;
 	private final Server server;
 	/**
+	 * <p>Constructor for TrackScheduler.</p>
+	 *
 	 * @param server The server to get everything from
 	 */
 	public TrackScheduler(Server server) {
@@ -53,6 +61,7 @@ public class TrackScheduler extends AudioEventAdapter {
 		}
 	}
 	
+	/** {@inheritDoc} */
 	@Override
 	public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
 		// Only start the next track if the end reason is suitable for it (FINISHED or LOAD_FAILED)

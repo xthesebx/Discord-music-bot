@@ -27,11 +27,15 @@ import java.net.URL;
 
 /**
  * The class for every server
+ *
+ * @author sebas
+ * @version $Id: $Id
  */
 public class Server {
 
     /**
      * setter for Volume
+     *
      * @param volume volume to set
      */
     public void setVolume(int volume) {
@@ -40,6 +44,7 @@ public class Server {
 
     /**
      * getter for guildId
+     *
      * @return guildId as string
      */
     public String getGuildId() {
@@ -48,6 +53,7 @@ public class Server {
 
     /**
      * getter for AudioManager
+     *
      * @return the AudioManager
      */
     public AudioManager getAudioManager() {
@@ -56,6 +62,7 @@ public class Server {
 
     /**
      * getter for TrackScheduler
+     *
      * @return the TrackScheduler
      */
     public TrackScheduler getTrackScheduler() {
@@ -64,6 +71,7 @@ public class Server {
 
     /**
      * getter for AudioPlayer
+     *
      * @return the AudioPlayer
      */
     public AudioPlayer getPlayer() {
@@ -72,6 +80,7 @@ public class Server {
 
     /**
      * getter for Dc
+     *
      * @return the Dc
      */
     public DisconnectTimer getDc() {
@@ -80,6 +89,7 @@ public class Server {
 
     /**
      * getter for AudioPlayerManager
+     *
      * @return the AudioPlayerManager
      * currently not in use
      */
@@ -100,6 +110,7 @@ public class Server {
 
     /**
      * Server creation
+     *
      * @param guild to get needed info from
      */
     public Server(Guild guild) {
@@ -131,6 +142,7 @@ public class Server {
 
     /**
      * join function to join channels
+     *
      * @param event event of the channel to join
      * @return the JoinState so we know what happened/how it went
      */
@@ -158,6 +170,7 @@ public class Server {
 
     /**
      * creating the Command responses for the SlashCommandInteractionEvents
+     *
      * @param event the event coming from the newMain
      */
     public void onSlashCommandInteraction (SlashCommandInteractionEvent event) {
@@ -178,6 +191,7 @@ public class Server {
 
     /**
      * creating the Command responses for the ButtonInteractionEvents
+     *
      * @param event the event coming from the newMain
      */
     public void onButtonInteraction (ButtonInteractionEvent event) {
@@ -188,6 +202,8 @@ public class Server {
 
     /**
      * to play the actual youtube thingy
+     *
+     * @param link link or songtitle to search for/play
      * @param genericEvent is the event, either buttoninteraction or slashcommandinteraction
      */
     public void play(String link, GenericInteractionCreateEvent genericEvent) {

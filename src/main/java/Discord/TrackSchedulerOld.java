@@ -11,6 +11,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * This class schedules tracks for the audio player. It contains the queue of tracks.
+ *
+ * @author sebas
+ * @version $Id: $Id
  */
 @Deprecated
 public class TrackSchedulerOld extends AudioEventAdapter {
@@ -18,7 +21,10 @@ public class TrackSchedulerOld extends AudioEventAdapter {
 	public final BlockingQueue<AudioTrack> queue;
 	private final AudioManager audioManager;
 	/**
+	 * <p>Constructor for TrackSchedulerOld.</p>
+	 *
 	 * @param player The audio player this scheduler uses
+	 * @param audioManager a {@link net.dv8tion.jda.api.managers.AudioManager} object
 	 */
 	public TrackSchedulerOld(AudioPlayer player, AudioManager audioManager) {
 		this.player = player;
@@ -55,6 +61,7 @@ public class TrackSchedulerOld extends AudioEventAdapter {
 		}
 	}
 	
+	/** {@inheritDoc} */
 	@Override
 	public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
 		// Only start the next track if the end reason is suitable for it (FINISHED or LOAD_FAILED)

@@ -17,19 +17,29 @@ import java.util.HashMap;
 
 /**
  * new Main Class after old one got deprecated
+ *
+ * @author sebas
+ * @version $Id: $Id
  */
 public class NewMain extends ListenerAdapter {
 
     private final JDA jda;
     private final HashMap<String, Server> map = new HashMap<>();
 
+    /**
+     * Main function
+     *
+     * @param args args
+     * @throws java.lang.InterruptedException because of main throwing it
+     */
     public static void main (String[] args) throws InterruptedException {
         new NewMain();
     }
 
     /**
      * basically just setting up jda
-     * @throws InterruptedException because of awaitReady
+     *
+     * @throws java.lang.InterruptedException because of awaitReady
      */
     public NewMain() throws InterruptedException {
         File env = new File("apikey.env");
@@ -44,6 +54,7 @@ public class NewMain extends ListenerAdapter {
 
     /**
      * reads text of a file
+     *
      * @param file the file to read from
      * @return String builder with text from the File
      */
@@ -73,6 +84,7 @@ public class NewMain extends ListenerAdapter {
 
     /**
      * write text to a file
+     *
      * @param text text to write
      * @param file file to write the text to
      */
@@ -87,8 +99,9 @@ public class NewMain extends ListenerAdapter {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * giving the command to corresponding server object
-     * @param event the event coming in from the command
      */
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
@@ -99,8 +112,9 @@ public class NewMain extends ListenerAdapter {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * giving the buttoninteraction to the corresponding server object
-     * @param event the event coming in from the button click
      */
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
@@ -110,8 +124,9 @@ public class NewMain extends ListenerAdapter {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * adding new server object to map to add new guilds
-     * @param event event of guild joining to add guild to map
      */
     @Override
     public void onGuildJoin(@NotNull GuildJoinEvent event) {
