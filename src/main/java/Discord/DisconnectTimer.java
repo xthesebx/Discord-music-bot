@@ -21,7 +21,7 @@ public class DisconnectTimer implements Runnable{
 				if (i < loops) {
 					try {
 						Thread.sleep(1000);
-
+						i++;
 					} catch (InterruptedException e) {
 
 					}
