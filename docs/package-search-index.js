@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"Discord"},{"l":"Discord.commandCreations"},{"l":"Discord.commands"}];updateSearchResults();
