@@ -13,5 +13,6 @@ public class SkipCommand extends BasicCommand {
     public SkipCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
         server.getTrackScheduler().nextTrack();
+        event.reply("Skipped the Track").queue();
     }
 }
