@@ -186,6 +186,7 @@ public class Server {
             case "resume" -> new ResumeCommand(event, this);
             case "stop" -> new StopCommand(event, this);
             case "volume" -> new VolumeCommand(event, this);
+            case "skip" -> new SkipCommand(event, this);
         }
     }
 
