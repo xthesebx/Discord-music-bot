@@ -94,7 +94,6 @@ public class NewMain extends ListenerAdapter {
             writer.write(text);
             writer.close();
         } catch (IOException ignored) {
-
         }
     }
 
@@ -108,7 +107,6 @@ public class NewMain extends ListenerAdapter {
         super.onSlashCommandInteraction(event);
         assert event.getGuild() != null;
         map.get(event.getGuild().getId()).onSlashCommandInteraction(event);
-
     }
 
     /**
