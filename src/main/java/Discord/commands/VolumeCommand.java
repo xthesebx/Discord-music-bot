@@ -2,6 +2,7 @@ package Discord.commands;
 
 import Discord.NewMain;
 import Discord.Server;
+import com.hawolt.logger.Logger;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
@@ -27,10 +28,18 @@ public class VolumeCommand extends BasicCommand {
         OptionMapping optionMapping = event.getOption("volume");
         assert optionMapping != null;
         String volString = optionMapping.getAsString();
-        int volumeInt = Integer.parseInt(volString);
-        event.reply("Setting the volume to " + volString).queue();
-        server.getPlayer().setVolume(volumeInt);
-        server.setVolume(volumeInt);
-        NewMain.write(volString, new File("volumes/" + server.getGuildId()));
+        try {
+            int volumeInt = Integer.parseInt(volString);
+            event.reply("Setting the volume to " + volString).queue();
+            server.getPlayer().setVolume(volumeInt);
+            server.setVolume(volumeInt);
+            NewMain.write(volString, new File("volumes/" + server.getGuildId()));
+        } catch (NumberFormatException e) {
+            event.reply("Failed to set volume to " + volString + ".\nPlease use a legal Integer Value! (max 2147483647)").queue();
+        } catch (Exception e) {
+            Logger.error(e);
+            event.reply("Failed to set volume to " + volString + ".").queue();
+            event.getJDA().retrieveUserById("277064996264083456").complete().openPrivateChannel().complete().sendMessage(e.toString()).queue();
+        }
     }
 }
