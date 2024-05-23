@@ -24,7 +24,6 @@ public class PlayCommand extends BasicCommand {
     public PlayCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
         this.audioManager = server.getAudioManager();
-        event.deferReply().queue();
         OptionMapping optionMapping = event.getOption("name");
         assert optionMapping != null;
         String link = optionMapping.getAsString();
@@ -44,6 +43,7 @@ public class PlayCommand extends BasicCommand {
                 }
             }
         }
+        event.deferReply().queue();
         server.play(link, event);
     }
 }
