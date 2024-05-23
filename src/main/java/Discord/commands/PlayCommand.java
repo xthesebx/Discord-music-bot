@@ -28,6 +28,10 @@ public class PlayCommand extends BasicCommand {
         OptionMapping optionMapping = event.getOption("name");
         assert optionMapping != null;
         String link = optionMapping.getAsString();
+        if (event.getMember().getVoiceState().getChannel() == null) {
+            event.reply("Connect to the voice Channel to add Music to the queue.").queue();
+            return;
+        }
         if (!audioManager.isConnected() || !audioManager.getConnectedChannel().getId().equals(event.getMember().getVoiceState().getChannel().getId())) {
             switch (server.join(event)) {
                 case NOTINVOICE -> {
