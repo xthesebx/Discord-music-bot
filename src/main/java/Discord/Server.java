@@ -255,10 +255,68 @@ public class Server {
 
             @Override
             public void loadFailed (FriendlyException e) {
-                Logger.error(e);
-                text = e.getMessage();
+                play(link, genericEvent, 0);
+            }
+        });
+    }
+
+    public void play(String link, GenericInteractionCreateEvent genericEvent, int retries) {
+        boolean eventType;
+        eventType = genericEvent instanceof ButtonInteractionEvent;
+        audioPlayerManager.loadItem(link, new AudioLoadResultHandler() {
+            String text;
+
+            @Override
+            public void trackLoaded (AudioTrack audioTrack) {
+                trackScheduler.queue(audioTrack);
+                dc.stopTimer();
+                text = "```Added " + audioTrack.getInfo().title + " by " + audioTrack.getInfo().author + " to Queue```";
                 if (!eventType) ((SlashCommandInteractionEvent) genericEvent).getHook().editOriginal(text).queue();
-                else ((ButtonInteractionEvent) genericEvent).getHook().editOriginal(new MessageEditBuilder().setContent(text).setReplace(true).build()).queue();
+                else {
+                    ((ButtonInteractionEvent) genericEvent).getHook().editOriginal(new MessageEditBuilder().setContent(text).build()).queue();
+                }
+            }
+
+            @Override
+            public void playlistLoaded (AudioPlaylist audioPlaylist) {
+                for (AudioTrack track : audioPlaylist.getTracks()) {
+                    trackScheduler.queue(track);
+                    text = "```Added " + track.getInfo().title + " by " + track.getInfo().author + " to Queue```";
+                    if (!eventType) ((SlashCommandInteractionEvent) genericEvent).getHook().editOriginal(text).queue();
+                    else ((ButtonInteractionEvent) genericEvent).getHook().editOriginal(new MessageEditBuilder().setContent(text).setReplace(true).build()).queue();
+                }
+                dc.stopTimer();
+            }
+
+            @Override
+            public void noMatches() {
+                String[][] ytResults = searchYT(link);
+                int i = 0;
+                Button[] rows = new Button[5];
+                for (String[] s : ytResults) {
+                    urls[i] = s[0];
+                    String title = s[1];
+                    if (title.length() > 80)
+                        rows[i] = Button.primary(String.valueOf(i), s[1].substring(0, 79));
+                    else
+                        rows[i] = Button.primary(String.valueOf(i), s[1]);
+                    i++;
+                }
+                MessageEditData messageEditData = new MessageEditBuilder().setActionRow(rows).setContent("Which one?").build();
+                ((SlashCommandInteractionEvent) genericEvent).getHook().editOriginal(messageEditData).queue();
+            }
+
+            @Override
+            public void loadFailed (FriendlyException e) {
+                if (retries < 10) {
+                    play(link, genericEvent, retries + 1);
+                } else {
+                    Logger.error(e);
+                    text = e.getMessage();
+                    if (!eventType) ((SlashCommandInteractionEvent) genericEvent).getHook().editOriginal(text).queue();
+                    else
+                        ((ButtonInteractionEvent) genericEvent).getHook().editOriginal(new MessageEditBuilder().setContent(text).setReplace(true).build()).queue();
+                }
             }
         });
     }
