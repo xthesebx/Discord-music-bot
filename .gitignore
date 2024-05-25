@@ -42,3 +42,5 @@ build/
 /apikey.env
 /logs/
 /volumes/
+/src/main/java/Discord/test.java
+/spotify.env
