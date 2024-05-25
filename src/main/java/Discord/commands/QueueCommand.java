@@ -45,6 +45,8 @@ public class QueueCommand extends BasicCommand {
             result.append(titles[j]).append(" by ").append(authors[j]).append(" ").append(length[j]).append("\n");
         }
         result.append("```");
-        event.reply(result.toString()).queue();
+        String response = result.toString();
+        if (response.length() > 2000) response = response.substring(0, 1990) + "...```";
+        event.reply(response).queue();
     }
 }
