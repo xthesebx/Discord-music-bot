@@ -1,12 +1,13 @@
 package Discord;
 
 import Discord.commands.*;
+import com.github.topi314.lavasrc.spotify.SpotifySourceManager;
 import com.hawolt.logger.Logger;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -117,7 +118,8 @@ public class Server {
         this.guild = guild;
         guildId = guild.getId();
         volume = readVolume();
-        AudioSourceManagers.registerRemoteSources(audioPlayerManager);
+        audioPlayerManager.registerSourceManager(new YoutubeAudioSourceManager(true, null, null));
+        audioPlayerManager.registerSourceManager(new SpotifySourceManager(null, NewMain.clientid, NewMain.clientsecret, "de", audioPlayerManager));
         this.audioManager = guild.getAudioManager();
         trackScheduler = new TrackScheduler(this);
         player.addListener(trackScheduler);

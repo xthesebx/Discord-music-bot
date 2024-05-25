@@ -25,6 +25,9 @@ public class NewMain extends ListenerAdapter {
 
     private final JDA jda;
     private final HashMap<String, Server> map = new HashMap<>();
+    public static String clientid;
+    public static String clientsecret;
+    public static String spdc;
 
     /**
      * Main function
@@ -42,6 +45,10 @@ public class NewMain extends ListenerAdapter {
      * @throws java.lang.InterruptedException because of awaitReady
      */
     public NewMain() throws InterruptedException {
+        String original = NewMain.read(new File("spotify.env"));
+        clientid = original.substring(0, original.indexOf("\n"));
+        clientsecret = original.substring(original.indexOf("\n") + 1).substring(0, original.indexOf("\n"));
+        spdc = original.substring(original.indexOf("\n") + 1).substring(original.indexOf("\n") + 1);
         File env = new File("apikey.env");
         jda = JDABuilder.createDefault(read(env).strip()).enableIntents(GatewayIntent.MESSAGE_CONTENT).enableIntents(GatewayIntent.GUILD_MESSAGES).enableIntents(GatewayIntent.GUILD_MESSAGE_TYPING).setStatus(OnlineStatus.OFFLINE).build();
         jda.addEventListener(this);
@@ -71,10 +78,12 @@ public class NewMain extends ListenerAdapter {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file.getAbsoluteFile()));
             String temp;
+            temp = reader.readLine();
+            text.append(temp);
             while (true) {
                 temp = reader.readLine();
                 if (temp == null) break;
-                text.append(temp);
+                text.append("\n" + temp);
             }
             reader.close();
         } catch (IOException ignored) {
