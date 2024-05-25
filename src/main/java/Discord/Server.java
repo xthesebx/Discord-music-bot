@@ -190,6 +190,7 @@ public class Server {
             case "stop" -> new StopCommand(event, this);
             case "volume" -> new VolumeCommand(event, this);
             case "skip" -> new SkipCommand(event, this);
+            case "shuffle" -> new ShuffleCommand(event, this);
         }
     }
 
