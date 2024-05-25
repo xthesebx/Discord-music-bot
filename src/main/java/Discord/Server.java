@@ -1,7 +1,6 @@
 package Discord;
 
 import Discord.commands.*;
-import com.github.topi314.lavasrc.spotify.SpotifySourceManager;
 import com.hawolt.logger.Logger;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -242,17 +241,17 @@ public class Server {
                     else
                         rows[i] = Button.primary(String.valueOf(i), track.getInfo().title);
                 }
-
                 MessageEditData messageEditData = new MessageEditBuilder().setActionRow(rows).setContent("Which one?").build();
                 ((SlashCommandInteractionEvent) genericEvent).getHook().editOriginal(messageEditData).queue();
                 return;
                 }
+
                 for (AudioTrack track : audioPlaylist.getTracks()) {
                     trackScheduler.queue(track);
-                    text = "```Added " + track.getInfo().title + " by " + track.getInfo().author + " to Queue```";
-                    if (!eventType) ((SlashCommandInteractionEvent) genericEvent).getHook().editOriginal(text).queue();
-                    else ((ButtonInteractionEvent) genericEvent).getHook().editOriginal(new MessageEditBuilder().setContent(text).setReplace(true).build()).queue();
                 }
+                text = "```Added the playlist to Queue```";
+                if (!eventType) ((SlashCommandInteractionEvent) genericEvent).getHook().editOriginal(text).queue();
+                else ((ButtonInteractionEvent) genericEvent).getHook().editOriginal(new MessageEditBuilder().setContent(text).setReplace(true).build()).queue();
                 dc.stopTimer();
             }
 
@@ -288,10 +287,11 @@ public class Server {
             public void playlistLoaded (AudioPlaylist audioPlaylist) {
                 for (AudioTrack track : audioPlaylist.getTracks()) {
                     trackScheduler.queue(track);
-                    text = "```Added " + track.getInfo().title + " by " + track.getInfo().author + " to Queue```";
-                    if (!eventType) ((SlashCommandInteractionEvent) genericEvent).getHook().editOriginal(text).queue();
-                    else ((ButtonInteractionEvent) genericEvent).getHook().editOriginal(new MessageEditBuilder().setContent(text).setReplace(true).build()).queue();
                 }
+                Logger.error(audioPlaylist.getTracks().size());
+                text = "```Added the playlist to Queue```";
+                if (!eventType) ((SlashCommandInteractionEvent) genericEvent).getHook().editOriginal(text).queue();
+                else ((ButtonInteractionEvent) genericEvent).getHook().editOriginal(new MessageEditBuilder().setContent(text).setReplace(true).build()).queue();
                 dc.stopTimer();
             }
 

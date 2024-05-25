@@ -27,6 +27,7 @@ public class QueueCommand extends BasicCommand {
             event.reply("Queue is empty").queue();
             return;
         }
+
         String[] titles = new String[trackScheduler.queue.size()];
         String[] authors = new String[trackScheduler.queue.size()];
         String[] length = new String[trackScheduler.queue.size()];
@@ -41,6 +42,7 @@ public class QueueCommand extends BasicCommand {
             i++;
         }
         StringBuilder result = new StringBuilder("```");
+        result.append("Currently are " + trackScheduler.queue.size() + " songs in queue\n");
         for (int j = 0; j < titles.length; j++) {
             result.append(titles[j]).append(" by ").append(authors[j]).append(" ").append(length[j]).append("\n");
         }
