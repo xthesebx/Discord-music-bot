@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 /**
  * The class for every server
@@ -228,6 +229,23 @@ public class Server {
 
             @Override
             public void playlistLoaded (AudioPlaylist audioPlaylist) {
+                if (link.startsWith("ytsearch:")) {
+                Button[] rows = new Button[5];
+                List<AudioTrack> list = audioPlaylist.getTracks();
+                for (int i = 0; i < 5; i++) {
+                    AudioTrack track = list.get(i);
+                    urls[i] = track.getIdentifier();
+                    String title = track.getInfo().title;
+                    if (title.length() > 80)
+                        rows[i] = Button.primary(String.valueOf(i), track.getInfo().title.substring(0, 79));
+                    else
+                        rows[i] = Button.primary(String.valueOf(i), track.getInfo().title);
+                }
+
+                MessageEditData messageEditData = new MessageEditBuilder().setActionRow(rows).setContent("Which one?").build();
+                ((SlashCommandInteractionEvent) genericEvent).getHook().editOriginal(messageEditData).queue();
+                return;
+                }
                 for (AudioTrack track : audioPlaylist.getTracks()) {
                     trackScheduler.queue(track);
                     text = "```Added " + track.getInfo().title + " by " + track.getInfo().author + " to Queue```";
@@ -239,20 +257,6 @@ public class Server {
 
             @Override
             public void noMatches() {
-                String[][] ytResults = searchYT(link);
-                int i = 0;
-                Button[] rows = new Button[5];
-                for (String[] s : ytResults) {
-                    urls[i] = s[0];
-                    String title = s[1];
-                    if (title.length() > 80)
-                        rows[i] = Button.primary(String.valueOf(i), s[1].substring(0, 79));
-                    else
-                        rows[i] = Button.primary(String.valueOf(i), s[1]);
-                    i++;
-                }
-                MessageEditData messageEditData = new MessageEditBuilder().setActionRow(rows).setContent("Which one?").build();
-                ((SlashCommandInteractionEvent) genericEvent).getHook().editOriginal(messageEditData).queue();
             }
 
             @Override
