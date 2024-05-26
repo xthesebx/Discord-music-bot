@@ -13,6 +13,10 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import java.io.IOException;
 import java.util.ArrayList;
 
+
+/***
+ * just redone some SpotifySourceManager Functions to allow bigger playlists to be added, up to 5k songs currently
+ */
 public class SpotifySourceManager extends com.github.topi314.lavasrc.spotify.SpotifySourceManager {
     public SpotifySourceManager(String[] providers, String clientId, String clientSecret, String countryCode, AudioPlayerManager audioPlayerManager) {
         super(providers, clientId, clientSecret, countryCode, audioPlayerManager);
