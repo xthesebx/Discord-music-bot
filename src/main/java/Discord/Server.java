@@ -6,14 +6,16 @@ import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import dev.lavalink.youtube.YoutubeAudioSourceManager;
+import dev.lavalink.youtube.clients.AndroidWithThumbnail;
+import dev.lavalink.youtube.clients.MusicWithThumbnail;
+import dev.lavalink.youtube.clients.WebWithThumbnail;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
-import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
@@ -107,7 +109,7 @@ public class Server {
     private final TrackScheduler trackScheduler;
     private final AudioPlayerHandler audioPlayerHandler = new AudioPlayerHandler(player);
     private final DisconnectTimer dc;
-    private final String[] urls = new String[5];
+    private final AudioTrack[] tracks = new AudioTrack[5];
 
     /**
      * Server creation
@@ -118,7 +120,7 @@ public class Server {
         this.guild = guild;
         guildId = guild.getId();
         volume = readVolume();
-        audioPlayerManager.registerSourceManager(new YoutubeAudioSourceManager(true, null, null));
+        audioPlayerManager.registerSourceManager(new YoutubeAudioSourceManager(true, new MusicWithThumbnail(), new WebWithThumbnail(), new AndroidWithThumbnail()));
         audioPlayerManager.registerSourceManager(new SpotifySourceManager(null, NewMain.clientid, NewMain.clientsecret, "de", audioPlayerManager));
         this.audioManager = guild.getAudioManager();
         trackScheduler = new TrackScheduler(this);
@@ -190,6 +192,7 @@ public class Server {
             case "volume" -> new VolumeCommand(event, this);
             case "skip" -> new SkipCommand(event, this);
             case "shuffle" -> new ShuffleCommand(event, this);
+            case "repeat" -> new RepeatCommand(event, this);
         }
     }
 
@@ -201,18 +204,17 @@ public class Server {
     public void onButtonInteraction (ButtonInteractionEvent event) {
         event.getMessage().delete().queue();
         event.deferReply().queue();
-        play(urls[Integer.parseInt(event.getButton().getId())], event);
+        AudioTrack track = tracks[Integer.parseInt(event.getButton().getId())];
+        trackScheduler.queue(track);
+        event.getHook().editOriginal("```Added " + track.getInfo().title + " by " + track.getInfo().author + " to queue```").queue();
     }
 
     /**
-     * to play the actual youtube thingy
-     *
+     * to play the actual thingy
      * @param link link or songtitle to search for/play
-     * @param genericEvent is the event, either buttoninteraction or slashcommandinteraction
+     * @param event is the event, either buttoninteraction or slashcommandinteraction
      */
-    public void play(String link, GenericInteractionCreateEvent genericEvent) {
-        boolean eventType;
-        eventType = genericEvent instanceof ButtonInteractionEvent;
+    public void play(String link, SlashCommandInteractionEvent event, int retries) {
         audioPlayerManager.loadItem(link, new AudioLoadResultHandler() {
             String text;
 
@@ -221,28 +223,26 @@ public class Server {
                 trackScheduler.queue(audioTrack);
                 dc.stopTimer();
                 text = "```Added " + audioTrack.getInfo().title + " by " + audioTrack.getInfo().author + " to Queue```";
-                if (!eventType) ((SlashCommandInteractionEvent) genericEvent).getHook().editOriginal(text).queue();
-                else {
-                    ((ButtonInteractionEvent) genericEvent).getHook().editOriginal(new MessageEditBuilder().setContent(text).build()).queue();
-                }
+                event.getHook().editOriginal(text).queue();
             }
 
             @Override
             public void playlistLoaded (AudioPlaylist audioPlaylist) {
-                if (link.startsWith("ytsearch:")) {
+                if (link.startsWith("ytsearch:") || link.startsWith("ytmsearch:") || link.startsWith("spsearch:")) {
                 Button[] rows = new Button[5];
                 List<AudioTrack> list = audioPlaylist.getTracks();
                 for (int i = 0; i < 5; i++) {
                     AudioTrack track = list.get(i);
-                    urls[i] = track.getIdentifier();
+                    tracks[i] = track;
                     String title = track.getInfo().title;
-                    if (title.length() > 80)
-                        rows[i] = Button.primary(String.valueOf(i), track.getInfo().title.substring(0, 79));
+                    String author = track.getInfo().author;
+                    if ((title.length() + author.length()) > 76)
+                        rows[i] = Button.primary(String.valueOf(i), title.substring(0, 75 - author.length()) + " by " + author);
                     else
-                        rows[i] = Button.primary(String.valueOf(i), track.getInfo().title);
+                        rows[i] = Button.primary(String.valueOf(i), track.getInfo().title + " by " + track.getInfo().author);
                 }
                 MessageEditData messageEditData = new MessageEditBuilder().setActionRow(rows).setContent("Which one?").build();
-                ((SlashCommandInteractionEvent) genericEvent).getHook().editOriginal(messageEditData).queue();
+                event.getHook().editOriginal(messageEditData).queue();
                 return;
                 }
 
@@ -250,80 +250,20 @@ public class Server {
                     trackScheduler.queue(track);
                 }
                 text = "```Added the playlist to Queue```";
-                if (!eventType) ((SlashCommandInteractionEvent) genericEvent).getHook().editOriginal(text).queue();
-                else ((ButtonInteractionEvent) genericEvent).getHook().editOriginal(new MessageEditBuilder().setContent(text).setReplace(true).build()).queue();
+                event.getHook().editOriginal(text).queue();
                 dc.stopTimer();
             }
 
             @Override
             public void noMatches() {
+                event.getHook().editOriginal("Could not find a song under that link or with that name. To search YouTube use \"ytsearch:\" as prefix for normal videos " +
+                        "and \"ytmsearch:\" for YouTube Music search. You can also search on Spotify with \"spsearch:\".").queue();
             }
 
             @Override
             public void loadFailed (FriendlyException e) {
-                play(link, genericEvent, 0);
-            }
-        });
-    }
-
-    public void play(String link, GenericInteractionCreateEvent genericEvent, int retries) {
-        boolean eventType;
-        eventType = genericEvent instanceof ButtonInteractionEvent;
-        audioPlayerManager.loadItem(link, new AudioLoadResultHandler() {
-            String text;
-
-            @Override
-            public void trackLoaded (AudioTrack audioTrack) {
-                trackScheduler.queue(audioTrack);
-                dc.stopTimer();
-                text = "```Added " + audioTrack.getInfo().title + " by " + audioTrack.getInfo().author + " to Queue```";
-                if (!eventType) ((SlashCommandInteractionEvent) genericEvent).getHook().editOriginal(text).queue();
-                else {
-                    ((ButtonInteractionEvent) genericEvent).getHook().editOriginal(new MessageEditBuilder().setContent(text).build()).queue();
-                }
-            }
-
-            @Override
-            public void playlistLoaded (AudioPlaylist audioPlaylist) {
-                for (AudioTrack track : audioPlaylist.getTracks()) {
-                    trackScheduler.queue(track);
-                }
-                Logger.error(audioPlaylist.getTracks().size());
-                text = "```Added the playlist to Queue```";
-                if (!eventType) ((SlashCommandInteractionEvent) genericEvent).getHook().editOriginal(text).queue();
-                else ((ButtonInteractionEvent) genericEvent).getHook().editOriginal(new MessageEditBuilder().setContent(text).setReplace(true).build()).queue();
-                dc.stopTimer();
-            }
-
-            @Override
-            public void noMatches() {
-                String[][] ytResults = searchYT(link);
-                int i = 0;
-                Button[] rows = new Button[5];
-                for (String[] s : ytResults) {
-                    urls[i] = s[0];
-                    String title = s[1];
-                    if (title.length() > 80)
-                        rows[i] = Button.primary(String.valueOf(i), s[1].substring(0, 79));
-                    else
-                        rows[i] = Button.primary(String.valueOf(i), s[1]);
-                    i++;
-                }
-                MessageEditData messageEditData = new MessageEditBuilder().setActionRow(rows).setContent("Which one?").build();
-                ((SlashCommandInteractionEvent) genericEvent).getHook().editOriginal(messageEditData).queue();
-            }
-
-            @Override
-            public void loadFailed (FriendlyException e) {
-                if (retries < 10) {
-                    play(link, genericEvent, retries + 1);
-                } else {
-                    Logger.error(e);
-                    text = e.getMessage();
-                    if (!eventType) ((SlashCommandInteractionEvent) genericEvent).getHook().editOriginal(text).queue();
-                    else
-                        ((ButtonInteractionEvent) genericEvent).getHook().editOriginal(new MessageEditBuilder().setContent(text).setReplace(true).build()).queue();
-                }
+                if (retries < 5) play(link, event, retries+1);
+                else event.getHook().editOriginal(e.getMessage()).queue();
             }
         });
     }
