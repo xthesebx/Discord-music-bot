@@ -17,29 +17,27 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @version 1.0-SNAPSHOT
  */
 public class TrackScheduler extends AudioEventAdapter {
-	private final AudioPlayer player;
-	/**
-	 * the queue for the server
-	 */
 	public final BlockingQueue<AudioTrack> queue;
+	private final List<AudioTrack> tracks;
+	private final AudioPlayer player;
 	private final Server server;
 	public boolean repeating;
 	private int i;
-	private List<AudioTrack> tracks;
 	/**
 	 * <p>Constructor for TrackScheduler.</p>
 	 *
 	 * @param server The server to get everything from
 	 */
 	public TrackScheduler(Server server) {
-		this.player = server.getPlayer();
-		this.queue = new LinkedBlockingQueue<>();
 		this.server = server;
 		this.tracks = new ArrayList<>();
+		this.player = server.getPlayer();
+		this.queue = new LinkedBlockingQueue<>();
 	}
 	
 	/**
 	 * Add the next track to queue or play right away if nothing is in the queue.
+	 * if we are in repeating mode add it to tracks instead of queue
 	 *
 	 * @param track The track to play or add to queue.
 	 */
