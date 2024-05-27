@@ -51,6 +51,7 @@ public class TrackScheduler extends AudioEventAdapter {
 			}
 		} else {
 			tracks.add(track);
+			player.startTrack(track, true);
 		}
 	}
 	
