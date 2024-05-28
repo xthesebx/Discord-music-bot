@@ -1,7 +1,6 @@
 package Discord;
 
 import Discord.commands.*;
-import com.hawolt.logger.Logger;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -24,8 +23,6 @@ import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
 
 /**
@@ -125,7 +122,7 @@ public class Server {
         this.audioManager = guild.getAudioManager();
         trackScheduler = new TrackScheduler(this);
         player.addListener(trackScheduler);
-        dc = new DisconnectTimer(audioManager);
+        dc = new DisconnectTimer(this);
         Thread dcThread = new Thread(dc);
         dcThread.start();
         player.setVolume(volume);
@@ -266,56 +263,5 @@ public class Server {
                 else event.getHook().editOriginal(e.getMessage()).queue();
             }
         });
-    }
-
-    /**
-     * to search YT for the songname
-     * @param songitle the title to search for
-     * @return returns link, title and uploader channel i think?
-     */
-    private String[][] searchYT (String songitle) {
-        try {
-            songitle = songitle.replaceAll(" ", "+");
-            URL url = new URL("https://www.youtube.com/results?search_query=" + songitle);
-            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-            BufferedInputStream inputStream = new BufferedInputStream(httpURLConnection.getInputStream());
-            byte[] dataBuffer = new byte[1024];
-            StringBuilder r = new StringBuilder();
-            while (inputStream.read(dataBuffer, 0, 1024) != -1) {
-                r.append(new String(dataBuffer));
-            }
-            String[][] list = new String[5][2];
-            r = new StringBuilder(r.toString().replaceAll("\\\\u0026", "&"));
-            r = new StringBuilder(r.toString().replaceAll("&amp;", "&"));
-            String temp = r.toString();
-            for (int i = 0; i < 5; i++) {
-                temp = temp.substring(temp.indexOf("/watch?"));
-                if (i > 0) {
-                    while (list[i - 1][0].contains(temp.substring(0, temp.indexOf("&pp")))) {
-                        temp = temp.substring(temp.indexOf("\""));
-                        temp = temp.substring(temp.indexOf("/watch?"));
-                    }
-                }
-                list[i][0] = "https://www.youtube.com" + temp.substring(0, temp.indexOf("\""));
-                URL tempurl = new URL(list[i][0]);
-                HttpURLConnection con = (HttpURLConnection) tempurl.openConnection();
-                inputStream = new BufferedInputStream(con.getInputStream());
-                dataBuffer = new byte[1024];
-                StringBuilder t = new StringBuilder();
-                while (inputStream.read(dataBuffer, 0, 1024) != -1) {
-                    t.append(new String(dataBuffer));
-                }
-                t = new StringBuilder(t.toString().replaceAll("\\\\u0026", "&"));
-                t = new StringBuilder(t.toString().replaceAll("&amp;", "&"));
-                t = new StringBuilder(t.toString().replaceAll("&#39;", "'"));
-                list[i][1] = t.substring(t.indexOf("<title>") + 7, t.indexOf("</title>") - 10);
-                temp = temp.substring(temp.indexOf("\""));
-            }
-            inputStream.close();
-            return (list);
-        } catch (Exception e) {
-            Logger.error(e);
-        }
-        return null;
     }
 }
