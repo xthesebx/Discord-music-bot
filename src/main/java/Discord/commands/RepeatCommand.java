@@ -12,7 +12,7 @@ public class RepeatCommand extends BasicCommand {
      */
     public RepeatCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
-        server.getTrackScheduler().Repeat();
+        server.getTrackScheduler().toggleRepeat();
         if (!server.getTrackScheduler().repeating)
             event.reply("not repeating anymore").queue();
         else
