@@ -53,6 +53,7 @@ public class TrackScheduler extends AudioEventAdapter {
 			tracks.add(track);
 			player.startTrack(track, true);
 		}
+		server.getDc().stopTimer();
 	}
 	
 	/**
@@ -89,7 +90,7 @@ public class TrackScheduler extends AudioEventAdapter {
 		}
 	}
 
-	public void Repeat() {
+	public void toggleRepeat() {
 		if (repeating) {
 			repeating = false;
 		} else {
