@@ -33,5 +33,6 @@ public class LeaveCommand extends BasicCommand {
         event.reply("Disconnected from the voice channel!").queue();
         server.getPlayer().stopTrack();
         server.getDc().stopTimer();
+        if (server.getTrackScheduler().repeating) server.getTrackScheduler().toggleRepeat();
     }
 }
