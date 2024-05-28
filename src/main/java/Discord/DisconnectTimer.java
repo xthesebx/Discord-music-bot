@@ -12,15 +12,17 @@ import net.dv8tion.jda.api.managers.AudioManager;
 public class DisconnectTimer implements Runnable{
 	int i = 0, loops = 300;
 	boolean active;
-	AudioManager audioManager;
+	private final AudioManager audioManager;
+	private final Server server;
 
 	/**
 	 * constructor of the Disconnect timer, only needs to know audioManager
 	 *
-	 * @param audioManager a {@link net.dv8tion.jda.api.managers.AudioManager} object
+	 * @param server Server to get the used information from
 	 */
-	public DisconnectTimer(AudioManager audioManager) {
-		this.audioManager = audioManager;
+	public DisconnectTimer(Server server) {
+		this.audioManager = server.getAudioManager();
+		this.server = server;
 	}
 
 	/**
@@ -39,7 +41,10 @@ public class DisconnectTimer implements Runnable{
 			if (this.active) {
 				if (i < loops) {
 					i++;
-				} else audioManager.closeAudioConnection();
+				} else {
+					audioManager.closeAudioConnection();
+					if (server.getTrackScheduler().repeating) server.getTrackScheduler().toggleRepeat();
+				}
 			}
 		}
 	}
