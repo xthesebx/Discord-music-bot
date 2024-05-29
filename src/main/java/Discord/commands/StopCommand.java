@@ -24,7 +24,10 @@ public class StopCommand extends BasicCommand {
     public StopCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
         this.player = server.getPlayer();
-        if (player.getPlayingTrack() == null) return;
+        if (player.getPlayingTrack() == null) {
+            event.reply("Player already stopped!").queue();
+            return;
+        }
         player.stopTrack();
         server.getDc().startTimer();
         event.reply("Stopped!").queue();
