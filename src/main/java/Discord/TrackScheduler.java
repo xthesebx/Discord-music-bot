@@ -93,6 +93,7 @@ public class TrackScheduler extends AudioEventAdapter {
 	public void toggleRepeat() {
 		if (repeating) {
 			repeating = false;
+			tracks.clear();
 		} else {
 			repeating = true;
 			tracks.add(player.getPlayingTrack());
