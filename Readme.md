@@ -1,2 +1,2 @@
-to run this project you have to put youtube-common-1.3.0.jar and youtube-v2-1.3.0.jar into a libs dir
+to run this project you have to put youtube-common-1.5.1.jar and youtube-v2-1.5.1.jar into a libs dir
 inside this project. you can download them [here](https://github.com/lavalink-devs/youtube-source/releases).

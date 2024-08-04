@@ -72,16 +72,16 @@
         <dependency>
             <groupId>dev.lavalink.youtube</groupId>
             <artifactId>youtube-common</artifactId>
-            <version>1.4.0</version>
+            <version>1.5.1</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/libs/youtube-common-1.4.0.jar</systemPath>
+            <systemPath>${project.basedir}/libs/youtube-common-1.5.1.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>dev.lavalink.youtube</groupId>
             <artifactId>youtube-v2</artifactId>
-            <version>1.4.0</version>
+            <version>1.5.1</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/libs/youtube-v2-1.4.0.jar</systemPath>
+            <systemPath>${project.basedir}/libs/youtube-v2-1.5.1.jar</systemPath>
         </dependency>
     </dependencies>
     <properties>

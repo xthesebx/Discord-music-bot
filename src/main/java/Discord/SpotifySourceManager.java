@@ -28,7 +28,6 @@ public class SpotifySourceManager extends com.github.topi314.lavasrc.spotify.Spo
         if (json == null) {
             return AudioReference.NO_TRACK;
         }
-
         var tracks = new ArrayList<AudioTrack>();
         JsonBrowser page;
         var offset = 0;
@@ -47,11 +46,9 @@ public class SpotifySourceManager extends com.github.topi314.lavasrc.spotify.Spo
 
         }
         while (page.get("next").text() != null && ++pages < 50);
-
         if (tracks.isEmpty()) {
             return AudioReference.NO_TRACK;
         }
-
         return new SpotifyAudioPlaylist(json.get("name").text(), tracks, ExtendedAudioPlaylist.Type.PLAYLIST, json.get("external_urls").get("spotify").text(), json.get("images").index(0).get("url").text(), json.get("owner").get("display_name").text(), (int) json.get("tracks").get("total").asLong(0));
     }
 
