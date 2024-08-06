@@ -148,7 +148,7 @@ public class Server {
      * @return the JoinState so we know what happened/how it went
      */
     public JoinStates join (SlashCommandInteractionEvent event) {
-        if (!guild.getSelfMember().hasPermission(event.getGuildChannel(), Permission.VOICE_CONNECT)) {
+        if (!guild.getSelfMember().hasPermission(event.getMember().getVoiceState().getChannel(), Permission.VOICE_CONNECT)) {
             // The bot does not have permission to join any voice channel. Don't forget the .queue()!
             return JoinStates.NOPERMS;
         }
