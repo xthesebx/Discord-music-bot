@@ -9,9 +9,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
-import dev.lavalink.youtube.clients.AndroidTestsuiteWithThumbnail;
-import dev.lavalink.youtube.clients.MusicWithThumbnail;
-import dev.lavalink.youtube.clients.WebWithThumbnail;
+import dev.lavalink.youtube.clients.*;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
@@ -117,8 +115,18 @@ public class Server {
         this.guild = guild;
         guildId = guild.getId();
         volume = readVolume();
-        audioPlayerManager.registerSourceManager(new YoutubeAudioSourceManager(true, new MusicWithThumbnail(), new WebWithThumbnail(), new AndroidTestsuiteWithThumbnail()));
+        audioPlayerManager.registerSourceManager(new YoutubeAudioSourceManager(true, new WebWithThumbnail(), new AndroidMusicWithThumbnail(), new TvHtml5EmbeddedWithThumbnail(), new MusicWithThumbnail()));
+        //???? other clients work, i guess i just do this for now
+
         audioPlayerManager.registerSourceManager(new SpotifySourceManager(null, NewMain.clientid, NewMain.clientsecret, "de", audioPlayerManager));
+        /**
+         * okay wtf i gotta rant:
+         * WHY TF IS THIS DEPENDANT ON THE YOUTUBE SOURCE MANAGER?!?!?
+         * FIXING THE FIRST ONE FIXED SPOTIFY FOR NO REASON
+         * ?????????????????????????????????????????????????????????????????????????????????????????????????????????
+         * I DONT GET IT; IT MAKES 0 SENSE
+         */
+
         this.audioManager = guild.getAudioManager();
         trackScheduler = new TrackScheduler(this);
         player.addListener(trackScheduler);
