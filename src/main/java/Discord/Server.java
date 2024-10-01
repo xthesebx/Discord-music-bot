@@ -156,6 +156,8 @@ public class Server {
      * @return the JoinState so we know what happened/how it went
      */
     public JoinStates join (SlashCommandInteractionEvent event) {
+        //TODO: Monitor, might have some issues doing it regularly or something, sometimes get rate limits out of nowhere
+        dc.startTimer();
         if (!guild.getSelfMember().hasPermission(event.getMember().getVoiceState().getChannel(), Permission.VOICE_CONNECT)) {
             // The bot does not have permission to join any voice channel. Don't forget the .queue()!
             return JoinStates.NOPERMS;
@@ -210,8 +212,10 @@ public class Server {
         event.getMessage().delete().queue();
         event.deferReply().queue();
         AudioTrack track = tracks[Integer.parseInt(event.getButton().getId())];
-        trackScheduler.queue(track);
-        event.getHook().editOriginal("```Added " + track.getInfo().title + " by " + track.getInfo().author + " to queue```").queue();
+        if (track != null) {
+            trackScheduler.queue(track);
+            event.getHook().editOriginal("```Added " + track.getInfo().title + " by " + track.getInfo().author + " to queue```").queue();
+        } else event.getHook().editOriginal("```Search is no longer available due to a bot restart```").queue();
     }
 
     /**
@@ -233,6 +237,7 @@ public class Server {
 
             @Override
             public void playlistLoaded (AudioPlaylist audioPlaylist) {
+                dc.stopTimer();
                 if (link.startsWith("ytsearch:") || link.startsWith("ytmsearch:") || link.startsWith("spsearch:")) {
                 Button[] rows = new Button[5];
                 List<AudioTrack> list = audioPlaylist.getTracks();
@@ -256,7 +261,6 @@ public class Server {
                 }
                 text = "```Added the playlist to Queue```";
                 event.getHook().editOriginal(text).queue();
-                dc.stopTimer();
             }
 
             @Override
