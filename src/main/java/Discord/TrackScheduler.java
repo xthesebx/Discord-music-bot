@@ -23,6 +23,7 @@ public class TrackScheduler extends AudioEventAdapter {
 	private final Server server;
 	public boolean repeating;
 	private int i;
+	public AudioTrack track;
 	/**
 	 * <p>Constructor for TrackScheduler.</p>
 	 *
@@ -48,10 +49,13 @@ public class TrackScheduler extends AudioEventAdapter {
 		if (!repeating) {
 			if (!player.startTrack(track, true)) {
 				queue.offer(track);
+			} else {
+				this.track = track.makeClone();
 			}
 		} else {
 			tracks.add(track);
-			player.startTrack(track, true);
+			if (player.startTrack(track, true))
+				this.track = track.makeClone();
 		}
 		server.getDc().stopTimer();
 	}
@@ -62,10 +66,10 @@ public class TrackScheduler extends AudioEventAdapter {
 	public void nextTrack() {
 		// Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
 		// giving null to startTrack, which is a valid argument and will simply stop the player.
-		AudioTrack track;
 		if (!repeating) {
+			if (queue.isEmpty()) return;
 			track = queue.poll();
-			player.startTrack(track, false);
+			player.startTrack(track.makeClone(), false);
 		} else {
 			if (i < tracks.size() - 1) i++;
 			else i = 0;

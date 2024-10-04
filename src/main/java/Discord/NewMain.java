@@ -1,5 +1,6 @@
 package Discord;
 
+import com.hawolt.logger.Logger;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -14,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.TimeZone;
 
 /**
  * new Main Class after old one got deprecated
@@ -22,12 +24,12 @@ import java.util.HashMap;
  * @version 1.0-SNAPSHOT
  */
 public class NewMain extends ListenerAdapter {
-
     private final JDA jda;
     private final HashMap<String, Server> map = new HashMap<>();
     public static String clientid;
     public static String clientsecret;
     public static String spdc;
+    public static String apikey;
 
     /**
      * Main function
@@ -45,15 +47,17 @@ public class NewMain extends ListenerAdapter {
      * @throws java.lang.InterruptedException because of awaitReady
      */
     public NewMain() throws InterruptedException {
+        TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
         String original = NewMain.read(new File("spotify.env"));
         clientid = original.substring(0, original.indexOf("\n"));
         clientsecret = original.substring(original.indexOf("\n") + 1).substring(0, original.indexOf("\n"));
         spdc = original.substring(original.indexOf("\n") + 1).substring(original.indexOf("\n") + 1);
-        File env = new File("apikey.env");
-        jda = JDABuilder.createDefault(read(env).strip()).enableIntents(GatewayIntent.MESSAGE_CONTENT).enableIntents(GatewayIntent.GUILD_MESSAGES).enableIntents(GatewayIntent.GUILD_MESSAGE_TYPING).setStatus(OnlineStatus.OFFLINE).build();
+        apikey = read(new File("apikey.env"));
+        jda = JDABuilder.createDefault(apikey.strip()).enableIntents(GatewayIntent.MESSAGE_CONTENT).enableIntents(GatewayIntent.GUILD_MESSAGES).enableIntents(GatewayIntent.GUILD_MESSAGE_TYPING).setStatus(OnlineStatus.OFFLINE).build();
         jda.addEventListener(this);
         jda.awaitReady();
         for (Guild guild : jda.getGuilds()) {
+            Logger.debug(guild.getName());
             map.put(guild.getId(), new Server(guild));
         }
         jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.customStatus("Playing some Banger Music"));

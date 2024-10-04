@@ -1,6 +1,7 @@
 package Discord;
 
 import Discord.commands.*;
+import com.github.topi314.lavalyrics.LyricsManager;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -21,7 +22,7 @@ import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 
 import java.io.*;
-import java.util.List;
+import java.util.*;
 
 /**
  * The class for every server
@@ -95,6 +96,10 @@ public class Server {
         return audioPlayerManager;
     }
 
+    public LyricsManager getLyricsManager() {
+        return lyricsManager;
+    }
+
     private final String guildId;
     private int volume;
     private final Guild guild;
@@ -105,6 +110,7 @@ public class Server {
     private final AudioPlayerHandler audioPlayerHandler = new AudioPlayerHandler(player);
     private final DisconnectTimer dc;
     private final AudioTrack[] tracks = new AudioTrack[5];
+    private final LyricsManager lyricsManager = new LyricsManager();
 
     /**
      * Server creation
@@ -115,10 +121,12 @@ public class Server {
         this.guild = guild;
         guildId = guild.getId();
         volume = readVolume();
-        audioPlayerManager.registerSourceManager(new YoutubeAudioSourceManager(true, new WebWithThumbnail(), new AndroidMusicWithThumbnail(), new TvHtml5EmbeddedWithThumbnail(), new MusicWithThumbnail()));
+        YoutubeAudioSourceManager ytsrc = new YoutubeAudioSourceManager(true, new WebWithThumbnail(), new AndroidMusicWithThumbnail(), new TvHtml5EmbeddedWithThumbnail(), new MusicWithThumbnail());
+        audioPlayerManager.registerSourceManager(ytsrc);
         //???? other clients work, i guess i just do this for now
-
-        audioPlayerManager.registerSourceManager(new SpotifySourceManager(null, NewMain.clientid, NewMain.clientsecret, "de", audioPlayerManager));
+        SpotifySourceManager spsrc = new SpotifySourceManager(null, NewMain.clientid, NewMain.clientsecret, "de", audioPlayerManager, NewMain.spdc);
+        audioPlayerManager.registerSourceManager(spsrc);
+        lyricsManager.registerLyricsManager(spsrc);
         /**
          * okay wtf i gotta rant:
          * WHY TF IS THIS DEPENDANT ON THE YOUTUBE SOURCE MANAGER?!?!?
@@ -200,6 +208,7 @@ public class Server {
             case "skip" -> new SkipCommand(event, this);
             case "shuffle" -> new ShuffleCommand(event, this);
             case "repeat" -> new RepeatCommand(event, this);
+            case "lyrics" -> new LyricsCommand(event, this);
         }
     }
 

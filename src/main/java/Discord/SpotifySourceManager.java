@@ -1,6 +1,7 @@
 package Discord;
 
 import com.github.topi314.lavasrc.ExtendedAudioPlaylist;
+import com.github.topi314.lavasrc.mirror.DefaultMirroringAudioTrackResolver;
 import com.github.topi314.lavasrc.spotify.SpotifyAudioPlaylist;
 import com.github.topi314.lavasrc.spotify.SpotifyAudioTrack;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -18,8 +19,8 @@ import java.util.ArrayList;
  * just redone some SpotifySourceManager Functions to allow bigger playlists to be added, up to 5k songs currently
  */
 public class SpotifySourceManager extends com.github.topi314.lavasrc.spotify.SpotifySourceManager {
-    public SpotifySourceManager(String[] providers, String clientId, String clientSecret, String countryCode, AudioPlayerManager audioPlayerManager) {
-        super(providers, clientId, clientSecret, countryCode, audioPlayerManager);
+    public SpotifySourceManager(String[] providers, String clientId, String clientSecret, String countryCode, AudioPlayerManager audioPlayerManager, String spdc) {
+        super(clientId, clientSecret, spdc, countryCode, unused -> audioPlayerManager, new DefaultMirroringAudioTrackResolver(providers));
     }
 
     @Override
