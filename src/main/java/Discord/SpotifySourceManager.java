@@ -15,14 +15,35 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
-/***
+/*
  * just redone some SpotifySourceManager Functions to allow bigger playlists to be added, up to 5k songs currently
  */
+
+/**
+ * <p>SpotifySourceManager class.</p>
+ *
+ * @see com.github.topi314.lavasrc.spotify.SpotifySourceManager
+ * just added songs so bigger playlists are possible
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
+ */
 public class SpotifySourceManager extends com.github.topi314.lavasrc.spotify.SpotifySourceManager {
+
+    /**
+     * Constructor for Source Manager
+     *
+     * @param providers no idea, just null
+     * @param clientId client id for spotify
+     * @param clientSecret secret for spotify
+     * @param countryCode country code of your country
+     * @param audioPlayerManager audioPlayerManager for the server
+     * @param spdc idk, used for lyrics
+     */
     public SpotifySourceManager(String[] providers, String clientId, String clientSecret, String countryCode, AudioPlayerManager audioPlayerManager, String spdc) {
         super(clientId, clientSecret, spdc, countryCode, unused -> audioPlayerManager, new DefaultMirroringAudioTrackResolver(providers));
     }
 
+    /** {@inheritDoc} */
     @Override
     public AudioItem getPlaylist(String id, boolean preview) throws IOException {
         var json = this.getJson(API_BASE + "playlists/" + id);
@@ -53,6 +74,9 @@ public class SpotifySourceManager extends com.github.topi314.lavasrc.spotify.Spo
         return new SpotifyAudioPlaylist(json.get("name").text(), tracks, ExtendedAudioPlaylist.Type.PLAYLIST, json.get("external_urls").get("spotify").text(), json.get("images").index(0).get("url").text(), json.get("owner").get("display_name").text(), (int) json.get("tracks").get("total").asLong(0));
     }
 
+    /**
+     * @see com.github.topi314.lavasrc.spotify.SpotifySourceManager
+     */
     private AudioTrack parseTrack(JsonBrowser json, boolean preview) {
         return new SpotifyAudioTrack(
                 new AudioTrackInfo(

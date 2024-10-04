@@ -73,16 +73,17 @@ public class BasicCommandBuilder extends JSONObject {
 
     /**
      * <p>setContext</p>
+     *
      * @param context Contexts to set
      */
-
     public void setContext(Integer[] context) {
         this.put("contexts", context);
     }
 
     /**
      * <p>creates the Command</p>
-     * @throws IOException because of inet usage
+     *
+     * @throws java.io.IOException because of inet usage
      */
     public void create() throws IOException {
         HttpClient client = HttpClients.createDefault();
@@ -99,28 +100,57 @@ public class BasicCommandBuilder extends JSONObject {
 
     }
 
+    /**
+     * <p>build.</p>
+     *
+     * @return a {@link org.json.JSONObject} object
+     */
     public JSONObject build() {
         return this;
     }
 
+    /**
+     * Option class to add options to the commands
+     */
     public static class Option extends JSONObject {
 
+        /**
+         * sets the optin name
+         * @param name option name to give the option
+         */
         public void setName(String name) {
             this.put("name", name);
         }
 
+        /**
+         * sets description of option
+         * @param description description to give the option
+         */
         public void setDescription(String description) {
             this.put("description", description);
         }
 
+        /**
+         * sets the option type
+         * @param type to set the option type
+         */
         public void setType(int type) {
             this.put("type", type);
         }
 
+        /**
+         * sets the option as required
+         * @param required if the option is supposed to be required or no
+         */
         public void setRequired (boolean required) {
             this.put("required", required);
         }
 
+        /**
+         * adds choice for auto fill options
+         * @param name choice name
+         * @param value choice value
+         */
         public void addChoice (String name, String value) {
             if(!this.has("choices")) {
                 this.put("choices", new JSONArray());

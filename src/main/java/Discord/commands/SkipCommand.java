@@ -3,9 +3,15 @@ package Discord.commands;
 import Discord.Server;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
+/**
+ * <p>SkipCommand class.</p>
+ *
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
+ */
 public class SkipCommand extends BasicCommand {
     /**
-     * <p>Constructor for BasicCommand.</p>
+     * <p>Constructor for SkipCommand.</p>
      *
      * @param event  received event to reply to it and handle the options
      * @param server the server it came from to make things easier

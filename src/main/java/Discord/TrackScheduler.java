@@ -17,17 +17,29 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @version 1.0-SNAPSHOT
  */
 public class TrackScheduler extends AudioEventAdapter {
+
+	/**
+	 * the queue
+	 */
 	public final BlockingQueue<AudioTrack> queue;
 	private final List<AudioTrack> tracks;
 	private final AudioPlayer player;
 	private final Server server;
+
+	/**
+	 * boolean if its repeating mode
+	 */
 	public boolean repeating;
 	private int i;
+
+	/**
+	 * current track
+	 */
 	public AudioTrack track;
 	/**
 	 * <p>Constructor for TrackScheduler.</p>
 	 *
-	 * @param server The server to get everything from
+	 * @param server The discord server related, to get everything from
 	 */
 	public TrackScheduler(Server server) {
 		this.server = server;
@@ -85,7 +97,10 @@ public class TrackScheduler extends AudioEventAdapter {
 		}
 	}
 	
-	/** {@inheritDoc} */
+	/**
+	 * {@inheritDoc}
+	 * to start next track when track ended
+	 */
 	@Override
 	public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
 		// Only start the next track if the end reason is suitable for it (FINISHED or LOAD_FAILED)
@@ -98,6 +113,9 @@ public class TrackScheduler extends AudioEventAdapter {
 		}
 	}
 
+	/**
+	 * toggles the repeat functionality
+	 */
 	public void toggleRepeat() {
 		if (repeating) {
 			repeating = false;

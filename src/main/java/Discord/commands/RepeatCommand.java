@@ -3,6 +3,12 @@ package Discord.commands;
 import Discord.Server;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
+/**
+ * <p>RepeatCommand class.</p>
+ *
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
+ */
 public class RepeatCommand extends BasicCommand {
     /**
      * <p>Constructor for BasicCommand.</p>

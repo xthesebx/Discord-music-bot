@@ -96,6 +96,11 @@ public class Server {
         return audioPlayerManager;
     }
 
+    /**
+     * getter for LyricsManager
+     *
+     * @return the LyricsManager
+     */
     public LyricsManager getLyricsManager() {
         return lyricsManager;
     }
@@ -234,8 +239,20 @@ public class Server {
 
     /**
      * to play the actual thingy
+     *
      * @param link link or songtitle to search for/play
      * @param event is the event, either buttoninteraction or slashcommandinteraction
+     */
+    public void play(String link, SlashCommandInteractionEvent event) {
+        play(link, event, 0);
+    }
+
+    /**
+     * to play the actual thingy
+     *
+     * @param link link or songtitle to search for/play
+     * @param event is the event, either buttoninteraction or slashcommandinteraction
+     * @param retries number of iterations
      */
     public void play(String link, SlashCommandInteractionEvent event, int retries) {
         audioPlayerManager.loadItem(link, new AudioLoadResultHandler() {

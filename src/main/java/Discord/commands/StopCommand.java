@@ -16,7 +16,7 @@ public class StopCommand extends BasicCommand {
     AudioPlayer player;
 
     /**
-     * in case of /command
+     * in case of /stop
      *
      * @param event received event to reply to it and handle the options
      * @param server the server it came from to make things easier

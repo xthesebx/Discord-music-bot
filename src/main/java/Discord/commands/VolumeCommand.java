@@ -18,10 +18,12 @@ import java.io.File;
 public class VolumeCommand extends BasicCommand {
 
     /**
-     * in case of /command
+     * in case of /volume
      *
      * @param event received event to reply to it and handle the options
      * @param server the server it came from to make things easier
+     *
+     * changes the volume of the player
      */
     public VolumeCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);

@@ -17,7 +17,7 @@ public class HelpCommand extends BasicCommand {
      *
      * @param event received event to reply to it and handle the options
      * @param server the server it came from to make things easier
-	 * just sends the command list as response
+     * just sends the command list as response
      */
     public HelpCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
@@ -34,7 +34,8 @@ public class HelpCommand extends BasicCommand {
 							/repeat - repeats the queue
 							/skip - skips the current song
 							/volume - sets the volume
-							/shuffle - shuffles the queue```""").queue();
+							/shuffle - shuffles the queue
+							/lyrics - prints the lyrics of current song```""").queue();
     }
 }
 

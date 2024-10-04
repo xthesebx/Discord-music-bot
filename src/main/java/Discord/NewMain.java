@@ -26,6 +26,13 @@ import java.util.TimeZone;
 public class NewMain extends ListenerAdapter {
     private final JDA jda;
     private final HashMap<String, Server> map = new HashMap<>();
+    /** Constant <code>clientid</code>
+     * Constant <code>clientsecret</code>
+     * Constant <code>spdc</code>
+     * Constant <code>apikey</code> */
+    /** Constant <code>clientsecret=""</code> */
+    /** Constant <code>spdc=""</code> */
+    /** Constant <code>apikey=""</code> */
     public static String clientid, clientsecret, spdc, apikey;
 
     /**

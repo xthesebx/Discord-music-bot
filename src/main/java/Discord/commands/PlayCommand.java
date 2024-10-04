@@ -40,6 +40,6 @@ public class PlayCommand extends BasicCommand {
             }
         }
         event.deferReply().queue();
-        server.play(link, event, 0);
+        server.play(link, event);
     }
 }
