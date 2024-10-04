@@ -82,7 +82,7 @@ public class BasicCommandBuilder extends JSONObject {
 
     /**
      * <p>creates the Command</p>
-     * @throws IOException
+     * @throws IOException because of inet usage
      */
     public void create() throws IOException {
         HttpClient client = HttpClients.createDefault();

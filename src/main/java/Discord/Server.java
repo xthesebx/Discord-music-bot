@@ -127,7 +127,7 @@ public class Server {
         SpotifySourceManager spsrc = new SpotifySourceManager(null, NewMain.clientid, NewMain.clientsecret, "de", audioPlayerManager, NewMain.spdc);
         audioPlayerManager.registerSourceManager(spsrc);
         lyricsManager.registerLyricsManager(spsrc);
-        /**
+        /*
          * okay wtf i gotta rant:
          * WHY TF IS THIS DEPENDANT ON THE YOUTUBE SOURCE MANAGER?!?!?
          * FIXING THE FIRST ONE FIXED SPOTIFY FOR NO REASON
@@ -166,14 +166,15 @@ public class Server {
     public JoinStates join (SlashCommandInteractionEvent event) {
         //TODO: Monitor, might have some issues doing it regularly or something, sometimes get rate limits out of nowhere
         dc.startTimer();
+        if (event.getMember().getVoiceState().getChannel() == null) {
+            return JoinStates.NOTINVOICE;
+        }
         if (!guild.getSelfMember().hasPermission(event.getMember().getVoiceState().getChannel(), Permission.VOICE_CONNECT)) {
             // The bot does not have permission to join any voice channel. Don't forget the .queue()!
             return JoinStates.NOPERMS;
         }
         // Creates a variable equal to the channel that the user is in.
-        if (event.getMember().getVoiceState().getChannel() == null) {
-            return JoinStates.NOTINVOICE;
-        }
+
         VoiceChannel connectedChannel = event.getMember().getVoiceState().getChannel().asVoiceChannel();
         // Checks if they are in a channel -- not being in a channel means that the variable = null.
         // Gets the audio manager.
@@ -220,11 +221,15 @@ public class Server {
     public void onButtonInteraction (ButtonInteractionEvent event) {
         event.getMessage().delete().queue();
         event.deferReply().queue();
-        AudioTrack track = tracks[Integer.parseInt(event.getButton().getId())];
-        if (track != null) {
-            trackScheduler.queue(track);
-            event.getHook().editOriginal("```Added " + track.getInfo().title + " by " + track.getInfo().author + " to queue```").queue();
-        } else event.getHook().editOriginal("```Search is no longer available due to a bot restart```").queue();
+        try {
+            AudioTrack track = tracks[Integer.parseInt(event.getButton().getId())];
+            if (track != null) {
+                trackScheduler.queue(track);
+                event.getHook().editOriginal("```Added " + track.getInfo().title + " by " + track.getInfo().author + " to queue```").queue();
+            } else event.getHook().editOriginal("```Search is no longer available due to a bot restart```").queue();
+        } catch (NullPointerException e) {
+            event.getHook().editOriginal("```Button is from old Bot Task, cant execute it```").queue();
+        }
     }
 
     /**

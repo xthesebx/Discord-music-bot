@@ -26,10 +26,7 @@ import java.util.TimeZone;
 public class NewMain extends ListenerAdapter {
     private final JDA jda;
     private final HashMap<String, Server> map = new HashMap<>();
-    public static String clientid;
-    public static String clientsecret;
-    public static String spdc;
-    public static String apikey;
+    public static String clientid, clientsecret, spdc, apikey;
 
     /**
      * Main function
@@ -87,7 +84,7 @@ public class NewMain extends ListenerAdapter {
             while (true) {
                 temp = reader.readLine();
                 if (temp == null) break;
-                text.append("\n" + temp);
+                text.append("\n").append(temp);
             }
             reader.close();
         } catch (IOException ignored) {

@@ -17,17 +17,18 @@ public class LyricsCommand extends BasicCommand {
      */
     public LyricsCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
-        String lyrics = "```";
+        StringBuilder lyrics = new StringBuilder("```");
         try {
             List<AudioLyrics.Line> lines = server.getLyricsManager().loadLyrics(server.getTrackScheduler().track).getLines();
+            assert lines != null;
             for (AudioLyrics.Line line : lines) {
                 if (line.getLine().equals("♪") || line.getLine().isEmpty()) continue;
                 if (lyrics.length() >= 1800) {
                     event.getChannel().asTextChannel().sendMessage(lyrics + "```").queue();
-                    lyrics = "```";
+                    lyrics = new StringBuilder("```");
                 }
                 Logger.debug(line.getLine());
-                lyrics += line.getLine() + "\n";
+                lyrics.append(line.getLine()).append("\n");
             }
             event.reply(lyrics + "```").queue();
         } catch (NullPointerException e) {
