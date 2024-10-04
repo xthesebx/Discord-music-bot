@@ -244,30 +244,29 @@ public class Server {
             @Override
             public void trackLoaded (AudioTrack audioTrack) {
                 trackScheduler.queue(audioTrack);
-                dc.stopTimer();
                 text = "```Added " + audioTrack.getInfo().title + " by " + audioTrack.getInfo().author + " to Queue```";
                 event.getHook().editOriginal(text).queue();
             }
 
             @Override
             public void playlistLoaded (AudioPlaylist audioPlaylist) {
-                dc.stopTimer();
                 if (link.startsWith("ytsearch:") || link.startsWith("ytmsearch:") || link.startsWith("spsearch:")) {
-                Button[] rows = new Button[5];
-                List<AudioTrack> list = audioPlaylist.getTracks();
-                for (int i = 0; i < 5; i++) {
-                    AudioTrack track = list.get(i);
-                    tracks[i] = track;
-                    String title = track.getInfo().title;
-                    String author = track.getInfo().author;
-                    if ((title.length() + author.length()) > 76)
-                        rows[i] = Button.primary(String.valueOf(i), title.substring(0, 75 - author.length()) + " by " + author);
-                    else
-                        rows[i] = Button.primary(String.valueOf(i), track.getInfo().title + " by " + track.getInfo().author);
-                }
-                MessageEditData messageEditData = new MessageEditBuilder().setActionRow(rows).setContent("Which one?").build();
-                event.getHook().editOriginal(messageEditData).queue();
-                return;
+                    dc.stopTimer();
+                    Button[] rows = new Button[5];
+                    List<AudioTrack> list = audioPlaylist.getTracks();
+                    for (int i = 0; i < 5; i++) {
+                        AudioTrack track = list.get(i);
+                        tracks[i] = track;
+                        String title = track.getInfo().title;
+                        String author = track.getInfo().author;
+                        if ((title.length() + author.length()) > 76)
+                            rows[i] = Button.primary(String.valueOf(i), title.substring(0, 75 - author.length()) + " by " + author);
+                        else
+                            rows[i] = Button.primary(String.valueOf(i), track.getInfo().title + " by " + track.getInfo().author);
+                    }
+                    MessageEditData messageEditData = new MessageEditBuilder().setActionRow(rows).setContent("Which one?").build();
+                    event.getHook().editOriginal(messageEditData).queue();
+                    return;
                 }
 
                 for (AudioTrack track : audioPlaylist.getTracks()) {
