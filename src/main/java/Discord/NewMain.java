@@ -30,9 +30,6 @@ public class NewMain extends ListenerAdapter {
      * Constant <code>clientsecret</code>
      * Constant <code>spdc</code>
      * Constant <code>apikey</code> */
-    /** Constant <code>clientsecret=""</code> */
-    /** Constant <code>spdc=""</code> */
-    /** Constant <code>apikey=""</code> */
     public static String clientid, clientsecret, spdc, apikey;
 
     /**

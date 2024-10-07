@@ -261,7 +261,7 @@ public class Server {
             @Override
             public void trackLoaded (AudioTrack audioTrack) {
                 trackScheduler.queue(audioTrack);
-                text = "```Added " + audioTrack.getInfo().title + " by " + audioTrack.getInfo().author + " to Queue```";
+                text = "```Added \"" + audioTrack.getInfo().title + "\" by " + audioTrack.getInfo().author + " to Queue```";
                 event.getHook().editOriginal(text).queue();
             }
 
@@ -289,7 +289,7 @@ public class Server {
                 for (AudioTrack track : audioPlaylist.getTracks()) {
                     trackScheduler.queue(track);
                 }
-                text = "```Added the playlist to Queue```";
+                text = "```Added \"" + audioPlaylist.getName() + "\" to Queue```";
                 event.getHook().editOriginal(text).queue();
             }
 
