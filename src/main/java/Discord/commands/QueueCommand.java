@@ -23,15 +23,24 @@ public class QueueCommand extends BasicCommand {
     public QueueCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
         this.trackScheduler = server.getTrackScheduler();
-        if (trackScheduler.queue.isEmpty()) {
+        if (trackScheduler.queue.isEmpty() && trackScheduler.queue2.isEmpty()) {
             event.reply("Queue is empty").queue();
             return;
         }
-
-        String[] titles = new String[trackScheduler.queue.size()];
-        String[] authors = new String[trackScheduler.queue.size()];
-        String[] length = new String[trackScheduler.queue.size()];
+        int size = trackScheduler.queue.size() + trackScheduler.queue2.size();
+        String[] titles = new String[size];
+        String[] authors = new String[size];
+        String[] length = new String[size];
         int i = 0;
+        for (AudioTrack e : trackScheduler.queue2) {
+            titles[i] = e.getInfo().title;
+            authors[i] = e.getInfo().author;
+            long duration = e.getDuration() / 1000;
+            long minutes = (long) Math.floor((double) duration / 60);
+            long seconds = (long) Math.floor(duration % 60);
+            length[i] = minutes + ":" + seconds;
+            i++;
+        }
         for (AudioTrack e : trackScheduler.queue) {
             titles[i] = e.getInfo().title;
             authors[i] = e.getInfo().author;
@@ -42,7 +51,7 @@ public class QueueCommand extends BasicCommand {
             i++;
         }
         StringBuilder result = new StringBuilder("```");
-        result.append("Currently are " + trackScheduler.queue.size() + " songs in queue\n");
+        result.append("Currently are " + size + " songs in queue\n");
         for (int j = 0; j < titles.length; j++) {
             result.append(titles[j]).append(" by ").append(authors[j]).append(" ").append(length[j]).append("\n");
         }

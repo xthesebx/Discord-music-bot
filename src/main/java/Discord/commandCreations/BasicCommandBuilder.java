@@ -80,6 +80,8 @@ public class BasicCommandBuilder extends JSONObject {
         this.put("contexts", context);
     }
 
+
+
     /**
      * <p>creates the Command</p>
      *

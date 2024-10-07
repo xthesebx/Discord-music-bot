@@ -107,8 +107,10 @@ public class NewMain extends ListenerAdapter {
             BufferedWriter writer = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
             writer.write(text);
             writer.close();
-        } catch (IOException ignored) {
-        }
+        } catch (FileNotFoundException e) {
+            file.getParentFile().mkdirs();
+            write(text, file);
+        } catch (IOException ignored) {}
     }
 
     /**

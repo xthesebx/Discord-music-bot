@@ -21,7 +21,7 @@ public class TrackScheduler extends AudioEventAdapter {
 	/**
 	 * the queue
 	 */
-	public final BlockingQueue<AudioTrack> queue;
+	public final BlockingQueue<AudioTrack> queue, queue2;
 	private final List<AudioTrack> tracks;
 	private final AudioPlayer player;
 	private final Server server;
@@ -46,11 +46,13 @@ public class TrackScheduler extends AudioEventAdapter {
 		this.tracks = new ArrayList<>();
 		this.player = server.getPlayer();
 		this.queue = new LinkedBlockingQueue<>();
+		this.queue2 = new LinkedBlockingQueue<>();
 	}
 	
 	/**
 	 * Add the next track to queue or play right away if nothing is in the queue.
 	 * if we are in repeating mode add it to tracks instead of queue
+	 * queue2 is the queue for song requests in streamer mode
 	 *
 	 * @param track The track to play or add to queue.
 	 */
@@ -71,6 +73,15 @@ public class TrackScheduler extends AudioEventAdapter {
 		}
 		server.getDc().stopTimer();
 	}
+
+	public void request(AudioTrack track) {
+		if (!player.startTrack(track, true)) {
+			queue2.offer(track);
+		} else {
+			this.track = track.makeClone();
+		}
+		server.getDc().stopTimer();
+	}
 	
 	/**
 	 * Start the next track, skipping the current one if it is playing.
@@ -79,6 +90,11 @@ public class TrackScheduler extends AudioEventAdapter {
 		// Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
 		// giving null to startTrack, which is a valid argument and will simply stop the player.
 		if (!repeating) {
+			if (!queue2.isEmpty()) {
+				track = queue2.poll();
+				player.startTrack(track.makeClone(), false);
+				return;
+			}
 			if (queue.isEmpty()) {
 				player.stopTrack();
 				track = null;

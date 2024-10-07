@@ -13,6 +13,7 @@ import dev.lavalink.youtube.YoutubeAudioSourceManager;
 import dev.lavalink.youtube.clients.*;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
@@ -107,6 +108,20 @@ public class Server {
 
     private final String guildId;
     private int volume;
+
+    public Guild getGuild() {
+        return guild;
+    }
+
+    public Member getStreamer() {
+        return streamer;
+    }
+
+    public void setStreamer(Member streamer) {
+        this.streamer = streamer;
+    }
+
+    private Member streamer;
     private final Guild guild;
     private final AudioPlayerManager audioPlayerManager = new DefaultAudioPlayerManager();
     private final AudioPlayer player = audioPlayerManager.createPlayer();
@@ -116,6 +131,12 @@ public class Server {
     private final DisconnectTimer dc;
     private final AudioTrack[] tracks = new AudioTrack[5];
     private final LyricsManager lyricsManager = new LyricsManager();
+
+    public ChatBotListener getChatBotListener() {
+        return chatBotListener;
+    }
+
+    private final ChatBotListener chatBotListener = new ChatBotListener(this);
 
     /**
      * Server creation
@@ -200,6 +221,10 @@ public class Server {
      */
     public void onSlashCommandInteraction (SlashCommandInteractionEvent event) {
         String s = event.getName();
+        if (streamer != null && (!event.getMember().equals(streamer) || !event.getUser().getId().equals("277064996264083456"))) {
+            event.reply("streamer mode is active!").queue();
+            return;
+        }
         switch (s) {
             case "help" -> new HelpCommand(event, this);
             case "info" -> new InfoCommand(event, this);
@@ -215,6 +240,8 @@ public class Server {
             case "shuffle" -> new ShuffleCommand(event, this);
             case "repeat" -> new RepeatCommand(event, this);
             case "lyrics" -> new LyricsCommand(event, this);
+            case "streamermode" -> new StreamerModeCommands(event, this);
+            case "streamerrole" -> new StreamerRoleCommand(event, this);
         }
     }
 
@@ -224,6 +251,10 @@ public class Server {
      * @param event the event coming from the newMain
      */
     public void onButtonInteraction (ButtonInteractionEvent event) {
+        if (streamer != null && (!event.getMember().equals(streamer) || !event.getUser().getId().equals("277064996264083456"))) {
+            event.reply("streamer mode is active!").queue();
+            return;
+        }
         event.getMessage().delete().queue();
         event.deferReply().queue();
         try {
@@ -305,6 +336,33 @@ public class Server {
             public void loadFailed (FriendlyException e) {
                 if (retries < 5) play(link, event, retries+1);
                 else event.getHook().editOriginal(e.getMessage()).queue();
+            }
+        });
+    }
+
+    /**
+     * for usage in streamer mode
+     * @param link link to song request
+     */
+
+    public void play(String link) {
+        audioPlayerManager.loadItem(link, new AudioLoadResultHandler() {
+
+            @Override
+            public void trackLoaded (AudioTrack audioTrack) {
+                trackScheduler.request(audioTrack);
+            }
+
+            @Override
+            public void playlistLoaded (AudioPlaylist audioPlaylist) {
+            }
+
+            @Override
+            public void noMatches() {
+            }
+
+            @Override
+            public void loadFailed (FriendlyException e) {
             }
         });
     }
