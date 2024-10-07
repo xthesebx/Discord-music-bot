@@ -269,9 +269,11 @@ public class Server {
             public void playlistLoaded (AudioPlaylist audioPlaylist) {
                 if (link.startsWith("ytsearch:") || link.startsWith("ytmsearch:") || link.startsWith("spsearch:")) {
                     dc.stopTimer();
-                    Button[] rows = new Button[5];
+                    int x = 5;
+                    if (audioPlaylist.getTracks().size() < x) x = audioPlaylist.getTracks().size();
+                    Button[] rows = new Button[x];
                     List<AudioTrack> list = audioPlaylist.getTracks();
-                    for (int i = 0; i < 5; i++) {
+                    for (int i = 0; i < x; i++) {
                         AudioTrack track = list.get(i);
                         tracks[i] = track;
                         String title = track.getInfo().title;
