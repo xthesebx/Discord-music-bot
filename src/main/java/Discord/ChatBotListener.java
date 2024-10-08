@@ -41,7 +41,10 @@ public class ChatBotListener {
         while(true) {
             try {
                 String s = in.readLine();
-                server.play(s);
+                if (s.equals("song?")) {
+                    out.println(server.getPlayer().getPlayingTrack().getInfo().uri);
+                } else
+                    server.play(s);
             } catch (SocketException e) {
                 disconnect();
                 for (int i = 0; i < 5; i++) {

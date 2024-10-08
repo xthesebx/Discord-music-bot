@@ -132,6 +132,7 @@ public class Server {
     private final AudioTrack[] tracks = new AudioTrack[5];
     private final LyricsManager lyricsManager = new LyricsManager();
 
+
     public ChatBotListener getChatBotListener() {
         return chatBotListener;
     }
@@ -143,7 +144,7 @@ public class Server {
      *
      * @param guild to get needed info from
      */
-    public Server(Guild guild) {
+    public Server(Guild guild) throws IOException {
         this.guild = guild;
         guildId = guild.getId();
         volume = readVolume();
@@ -242,6 +243,7 @@ public class Server {
             case "lyrics" -> new LyricsCommand(event, this);
             case "streamermode" -> new StreamerModeCommands(event, this);
             case "streamerrole" -> new StreamerRoleCommand(event, this);
+            case "hotkeyconnect" -> new HotkeyConnectionCommand(event, this);
         }
     }
 

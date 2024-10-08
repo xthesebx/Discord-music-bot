@@ -31,6 +31,15 @@ public class NewMain extends ListenerAdapter {
      * Constant <code>spdc</code>
      * Constant <code>apikey</code> */
     public static String clientid, clientsecret, spdc, apikey;
+    public static final StreamerHotkeyListener streamerHotkeyListener;
+
+    static {
+        try {
+            streamerHotkeyListener = new StreamerHotkeyListener();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Main function
@@ -38,7 +47,7 @@ public class NewMain extends ListenerAdapter {
      * @param args args
      * @throws java.lang.InterruptedException because of main throwing it
      */
-    public static void main (String[] args) throws InterruptedException {
+    public static void main (String[] args) throws InterruptedException, IOException {
         new NewMain();
     }
 
@@ -47,7 +56,7 @@ public class NewMain extends ListenerAdapter {
      *
      * @throws java.lang.InterruptedException because of awaitReady
      */
-    public NewMain() throws InterruptedException {
+    public NewMain() throws InterruptedException, IOException {
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
         String original = NewMain.read(new File("spotify.env"));
         clientid = original.substring(0, original.indexOf("\n"));
@@ -145,6 +154,10 @@ public class NewMain extends ListenerAdapter {
     @Override
     public void onGuildJoin(@NotNull GuildJoinEvent event) {
         super.onGuildJoin(event);
-        map.put(event.getGuild().getId(), new Server(event.getGuild()));
+        try {
+            map.put(event.getGuild().getId(), new Server(event.getGuild()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
