@@ -2,6 +2,7 @@ package Discord;
 
 import Discord.commands.*;
 import com.github.topi314.lavalyrics.LyricsManager;
+import com.hawolt.logger.Logger;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -23,6 +24,8 @@ import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -288,6 +291,19 @@ public class Server {
      * @param retries number of iterations
      */
     public void play(String link, SlashCommandInteractionEvent event, int retries) {
+        if (link.startsWith("http://") && (!link.contains("spotify") || link.contains("youtu"))) {
+            try {
+                URL url = new URL("http://playlist.sebgameservers.de");
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setInstanceFollowRedirects(false);
+                connection.connect();
+                link = connection.getHeaderField("Location");
+            } catch (IOException e) {
+                Logger.error(e);
+            }
+        }
+        String finalLink = link;
         audioPlayerManager.loadItem(link, new AudioLoadResultHandler() {
             String text;
 
@@ -300,7 +316,7 @@ public class Server {
 
             @Override
             public void playlistLoaded (AudioPlaylist audioPlaylist) {
-                if (link.startsWith("ytsearch:") || link.startsWith("ytmsearch:") || link.startsWith("spsearch:")) {
+                if (finalLink.startsWith("ytsearch:") || finalLink.startsWith("ytmsearch:") || finalLink.startsWith("spsearch:")) {
                     dc.stopTimer();
                     int x = 5;
                     if (audioPlaylist.getTracks().size() < x) x = audioPlaylist.getTracks().size();
@@ -336,7 +352,7 @@ public class Server {
 
             @Override
             public void loadFailed (FriendlyException e) {
-                if (retries < 5) play(link, event, retries+1);
+                if (retries < 5) play(finalLink, event, retries+1);
                 else event.getHook().editOriginal(e.getMessage()).queue();
             }
         });
