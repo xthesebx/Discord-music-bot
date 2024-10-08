@@ -1,11 +1,9 @@
 package Discord.commands;
 
-import Discord.NewMain;
 import Discord.Server;
 import Discord.StreamerHotkeyListener;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
-import java.io.File;
 import java.util.UUID;
 
 public class HotkeyConnectionCommand extends BasicCommand {
