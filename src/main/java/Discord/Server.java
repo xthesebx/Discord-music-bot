@@ -217,6 +217,9 @@ public class Server {
         // Connects to the channel.
         audioManager.openAudioConnection(connectedChannel);
         // Obviously people do not notice someone/something connecting.
+        if (player.getPlayingTrack() != null) {
+            dc.stopTimer();
+        }
         return JoinStates.JOINED;
     }
 
@@ -242,6 +245,9 @@ public class Server {
         // Connects to the channel.
         audioManager.openAudioConnection(connectedChannel);
         // Obviously people do not notice someone/something connecting.
+        if (player.getPlayingTrack() != null) {
+            dc.stopTimer();
+        }
         return JoinStates.JOINED;
     }
 
