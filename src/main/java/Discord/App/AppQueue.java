@@ -6,18 +6,24 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.concurrent.TimeUnit;
+
 public class AppQueue {
 
     public static Debouncer debouncer = new Debouncer();
     AppInstance instance;
     TrackScheduler trackScheduler;
+    JSONObject object = new JSONObject(), insert = new JSONObject();
+    JSONArray queue = new JSONArray();
 
     public AppQueue(Server server, AppInstance instance) {
         this.trackScheduler = server.getTrackScheduler();
         this.instance = instance;
     }
 
-    public void updateQueue() {
+
+
+    public void initQueue() {
         int size = trackScheduler.queue.size() + trackScheduler.queue2.size();
         String[] titles = new String[size];
         String[] authors = new String[size];
@@ -41,13 +47,41 @@ public class AppQueue {
             length[i] = minutes + ":" + seconds;
             i++;
         }
-        JSONObject object = new JSONObject();
-        JSONArray JSON = new JSONArray();
         for (int j = 0; j < size; j++) {
-            JSON.put(song(titles[j], authors[j], length[j]));
+            queue.put(song(titles[j], authors[j], length[j]));
         }
-        object.put("queue", JSON);
-        instance.out.println(object);
+        object.put("queue", queue);
+        debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
+    }
+
+    public void addQueue(AudioTrack track) {
+        long duration = track.getDuration() / 1000;
+        long minutes = (long) Math.floor((double) duration / 60);
+        long seconds = (long) Math.floor(duration % 60);
+        String length = minutes + ":" + seconds;
+        queue.put(song(track.getInfo().title, track.getInfo().author, length));
+        object.put("queue", queue);
+        debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
+    }
+
+    public void insertQueue(AudioTrack track, String pos) {
+        long duration = track.getDuration() / 1000;
+        long minutes = (long) Math.floor((double) duration / 60);
+        long seconds = (long) Math.floor(duration % 60);
+        String length = minutes + ":" + seconds;
+        insert.put(pos ,song(track.getInfo().title, track.getInfo().author, length));
+        object.put("insert", insert);
+        debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
+    }
+
+    public void nextQueue() {
+        object.put("next", "next");
+        debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
+    }
+
+    public void clearQueue() {
+        object.put("clear", "clear");
+        debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
     }
 
     private JSONObject song(String title, String author, String duration) {
@@ -56,5 +90,12 @@ public class AppQueue {
         object.put("author", author);
         object.put("duration", duration);
         return object;
+    }
+
+    private void send() {
+        instance.out.println(object);
+        object.clear();
+        queue.clear();
+        insert.clear();
     }
 }

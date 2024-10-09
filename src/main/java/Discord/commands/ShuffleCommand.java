@@ -41,8 +41,8 @@ public class ShuffleCommand extends BasicCommand {
             server.getTrackScheduler().queue.offer(track);
         }
         server.getAppInstances().forEach(instance -> {
-            AppQueue.debouncer.debounce("appqueue", () ->
-                    instance.getAppQueue().updateQueue(), 1, TimeUnit.SECONDS);
+            instance.getAppQueue().clearQueue();
+            instance.getAppQueue().initQueue();
         });
     }
 }

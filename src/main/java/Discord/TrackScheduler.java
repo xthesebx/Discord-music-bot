@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This class schedules tracks for the audio player. It contains the queue of tracks.
@@ -77,8 +76,7 @@ public class TrackScheduler extends AudioEventAdapter {
 		}
 		server.getDc().stopTimer();
 		server.getAppInstances().forEach(instance -> {
-		AppQueue.debouncer.debounce("appqueue", () ->
-			instance.getAppQueue().updateQueue(), 1, TimeUnit.SECONDS);
+			instance.getAppQueue().addQueue(track);
 		});
 	}
 
@@ -90,8 +88,7 @@ public class TrackScheduler extends AudioEventAdapter {
 		}
 		server.getDc().stopTimer();
 		server.getAppInstances().forEach(instance -> {
-			AppQueue.debouncer.debounce("appqueue", () ->
-				instance.getAppQueue().updateQueue(), 1, TimeUnit.SECONDS);
+			instance.getAppQueue().insertQueue(track, String.valueOf(queue2.size() - 2));
 		});
 	}
 	
@@ -124,8 +121,7 @@ public class TrackScheduler extends AudioEventAdapter {
 			server.getDc().startTimer();
 		}
 		server.getAppInstances().forEach(instance -> {
-			AppQueue.debouncer.debounce("appqueue", () ->
-				instance.getAppQueue().updateQueue(), 1, TimeUnit.SECONDS);
+			instance.getAppQueue().nextQueue();
 		});
 	}
 	
@@ -143,8 +139,7 @@ public class TrackScheduler extends AudioEventAdapter {
 		} else {
 			queue.clear();
 			server.getAppInstances().forEach(instance -> {
-				AppQueue.debouncer.debounce("appqueue", () ->
-					instance.getAppQueue().updateQueue(), 1, TimeUnit.SECONDS);
+				instance.getAppQueue().clearQueue();
 			});
 		}
 	}
@@ -183,9 +178,5 @@ public class TrackScheduler extends AudioEventAdapter {
 		for (AudioTrack t : temp) {
 			if (t != null) queue.offer(t);
 		}
-		server.getAppInstances().forEach(instance -> {
-			AppQueue.debouncer.debounce("appqueue", () ->
-					instance.getAppQueue().updateQueue(), 1, TimeUnit.SECONDS);
-		});
 	}
 }

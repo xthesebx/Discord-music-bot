@@ -41,18 +41,7 @@ public class PlayMethods {
         DisconnectTimer dc = server.getDc();
         AudioTrack[] tracks = server.getTracks();
 
-        if (link.startsWith("http://") && (!link.contains("spotify") || link.contains("youtu"))) {
-            try {
-                URL url = new URL("http://playlist.sebgameservers.de");
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.setInstanceFollowRedirects(false);
-                connection.connect();
-                link = connection.getHeaderField("Location");
-            } catch (IOException e) {
-                Logger.error(e);
-            }
-        }
+
         String finalLink = link;
         audioPlayerManager.loadItem(link, new AudioLoadResultHandler() {
             String text;
@@ -141,7 +130,18 @@ public class PlayMethods {
     }
 
     public static void playApp(String link, Server server) {
-
+        if (link.startsWith("http://") && (!link.contains("spotify") || link.contains("youtu"))) {
+            try {
+                URL url = new URL("http://playlist.sebgameservers.de");
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setInstanceFollowRedirects(false);
+                connection.connect();
+                link = connection.getHeaderField("Location");
+            } catch (IOException e) {
+                Logger.error(e);
+            }
+        }
         AudioPlayerManager audioPlayerManager = server.getAudioPlayerManager();
         TrackScheduler trackScheduler = server.getTrackScheduler();
         DisconnectTimer dc = server.getDc();
@@ -164,10 +164,12 @@ public class PlayMethods {
 
             @Override
             public void noMatches() {
+                Logger.debug("no matches");
             }
 
             @Override
             public void loadFailed (FriendlyException e) {
+                Logger.debug("load failed");
             }
         });
     }

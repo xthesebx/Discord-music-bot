@@ -37,7 +37,7 @@ public class AppInstance implements Runnable {
         this.uuid = uuid;
         this.appQueue = new AppQueue(server, this);
         AppQueue.debouncer.debounce("appqueue", () ->
-                appQueue.updateQueue(), 1, TimeUnit.SECONDS);
+                appQueue.initQueue(), 1, TimeUnit.SECONDS);
     }
 
     @Override
