@@ -1,5 +1,6 @@
 package Discord.commands;
 
+import Discord.PlayMethods;
 import Discord.Server;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -40,6 +41,6 @@ public class PlayCommand extends BasicCommand {
             }
         }
         event.deferReply().queue();
-        server.play(link, event);
+        PlayMethods.play(link, event, server);
     }
 }

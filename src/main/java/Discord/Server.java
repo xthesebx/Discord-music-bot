@@ -1,14 +1,11 @@
 package Discord;
 
+import Discord.App.AppInstance;
 import Discord.commands.*;
 import com.github.topi314.lavalyrics.LyricsManager;
-import com.hawolt.logger.Logger;
-import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
-import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
 import dev.lavalink.youtube.clients.*;
@@ -18,14 +15,9 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.managers.AudioManager;
-import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
-import net.dv8tion.jda.api.utils.messages.MessageEditData;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.*;
 
 /**
@@ -132,9 +124,19 @@ public class Server {
     private final TrackScheduler trackScheduler;
     private final AudioPlayerHandler audioPlayerHandler = new AudioPlayerHandler(player);
     private final DisconnectTimer dc;
+
+    public AudioTrack[] getTracks() {
+        return tracks;
+    }
+
     private final AudioTrack[] tracks = new AudioTrack[5];
     private final LyricsManager lyricsManager = new LyricsManager();
+    public final HashMap<UUID, Member> members = new HashMap<>();
+    private final List<AppInstance> appInstances = new ArrayList();
 
+    public List<AppInstance> getAppInstances() {
+        return appInstances;
+    }
 
     public ChatBotListener getChatBotListener() {
         return chatBotListener;
@@ -218,6 +220,43 @@ public class Server {
         return JoinStates.JOINED;
     }
 
+    public JoinStates join (Member member) {
+        //TODO: Monitor, might have some issues doing it regularly or something, sometimes get rate limits out of nowhere
+        dc.startTimer();
+        if (member.getVoiceState().getChannel() == null) {
+            return JoinStates.NOTINVOICE;
+        }
+        if (!guild.getSelfMember().hasPermission(member.getVoiceState().getChannel(), Permission.VOICE_CONNECT)) {
+            // The bot does not have permission to join any voice channel. Don't forget the .queue()!
+            return JoinStates.NOPERMS;
+        }
+        // Creates a variable equal to the channel that the user is in.
+
+        VoiceChannel connectedChannel = member.getVoiceState().getChannel().asVoiceChannel();
+        // Checks if they are in a channel -- not being in a channel means that the variable = null.
+        // Gets the audio manager.
+        if (audioManager.isConnected() && audioManager.getConnectedChannel().asVoiceChannel().equals(connectedChannel)) {
+            return JoinStates.ALREADYCONNECTED;
+        }
+        audioManager.setSendingHandler(audioPlayerHandler);
+        // Connects to the channel.
+        audioManager.openAudioConnection(connectedChannel);
+        // Obviously people do not notice someone/something connecting.
+        return JoinStates.JOINED;
+    }
+
+    public void leave() {
+        if (!audioManager.isConnected()) {
+            return;
+        }
+        // Disconnect from the channel.
+        audioManager.closeAudioConnection();
+        // Notify the user.
+        player.stopTrack();
+        dc.stopTimer();
+        if (trackScheduler.repeating) trackScheduler.toggleRepeat();
+    }
+
     /**
      * creating the Command responses for the SlashCommandInteractionEvents
      *
@@ -273,115 +312,7 @@ public class Server {
         }
     }
 
-    /**
-     * to play the actual thingy
-     *
-     * @param link link or songtitle to search for/play
-     * @param event is the event, either buttoninteraction or slashcommandinteraction
-     */
-    public void play(String link, SlashCommandInteractionEvent event) {
-        play(link, event, 0);
-    }
+    public void updateAppQueue() {
 
-    /**
-     * to play the actual thingy
-     *
-     * @param link link or songtitle to search for/play
-     * @param event is the event, either buttoninteraction or slashcommandinteraction
-     * @param retries number of iterations
-     */
-    public void play(String link, SlashCommandInteractionEvent event, int retries) {
-        if (link.startsWith("http://") && (!link.contains("spotify") || link.contains("youtu"))) {
-            try {
-                URL url = new URL("http://playlist.sebgameservers.de");
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.setInstanceFollowRedirects(false);
-                connection.connect();
-                link = connection.getHeaderField("Location");
-            } catch (IOException e) {
-                Logger.error(e);
-            }
-        }
-        String finalLink = link;
-        audioPlayerManager.loadItem(link, new AudioLoadResultHandler() {
-            String text;
-
-            @Override
-            public void trackLoaded (AudioTrack audioTrack) {
-                trackScheduler.queue(audioTrack);
-                text = "```Added \"" + audioTrack.getInfo().title + "\" by " + audioTrack.getInfo().author + " to Queue```";
-                event.getHook().editOriginal(text).queue();
-            }
-
-            @Override
-            public void playlistLoaded (AudioPlaylist audioPlaylist) {
-                if (finalLink.startsWith("ytsearch:") || finalLink.startsWith("ytmsearch:") || finalLink.startsWith("spsearch:")) {
-                    dc.stopTimer();
-                    int x = 5;
-                    if (audioPlaylist.getTracks().size() < x) x = audioPlaylist.getTracks().size();
-                    Button[] rows = new Button[x];
-                    List<AudioTrack> list = audioPlaylist.getTracks();
-                    for (int i = 0; i < x; i++) {
-                        AudioTrack track = list.get(i);
-                        tracks[i] = track;
-                        String title = track.getInfo().title;
-                        String author = track.getInfo().author;
-                        if ((title.length() + author.length()) > 76)
-                            rows[i] = Button.primary(String.valueOf(i), title.substring(0, 75 - author.length()) + " by " + author);
-                        else
-                            rows[i] = Button.primary(String.valueOf(i), track.getInfo().title + " by " + track.getInfo().author);
-                    }
-                    MessageEditData messageEditData = new MessageEditBuilder().setActionRow(rows).setContent("Which one?").build();
-                    event.getHook().editOriginal(messageEditData).queue();
-                    return;
-                }
-
-                for (AudioTrack track : audioPlaylist.getTracks()) {
-                    trackScheduler.queue(track);
-                }
-                text = "```Added \"" + audioPlaylist.getName() + "\" to Queue```";
-                event.getHook().editOriginal(text).queue();
-            }
-
-            @Override
-            public void noMatches() {
-                event.getHook().editOriginal("Could not find a song under that link or with that name. To search YouTube use \"ytsearch:\" as prefix for normal videos " +
-                        "and \"ytmsearch:\" for YouTube Music search. You can also search on Spotify with \"spsearch:\".").queue();
-            }
-
-            @Override
-            public void loadFailed (FriendlyException e) {
-                if (retries < 5) play(finalLink, event, retries+1);
-                else event.getHook().editOriginal(e.getMessage()).queue();
-            }
-        });
-    }
-
-    /**
-     * for usage in streamer mode
-     * @param link link to song request
-     */
-
-    public void play(String link) {
-        audioPlayerManager.loadItem(link, new AudioLoadResultHandler() {
-
-            @Override
-            public void trackLoaded (AudioTrack audioTrack) {
-                trackScheduler.request(audioTrack);
-            }
-
-            @Override
-            public void playlistLoaded (AudioPlaylist audioPlaylist) {
-            }
-
-            @Override
-            public void noMatches() {
-            }
-
-            @Override
-            public void loadFailed (FriendlyException e) {
-            }
-        });
     }
 }

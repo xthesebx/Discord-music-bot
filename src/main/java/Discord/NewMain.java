@@ -1,5 +1,6 @@
 package Discord;
 
+import Discord.App.AppListener;
 import com.hawolt.logger.Logger;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -31,11 +32,11 @@ public class NewMain extends ListenerAdapter {
      * Constant <code>spdc</code>
      * Constant <code>apikey</code> */
     public static String clientid, clientsecret, spdc, apikey;
-    public static final StreamerHotkeyListener streamerHotkeyListener;
+    public static final AppListener APP_LISTENER;
 
     static {
         try {
-            streamerHotkeyListener = new StreamerHotkeyListener();
+            APP_LISTENER = new AppListener();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

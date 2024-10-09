@@ -1,14 +1,18 @@
 package Discord;
 
+import Discord.App.AppQueue;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This class schedules tracks for the audio player. It contains the queue of tracks.
@@ -72,6 +76,10 @@ public class TrackScheduler extends AudioEventAdapter {
 				this.track = track.makeClone();
 		}
 		server.getDc().stopTimer();
+		server.getAppInstances().forEach(instance -> {
+		AppQueue.debouncer.debounce("appqueue", () ->
+			instance.getAppQueue().updateQueue(), 1, TimeUnit.SECONDS);
+		});
 	}
 
 	public void request(AudioTrack track) {
@@ -81,6 +89,10 @@ public class TrackScheduler extends AudioEventAdapter {
 			this.track = track.makeClone();
 		}
 		server.getDc().stopTimer();
+		server.getAppInstances().forEach(instance -> {
+			AppQueue.debouncer.debounce("appqueue", () ->
+				instance.getAppQueue().updateQueue(), 1, TimeUnit.SECONDS);
+		});
 	}
 	
 	/**
@@ -111,6 +123,10 @@ public class TrackScheduler extends AudioEventAdapter {
 		if (track == null) {
 			server.getDc().startTimer();
 		}
+		server.getAppInstances().forEach(instance -> {
+			AppQueue.debouncer.debounce("appqueue", () ->
+				instance.getAppQueue().updateQueue(), 1, TimeUnit.SECONDS);
+		});
 	}
 	
 	/**
@@ -126,6 +142,10 @@ public class TrackScheduler extends AudioEventAdapter {
 			return;
 		} else {
 			queue.clear();
+			server.getAppInstances().forEach(instance -> {
+				AppQueue.debouncer.debounce("appqueue", () ->
+					instance.getAppQueue().updateQueue(), 1, TimeUnit.SECONDS);
+			});
 		}
 	}
 
@@ -141,5 +161,31 @@ public class TrackScheduler extends AudioEventAdapter {
 			tracks.add(player.getPlayingTrack());
 			queue.drainTo(tracks);
 		}
+	}
+
+	public void removeFromQueue (JSONArray id) {
+		AudioTrack[] temp2 = new AudioTrack[queue2.size()];
+		AudioTrack[] temp = new AudioTrack[queue.size()];
+		queue2.toArray(temp2);
+		queue2.clear();
+		queue.toArray(temp);
+		queue.clear();
+
+		id.forEach(o -> {
+					int i = (int) o;
+					if (i < temp2.length) {
+						temp2[i] = null;
+					} else temp[i - temp2.length] = null;
+				});
+		for (AudioTrack t : temp2) {
+			if (t != null) queue2.offer(t);
+		}
+		for (AudioTrack t : temp) {
+			if (t != null) queue.offer(t);
+		}
+		server.getAppInstances().forEach(instance -> {
+			AppQueue.debouncer.debounce("appqueue", () ->
+					instance.getAppQueue().updateQueue(), 1, TimeUnit.SECONDS);
+		});
 	}
 }

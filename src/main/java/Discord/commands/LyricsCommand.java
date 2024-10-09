@@ -33,7 +33,6 @@ public class LyricsCommand extends BasicCommand {
                     event.getChannel().asTextChannel().sendMessage(lyrics + "```").queue();
                     lyrics = new StringBuilder("```");
                 }
-                Logger.debug(line.getLine());
                 lyrics.append(line.getLine()).append("\n");
             }
             event.reply(lyrics + "```").queue();

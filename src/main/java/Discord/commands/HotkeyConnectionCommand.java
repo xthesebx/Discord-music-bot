@@ -1,7 +1,7 @@
 package Discord.commands;
 
 import Discord.Server;
-import Discord.StreamerHotkeyListener;
+import Discord.App.AppListener;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.util.UUID;
@@ -16,8 +16,9 @@ public class HotkeyConnectionCommand extends BasicCommand {
     public HotkeyConnectionCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
         UUID uuid = UUID.randomUUID();
-        StreamerHotkeyListener.auth.put(uuid, server);
+        AppListener.auth.put(uuid, server);
         event.reply("send in private chat").queue();
         event.getUser().openPrivateChannel().complete().sendMessage(uuid.toString()).queue();
+        server.members.put(uuid, event.getMember());
     }
 }

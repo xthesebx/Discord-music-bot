@@ -1,5 +1,6 @@
 package Discord.commands;
 
+import Discord.App.AppQueue;
 import Discord.Server;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -7,6 +8,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>ShuffleCommand class.</p>
@@ -24,6 +26,11 @@ public class ShuffleCommand extends BasicCommand {
      */
     public ShuffleCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
+        shuffle(server);
+        event.reply("Shuffled the queue").queue();
+    }
+
+    public static void shuffle(Server server) {
         List<AudioTrack> tracks = new ArrayList<>();
         int size = server.getTrackScheduler().queue.size();
         for (int i = 0; i < size; i ++) {
@@ -33,6 +40,9 @@ public class ShuffleCommand extends BasicCommand {
         for (AudioTrack track : tracks) {
             server.getTrackScheduler().queue.offer(track);
         }
-        event.reply("Shuffled the queue").queue();
+        server.getAppInstances().forEach(instance -> {
+            AppQueue.debouncer.debounce("appqueue", () ->
+                    instance.getAppQueue().updateQueue(), 1, TimeUnit.SECONDS);
+        });
     }
 }
