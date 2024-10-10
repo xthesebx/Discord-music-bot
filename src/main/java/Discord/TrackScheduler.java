@@ -91,7 +91,7 @@ public class TrackScheduler extends AudioEventAdapter {
 		}
 		server.getDc().stopTimer();
 		server.getAppInstances().forEach(instance -> {
-			instance.getAppQueue().insertQueue(track, String.valueOf(queue2.size() - 2));
+			instance.getAppQueue().insertQueue(track, String.valueOf(queue2.size() - 1));
 		});
 	}
 	
