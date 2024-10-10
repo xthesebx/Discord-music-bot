@@ -51,6 +51,7 @@ public class StreamerModeCommands extends BasicCommand {
             }
             if (e instanceof ConnectException) {
                 server.setStreamer(null);
+                event.reply("cant activate StreamerMode").queue();
                 return;
             }
             Logger.error(e);
