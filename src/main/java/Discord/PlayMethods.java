@@ -130,9 +130,9 @@ public class PlayMethods {
     }
 
     public static void playApp(String link, Server server) {
-        if (link.startsWith("http://") && (!link.contains("spotify") || link.contains("youtu"))) {
+        if (link.startsWith("http") && (!link.contains("spotify") || link.contains("youtu"))) {
             try {
-                URL url = new URL("http://playlist.sebgameservers.de");
+                URL url = new URL(link);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setInstanceFollowRedirects(false);
