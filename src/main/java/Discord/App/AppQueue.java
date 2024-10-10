@@ -6,6 +6,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.util.concurrent.TimeUnit;
 
 public class AppQueue {
@@ -32,19 +33,13 @@ public class AppQueue {
         for (AudioTrack e : trackScheduler.queue2) {
             titles[i] = e.getInfo().title;
             authors[i] = e.getInfo().author;
-            long duration = e.getDuration() / 1000;
-            long minutes = (long) Math.floor((double) duration / 60);
-            long seconds = (long) Math.floor(duration % 60);
-            length[i] = minutes + ":" + seconds;
+            length[i] = getLength(e);
             i++;
         }
         for (AudioTrack e : trackScheduler.queue) {
             titles[i] = e.getInfo().title;
             authors[i] = e.getInfo().author;
-            long duration = e.getDuration() / 1000;
-            long minutes = (long) Math.floor((double) duration / 60);
-            long seconds = (long) Math.floor(duration % 60);
-            length[i] = minutes + ":" + seconds;
+            length[i] = getLength(e);
             i++;
         }
         for (int j = 0; j < size; j++) {
@@ -55,20 +50,14 @@ public class AppQueue {
     }
 
     public void addQueue(AudioTrack track) {
-        long duration = track.getDuration() / 1000;
-        long minutes = (long) Math.floor((double) duration / 60);
-        long seconds = (long) Math.floor(duration % 60);
-        String length = minutes + ":" + seconds;
+        String length = getLength(track);
         queue.put(song(track.getInfo().title, track.getInfo().author, length));
         object.put("queue", queue);
         debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
     }
 
     public void insertQueue(AudioTrack track, String pos) {
-        long duration = track.getDuration() / 1000;
-        long minutes = (long) Math.floor((double) duration / 60);
-        long seconds = (long) Math.floor(duration % 60);
-        String length = minutes + ":" + seconds;
+        String length = getLength(track);
         insert.put(pos ,song(track.getInfo().title, track.getInfo().author, length));
         object.put("insert", insert);
         debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
@@ -97,5 +86,13 @@ public class AppQueue {
         object.clear();
         queue.clear();
         insert.clear();
+    }
+
+    private String getLength(AudioTrack track) {
+        long duration = track.getDuration() / 1000;
+        long minutes = (long) Math.floor((double) duration / 60);
+        DecimalFormat format = new DecimalFormat("00");
+        long seconds = (long) Math.floor(duration % 60);
+        return (minutes + ":" + format.format(seconds));
     }
 }

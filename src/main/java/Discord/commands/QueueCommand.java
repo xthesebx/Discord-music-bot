@@ -5,6 +5,8 @@ import Discord.TrackScheduler;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
+import java.text.DecimalFormat;
+
 /**
  * command /queue shows the current queue
  *
@@ -37,8 +39,9 @@ public class QueueCommand extends BasicCommand {
             authors[i] = e.getInfo().author;
             long duration = e.getDuration() / 1000;
             long minutes = (long) Math.floor((double) duration / 60);
+            DecimalFormat format = new DecimalFormat("00");
             long seconds = (long) Math.floor(duration % 60);
-            length[i] = minutes + ":" + seconds;
+            length[i] = minutes + ":" + format.format(seconds);
             i++;
         }
         for (AudioTrack e : trackScheduler.queue) {
@@ -46,8 +49,9 @@ public class QueueCommand extends BasicCommand {
             authors[i] = e.getInfo().author;
             long duration = e.getDuration() / 1000;
             long minutes = (long) Math.floor((double) duration / 60);
+            DecimalFormat format = new DecimalFormat("00");
             long seconds = (long) Math.floor(duration % 60);
-            length[i] = minutes + ":" + seconds;
+            length[i] = minutes + ":" + format.format(seconds);
             i++;
         }
         StringBuilder result = new StringBuilder("```");
