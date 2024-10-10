@@ -15,7 +15,7 @@ public class ChatBotListener {
     private PrintWriter out;
     private BufferedReader in;
     private final Server server;
-
+    public boolean requests = true;
     /**
      * constructor for the tcp listener
      * @param server discord server regarding streamer mode
@@ -43,7 +43,7 @@ public class ChatBotListener {
                 String s = in.readLine();
                 if (s.equals("song?")) {
                     out.println(server.getPlayer().getPlayingTrack().getInfo().uri);
-                } else
+                } else if (requests)
                     PlayMethods.play(s, server);
             } catch (SocketException e) {
                 disconnect();

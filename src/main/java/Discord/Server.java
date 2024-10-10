@@ -291,7 +291,8 @@ public class Server {
             case "lyrics" -> new LyricsCommand(event, this);
             case "streamermode" -> new StreamerModeCommands(event, this);
             case "streamerrole" -> new StreamerRoleCommand(event, this);
-            case "hotkeyconnect" -> new HotkeyConnectionCommand(event, this);
+            case "appconnect" -> new AppConnectionCommand(event, this);
+            case "togglerequests" -> new ToggleRequestCommand(event, this);
         }
     }
 

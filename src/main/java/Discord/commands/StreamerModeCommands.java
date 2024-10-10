@@ -37,7 +37,7 @@ public class StreamerModeCommands extends BasicCommand {
                 server.getChatBotListener().disconnect();
                 return;
             }
-            event.reply("streamermode already in use").queue();
+            event.reply("streamermode already in use by someone else").queue();
         }
         server.setStreamer(event.getMember());
         event.reply("activated StreamerMode").queue();
