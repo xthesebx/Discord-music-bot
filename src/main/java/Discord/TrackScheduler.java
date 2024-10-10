@@ -182,4 +182,28 @@ public class TrackScheduler extends AudioEventAdapter {
 			if (t != null) queue.offer(t);
 		}
 	}
+
+	public void move(int from, int to) {
+		List<AudioTrack> temp = new ArrayList<>();
+		List<AudioTrack> temp2 = new ArrayList<>();
+		temp.addAll(queue);
+		temp2.addAll(queue2);
+		queue.clear();
+		queue2.clear();
+		AudioTrack track;
+		if (from < temp2.size()) {
+			track = temp2.get(from);
+			temp2.remove(from);
+		} else {
+			track = temp.get(from - temp2.size());
+			temp.remove(from - temp2.size());
+		}
+		if (to < temp2.size()) {
+			temp2.add(to, track);
+		} else {
+			temp.add(to - temp2.size(), track);
+		}
+		queue.addAll(temp);
+		queue2.addAll(temp2);
+	}
 }

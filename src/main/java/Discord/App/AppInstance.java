@@ -51,6 +51,12 @@ public class AppInstance implements Runnable {
                     JSONObject object = new JSONObject(s);
                     JSONArray array = object.getJSONArray("delete");
                     server.getTrackScheduler().removeFromQueue(array);
+                } else if (s.startsWith("move ")) {
+                    String fromString = s.substring(s.indexOf(" ") + 1);
+                    int from = Integer.parseInt(fromString.substring(0, fromString.indexOf(" ")));
+                    int to  = Integer.parseInt(fromString.substring(fromString.indexOf(" ") + 1));
+                    server.getTrackScheduler().move(from, to);
+
                 } else {
                     switch (s) {
                         case "playpause" -> {
