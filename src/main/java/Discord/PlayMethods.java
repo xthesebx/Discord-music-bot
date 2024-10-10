@@ -106,12 +106,12 @@ public class PlayMethods {
         AudioPlayerManager audioPlayerManager = server.getAudioPlayerManager();
         TrackScheduler trackScheduler = server.getTrackScheduler();
         DisconnectTimer dc = server.getDc();
-
         audioPlayerManager.loadItem(link, new AudioLoadResultHandler() {
 
             @Override
             public void trackLoaded (AudioTrack audioTrack) {
                 trackScheduler.request(audioTrack);
+                server.getChatBotListener().addedRequest(audioTrack);
                 dc.stopTimer();
             }
 

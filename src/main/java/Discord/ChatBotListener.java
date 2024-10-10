@@ -52,6 +52,7 @@ public class ChatBotListener implements Runnable {
                     out.println(server.getPlayer().getPlayingTrack().getInfo().uri);
                 } else if (requests)
                     PlayMethods.play(s, server);
+                else out.println("requests are currently disabled");
             } catch (IOException e) {
                 if (e instanceof SocketException) {
                     disconnect();
@@ -82,5 +83,9 @@ public class ChatBotListener implements Runnable {
             socket.close();
         } catch (IOException ignored) {
         }
+    }
+
+    public void addedRequest(AudioTrack track) {
+        out.println("added \"" + track.getInfo().title + "\" to queue");
     }
 }

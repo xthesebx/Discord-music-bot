@@ -14,7 +14,8 @@ public class ToggleRequestCommand extends BasicCommand {
      * @param server the server it came from to make things easier
      */
     public ToggleRequestCommand(SlashCommandInteractionEvent event, Server server) {
-        super(event, server);        String roleid = NewMain.read(new File("roles/" + event.getGuild().getId()));
+        super(event, server);
+        String roleid = NewMain.read(new File("roles/" + event.getGuild().getId()));
         if (roleid.isEmpty()) {
             event.reply("setup streamerrole first").queue();
             return;
