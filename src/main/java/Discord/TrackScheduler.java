@@ -68,6 +68,9 @@ public class TrackScheduler extends AudioEventAdapter {
 				queue.offer(track);
 			} else {
 				this.track = track.makeClone();
+				server.getAppInstances().forEach(instance -> {
+					instance.getAppQueue().nextQueue();
+				});
 			}
 		} else {
 			tracks.add(track);
