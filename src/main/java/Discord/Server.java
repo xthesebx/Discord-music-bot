@@ -197,7 +197,9 @@ public class Server {
      */
     public JoinStates join (SlashCommandInteractionEvent event) {
         //TODO: Monitor, might have some issues doing it regularly or something, sometimes get rate limits out of nowhere
-        dc.startTimer();
+        if (player.getPlayingTrack() == null) {
+            dc.startTimer();
+        }
         if (event.getMember().getVoiceState().getChannel() == null) {
             return JoinStates.NOTINVOICE;
         }
@@ -217,15 +219,14 @@ public class Server {
         // Connects to the channel.
         audioManager.openAudioConnection(connectedChannel);
         // Obviously people do not notice someone/something connecting.
-        if (player.getPlayingTrack() != null) {
-            dc.stopTimer();
-        }
         return JoinStates.JOINED;
     }
 
     public JoinStates join (Member member) {
         //TODO: Monitor, might have some issues doing it regularly or something, sometimes get rate limits out of nowhere
-        dc.startTimer();
+        if (player.getPlayingTrack() == null) {
+            dc.startTimer();
+        }
         if (member.getVoiceState().getChannel() == null) {
             return JoinStates.NOTINVOICE;
         }
@@ -245,9 +246,6 @@ public class Server {
         // Connects to the channel.
         audioManager.openAudioConnection(connectedChannel);
         // Obviously people do not notice someone/something connecting.
-        if (player.getPlayingTrack() != null) {
-            dc.stopTimer();
-        }
         return JoinStates.JOINED;
     }
 
@@ -317,9 +315,5 @@ public class Server {
         } catch (NullPointerException e) {
             event.getHook().editOriginal("```Button is from old Bot Task, cant execute it```").queue();
         }
-    }
-
-    public void updateAppQueue() {
-
     }
 }
