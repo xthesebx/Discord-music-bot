@@ -1,6 +1,9 @@
 package Discord;
 
 
+import com.hawolt.logger.Logger;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,12 +12,14 @@ import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketException;
 
-public class ChatBotListener {
+public class ChatBotListener implements Runnable {
+
 
     private Socket socket;
     private PrintWriter out;
     private BufferedReader in;
     private final Server server;
+    private String channel;
     public boolean requests = true;
     /**
      * constructor for the tcp listener
@@ -30,14 +35,16 @@ public class ChatBotListener {
      * @throws IOException because of sockets you know
      */
     public void connect(String channel) throws IOException {
-        try {
-            socket = new Socket("127.0.0.1", 42069);
-        } catch (ConnectException e) {
-            server.setStreamer(null);
-        }
+        this.channel = channel;
+        socket = new Socket("127.0.0.1", 42069);
         out = new PrintWriter(socket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out.println(channel);
+    }
+
+    @Override
+    public void run() {
+        outerloop:
         while(true) {
             try {
                 String s = in.readLine();
@@ -45,16 +52,21 @@ public class ChatBotListener {
                     out.println(server.getPlayer().getPlayingTrack().getInfo().uri);
                 } else if (requests)
                     PlayMethods.play(s, server);
-            } catch (SocketException e) {
-                disconnect();
-                for (int i = 0; i < 5; i++) {
-                    try {
-                        Thread.sleep(i * 1000);
-                    } catch (InterruptedException ignored) {}
-                    connect(channel);
+            } catch (IOException e) {
+                if (e instanceof SocketException) {
+                    disconnect();
+                    for (int i = 1; i < 6; i++) {
+                        try {
+                            Thread.sleep(i * 5000);
+                            Logger.error("trying to reconnect");
+                            connect(channel);
+                            continue outerloop;
+                        } catch (InterruptedException | IOException ignored) {
+                        }
+                    }
+                    server.setStreamer(null);
+                    return;
                 }
-                server.setStreamer(null);
-                return;
             }
         }
     }
@@ -68,6 +80,7 @@ public class ChatBotListener {
         try {
             in.close();
             socket.close();
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
     }
 }
