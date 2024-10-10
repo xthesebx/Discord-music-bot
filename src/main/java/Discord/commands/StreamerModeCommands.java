@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 
 import java.io.File;
 import java.io.IOException;
+import java.net.ConnectException;
 
 /**
  * Guild specific command, can be used in combination with my Twitch request bot to create a bot that plays song requests
@@ -40,15 +41,21 @@ public class StreamerModeCommands extends BasicCommand {
             event.reply("streamermode already in use by someone else").queue();
         }
         server.setStreamer(event.getMember());
-        event.reply("activated StreamerMode").queue();
         server.join(event);
-        new Thread(() -> {
-            try {
-                server.getChatBotListener().connect(event.getOption("twitchaccount").getAsString());
-            } catch (IOException e) {
-                Logger.error(e);
+        try {
+            server.getChatBotListener().connect(event.getOption("twitchaccount").getAsString());
+        } catch (IOException | NullPointerException e) {
+            if (e instanceof NullPointerException) {
+                event.reply("cant activate StreamerMode").queue();
+                return;
             }
-        }).start();
-
+            if (e instanceof ConnectException) {
+                server.setStreamer(null);
+                return;
+            }
+            Logger.error(e);
+        }
+        event.reply("activated StreamerMode").queue();
+        new Thread(server.getChatBotListener()).start();
     }
 }
