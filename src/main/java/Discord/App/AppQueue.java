@@ -4,6 +4,7 @@ import Discord.Server;
 import Discord.TrackScheduler;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DecimalFormat;
@@ -64,7 +65,13 @@ public class AppQueue {
     }
 
     public void nextQueue() {
-        object.put("next", "next");
+        int i = 1;
+        try {
+            i = object.getInt("next") + 1;
+        } catch (JSONException e) {
+
+        }
+        object.put("next", i);
         debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
     }
 

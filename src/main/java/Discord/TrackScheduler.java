@@ -1,6 +1,5 @@
 package Discord;
 
-import Discord.App.AppQueue;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -11,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This class schedules tracks for the audio player. It contains the queue of tracks.
@@ -105,9 +104,7 @@ public class TrackScheduler extends AudioEventAdapter {
 			if (!queue2.isEmpty()) {
 				track = queue2.poll();
 				player.startTrack(track.makeClone(), false);
-				return;
-			}
-			if (queue.isEmpty()) {
+			} else if (queue.isEmpty()) {
 				player.stopTrack();
 				track = null;
 			} else {
@@ -168,12 +165,13 @@ public class TrackScheduler extends AudioEventAdapter {
 		queue2.clear();
 		queue.toArray(temp);
 		queue.clear();
-
+		AtomicInteger j = new AtomicInteger();
 		id.forEach(o -> {
 					int i = (int) o;
 					if (i < temp2.length) {
-						temp2[i] = null;
-					} else temp[i - temp2.length] = null;
+						temp2[i + j.get()] = null;
+					} else temp[i - temp2.length + j.get()] = null;
+					j.getAndIncrement();
 				});
 		for (AudioTrack t : temp2) {
 			if (t != null) queue2.offer(t);
