@@ -21,18 +21,8 @@ public class LeaveCommand extends BasicCommand {
      */
     public LeaveCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
-        this.audioManager = server.getAudioManager();
-        // Checks if the bot is connected to a voice channel.
-        if (!audioManager.isConnected()) {
-            event.reply("Currently not connected to a Voice-Channel").queue();
-            return;
-        }
-        // Disconnect from the channel.
-       audioManager.closeAudioConnection();
-        // Notify the user.
-        event.reply("Disconnected from the voice channel!").queue();
-        server.getPlayer().stopTrack();
-        server.getDc().stopTimer();
-        if (server.getTrackScheduler().repeating) server.getTrackScheduler().toggleRepeat();
+        if (!server.leave()) event.reply("Currently not connected to a Voice-Channel").queue();
+        else event.reply("Disconnected from the voice channel!").queue();
+
     }
 }

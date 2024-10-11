@@ -249,16 +249,18 @@ public class Server {
         return JoinStates.JOINED;
     }
 
-    public void leave() {
+    public boolean leave() {
         if (!audioManager.isConnected()) {
-            return;
+            return false;
         }
         // Disconnect from the channel.
         audioManager.closeAudioConnection();
         // Notify the user.
         player.stopTrack();
         dc.stopTimer();
+        if (player.isPaused()) player.setPaused(false);
         if (trackScheduler.repeating) trackScheduler.toggleRepeat();
+        return true;
     }
 
     /**

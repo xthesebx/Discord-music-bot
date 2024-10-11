@@ -31,6 +31,7 @@ public class StopCommand extends BasicCommand {
         }
         player.stopTrack();
         server.getDc().startTimer();
+        if (server.getPlayer().isPaused()) server.getPlayer().setPaused(false);
         event.reply("Stopped!").queue();
     }
 }
