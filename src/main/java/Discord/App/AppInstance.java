@@ -3,6 +3,7 @@ package Discord.App;
 import Discord.PlayMethods;
 import Discord.Server;
 import Discord.commands.ShuffleCommand;
+import Discord.commands.StreamerModeCommands;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -54,9 +55,11 @@ public class AppInstance implements Runnable {
                 } else if (s.startsWith("move ")) {
                     String fromString = s.substring(s.indexOf(" ") + 1);
                     int from = Integer.parseInt(fromString.substring(0, fromString.indexOf(" ")));
-                    int to  = Integer.parseInt(fromString.substring(fromString.indexOf(" ") + 1));
+                    int to = Integer.parseInt(fromString.substring(fromString.indexOf(" ") + 1));
                     server.getTrackScheduler().move(from, to);
-
+                } else if (s.startsWith("streamer ")) {
+                    String twitchname = s.substring(s.indexOf(" ") + 1);
+                    StreamerModeCommands.setStreamer(server, server.members.get(uuid), twitchname);
                 } else {
                     switch (s) {
                         case "playpause" -> {
@@ -71,6 +74,12 @@ public class AppInstance implements Runnable {
                         }
                         case "leave" -> {
                             server.leave();
+                        }
+                        case "stop" -> {
+                            server.getPlayer().stopTrack();
+                            server.getDc().startTimer();
+                            if (server.getPlayer().isPaused()) server.getPlayer().setPaused(false);
+                            if (server.getTrackScheduler().repeating) server.getTrackScheduler().toggleRepeat();
                         }
                         case "shuffle" -> {
                             ShuffleCommand.shuffle(server);

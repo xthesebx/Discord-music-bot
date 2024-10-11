@@ -3,6 +3,7 @@ package Discord.commands;
 import Discord.NewMain;
 import Discord.Server;
 import com.hawolt.logger.Logger;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.io.File;
@@ -22,41 +23,49 @@ public class StreamerModeCommands extends BasicCommand {
      */
     public StreamerModeCommands(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
-        String roleid = NewMain.read(new File("roles/" + event.getGuild().getId()));
-        if (roleid.isEmpty()) {
-            event.reply("setup streamerrole first").queue();
-            return;
+        switch (setStreamer(server, event.getMember(), event.getOption("twitchaccount").getAsString())) {
+            case NO_STREAMER_ROLE -> event.reply("setup streamerrole first").queue();
+            case NO_STREAMER -> event.reply("you are not a streamer").queue();
+            case DEACTIVATED -> event.reply("deactivated StreamerMode").queue();
+            case RUNNING_BY_SOMEONE -> event.reply("streamermode already in use by someone else").queue();
+            case ERROR -> event.reply("cant activate StreamerMode").queue();
+            case ACTIVATED -> event.reply("activated StreamerMode").queue();
         }
-        if (!event.getMember().getRoles().contains(server.getGuild().getRoleById(roleid))) {
-            event.reply("you are not a streamer").queue();
-            return;
+    }
+
+    public static StreamerFeedback setStreamer(Server server, Member member, String twitchacc) {
+
+        String roleid = NewMain.read(new File("roles/" + server.getGuild().getId()));
+        if (roleid.isEmpty()) {
+            return StreamerFeedback.NO_STREAMER_ROLE;
+        }
+        if (!member.getRoles().contains(server.getGuild().getRoleById(roleid))) {
+            return StreamerFeedback.NO_STREAMER;
         }
         if (server.getStreamer() != null) {
-            if (server.getStreamer().equals(event.getMember())) {
+            if (server.getStreamer().equals(member)) {
                 server.setStreamer(null);
-                event.reply("deactivated StreamerMode").queue();
                 server.getChatBotListener().disconnect();
-                return;
+                return StreamerFeedback.DEACTIVATED;
             }
-            event.reply("streamermode already in use by someone else").queue();
+            return StreamerFeedback.RUNNING_BY_SOMEONE;
         }
-        server.setStreamer(event.getMember());
-        server.join(event);
+        server.setStreamer(member);
+        server.join(member);
         try {
-            server.getChatBotListener().connect(event.getOption("twitchaccount").getAsString());
+            server.getChatBotListener().connect(twitchacc);
         } catch (IOException | NullPointerException e) {
             if (e instanceof NullPointerException) {
-                event.reply("cant activate StreamerMode").queue();
-                return;
+                server.setStreamer(null);
+                return StreamerFeedback.ERROR;
             }
             if (e instanceof ConnectException) {
                 server.setStreamer(null);
-                event.reply("cant activate StreamerMode").queue();
-                return;
+                return StreamerFeedback.ERROR;
             }
             Logger.error(e);
         }
-        event.reply("activated StreamerMode").queue();
         new Thread(server.getChatBotListener()).start();
+        return StreamerFeedback.ACTIVATED;
     }
 }
