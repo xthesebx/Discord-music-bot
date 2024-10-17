@@ -2,6 +2,8 @@ package Discord;
 
 import Discord.App.AppInstance;
 import Discord.commands.*;
+import Discord.playerHandlers.*;
+import Discord.twitchIntegration.ChatBotListener;
 import com.github.topi314.lavalyrics.LyricsManager;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -259,7 +261,7 @@ public class Server {
         player.stopTrack();
         dc.stopTimer();
         if (player.isPaused()) player.setPaused(false);
-        if (trackScheduler.repeating) trackScheduler.toggleRepeat();
+        trackScheduler.repeating = RepeatState.NO_REPEAT;
         return true;
     }
 

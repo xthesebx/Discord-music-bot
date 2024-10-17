@@ -34,11 +34,12 @@ public class ShuffleCommand extends BasicCommand {
         List<AudioTrack> tracks = new ArrayList<>();
         int size = server.getTrackScheduler().queue.size();
         for (int i = 0; i < size; i ++) {
-            tracks.add(server.getTrackScheduler().queue.poll());
+            tracks.add(server.getTrackScheduler().queue.get(0));
+            server.getTrackScheduler().queue.remove(0);
         }
         Collections.shuffle(tracks);
         for (AudioTrack track : tracks) {
-            server.getTrackScheduler().queue.offer(track);
+            server.getTrackScheduler().queue.add(track);
         }
         server.getAppInstances().forEach(instance -> {
             instance.getAppQueue().clearQueue();

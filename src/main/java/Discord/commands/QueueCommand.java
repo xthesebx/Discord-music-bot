@@ -1,7 +1,7 @@
 package Discord.commands;
 
 import Discord.Server;
-import Discord.TrackScheduler;
+import Discord.playerHandlers.TrackScheduler;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 

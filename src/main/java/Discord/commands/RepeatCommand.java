@@ -18,10 +18,10 @@ public class RepeatCommand extends BasicCommand {
      */
     public RepeatCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
-        server.getTrackScheduler().toggleRepeat();
-        if (!server.getTrackScheduler().repeating)
-            event.reply("not repeating anymore").queue();
-        else
-            event.reply("repeating now").queue();
+        switch (server.getTrackScheduler().toggleRepeat()) {
+            case NO_REPEAT -> event.reply("Not Repeating anymore").queue();
+            case REPEAT_QUEUE -> event.reply("Repeating the whole Queue").queue();
+            case REPEAT_SINGLE -> event.reply("Repeating the single Song").queue();
+        }
     }
 }

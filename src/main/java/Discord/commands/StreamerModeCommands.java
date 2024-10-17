@@ -2,6 +2,7 @@ package Discord.commands;
 
 import Discord.NewMain;
 import Discord.Server;
+import Discord.twitchIntegration.StreamerFeedback;
 import com.hawolt.logger.Logger;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;

@@ -1,9 +1,10 @@
 package Discord.App;
 
-import Discord.PlayMethods;
+import Discord.playerHandlers.PlayMethods;
 import Discord.Server;
 import Discord.commands.ShuffleCommand;
 import Discord.commands.StreamerModeCommands;
+import Discord.playerHandlers.RepeatState;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -79,11 +80,12 @@ public class AppInstance implements Runnable {
                             server.getPlayer().stopTrack();
                             server.getDc().startTimer();
                             if (server.getPlayer().isPaused()) server.getPlayer().setPaused(false);
-                            if (server.getTrackScheduler().repeating) server.getTrackScheduler().toggleRepeat();
+                            server.getTrackScheduler().repeating = RepeatState.NO_REPEAT;
                         }
                         case "shuffle" -> {
                             ShuffleCommand.shuffle(server);
                         }
+                        case "repeat" -> out.println(server.getTrackScheduler().toggleRepeat().name());
                     }
                 }
             }

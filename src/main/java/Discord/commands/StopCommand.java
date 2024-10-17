@@ -1,6 +1,7 @@
 package Discord.commands;
 
 import Discord.Server;
+import Discord.playerHandlers.RepeatState;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
@@ -24,7 +25,7 @@ public class StopCommand extends BasicCommand {
     public StopCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
         this.player = server.getPlayer();
-        if (server.getTrackScheduler().repeating) server.getTrackScheduler().toggleRepeat();
+        server.getTrackScheduler().repeating = RepeatState.NO_REPEAT;
         if (player.getPlayingTrack() == null) {
             event.reply("Player already stopped!").queue();
             return;

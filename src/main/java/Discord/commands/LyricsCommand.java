@@ -25,7 +25,7 @@ public class LyricsCommand extends BasicCommand {
         super(event, server);
         StringBuilder lyrics = new StringBuilder("```");
         try {
-            List<AudioLyrics.Line> lines = server.getLyricsManager().loadLyrics(server.getTrackScheduler().track).getLines();
+            List<AudioLyrics.Line> lines = server.getLyricsManager().loadLyrics(server.getPlayer().getPlayingTrack()).getLines();
             assert lines != null;
             for (AudioLyrics.Line line : lines) {
                 if (line.getLine().equals("♪") || line.getLine().isEmpty()) continue;

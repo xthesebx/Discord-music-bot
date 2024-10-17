@@ -1,6 +1,6 @@
 package Discord.commands;
 
-import Discord.PlayMethods;
+import Discord.playerHandlers.PlayMethods;
 import Discord.Server;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;

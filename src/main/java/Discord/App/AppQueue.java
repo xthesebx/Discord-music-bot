@@ -1,7 +1,7 @@
 package Discord.App;
 
 import Discord.Server;
-import Discord.TrackScheduler;
+import Discord.playerHandlers.TrackScheduler;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,49 +17,64 @@ public class AppQueue {
     TrackScheduler trackScheduler;
     JSONObject object = new JSONObject(), insert = new JSONObject();
     JSONArray queue = new JSONArray();
+    Server server;
 
     public AppQueue(Server server, AppInstance instance) {
         this.trackScheduler = server.getTrackScheduler();
         this.instance = instance;
+        this.server = server;
     }
 
 
 
     public void initQueue() {
-        int size = trackScheduler.queue.size() + trackScheduler.queue2.size();
+        int size = trackScheduler.queue.size() - trackScheduler.i + trackScheduler.queue2.size() + 1;
         String[] titles = new String[size];
         String[] authors = new String[size];
         String[] length = new String[size];
-        int i = 0;
+        String[] urls = new String[size];
+        titles[0] = server.getPlayer().getPlayingTrack().getInfo().title;
+        authors[0] = server.getPlayer().getPlayingTrack().getInfo().author;
+        length[0] = getLength(server.getPlayer().getPlayingTrack());
+        urls[0] = server.getPlayer().getPlayingTrack().getInfo().uri;
+        int i = 1;
         for (AudioTrack e : trackScheduler.queue2) {
             titles[i] = e.getInfo().title;
             authors[i] = e.getInfo().author;
             length[i] = getLength(e);
+            urls[i] = e.getInfo().uri;
             i++;
         }
+        int j = 0;
         for (AudioTrack e : trackScheduler.queue) {
+            if (j < trackScheduler.i) {
+                j++;
+                continue;
+            };
             titles[i] = e.getInfo().title;
             authors[i] = e.getInfo().author;
             length[i] = getLength(e);
+            urls[i] = e.getInfo().uri;
             i++;
         }
-        for (int j = 0; j < size; j++) {
-            queue.put(song(titles[j], authors[j], length[j]));
+        for (j = 0; j < size; j++) {
+            queue.put(song(titles[j], authors[j], length[j], urls[j]));
         }
         object.put("queue", queue);
         debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
+        nextQueue();
     }
 
     public void addQueue(AudioTrack track) {
         String length = getLength(track);
-        queue.put(song(track.getInfo().title, track.getInfo().author, length));
+        queue.put(song(track.getInfo().title, track.getInfo().author, length, track.getInfo().uri));
         object.put("queue", queue);
         debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
     }
 
     public void insertQueue(AudioTrack track, String pos) {
         String length = getLength(track);
-        insert.put(pos ,song(track.getInfo().title, track.getInfo().author, length));
+        insert.put(pos ,song(track.getInfo().title, track.getInfo().author, length, track.getInfo().uri));
         object.put("insert", insert);
         debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
     }
@@ -80,11 +95,12 @@ public class AppQueue {
         debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
     }
 
-    private JSONObject song(String title, String author, String duration) {
+    private JSONObject song(String title, String author, String duration, String url) {
         JSONObject object = new JSONObject();
         object.put("title", title);
         object.put("author", author);
         object.put("duration", duration);
+        object.put("url", url);
         return object;
     }
 
