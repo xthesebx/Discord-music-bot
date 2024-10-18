@@ -155,18 +155,25 @@ public class Server {
         this.guild = guild;
         guildId = guild.getId();
         volume = readVolume();
-        YoutubeAudioSourceManager ytsrc = new YoutubeAudioSourceManager(true, new WebWithThumbnail(), new AndroidMusicWithThumbnail(), new TvHtml5EmbeddedWithThumbnail(), new MusicWithThumbnail());
+        //web issues for a lot of songs
+        // new AndroidMusicWithThumbnail() works partly for songs and for spotify
+        // new IOSWithThumbnail works for yt vids
+        // music for ytmusic search
+        //tvhtml5 for ytsearch
+        //i think thats it for now? seems like web was broken, replaced with ios
+        //can create new ClientOptions for clients to disable certain features when broken, need working ones for everything tho
+
+        YoutubeAudioSourceManager ytsrc = new YoutubeAudioSourceManager(true, new TvHtml5EmbeddedWithThumbnail(), new IosWithThumbnail(), new AndroidMusicWithThumbnail(), new MusicWithThumbnail());
         audioPlayerManager.registerSourceManager(ytsrc);
         //???? other clients work, i guess i just do this for now
         SpotifySourceManager spsrc = new SpotifySourceManager(null, NewMain.clientid, NewMain.clientsecret, "de", audioPlayerManager, NewMain.spdc);
         audioPlayerManager.registerSourceManager(spsrc);
         lyricsManager.registerLyricsManager(spsrc);
         /*
-         * okay wtf i gotta rant:
-         * WHY TF IS THIS DEPENDANT ON THE YOUTUBE SOURCE MANAGER?!?!?
-         * FIXING THE FIRST ONE FIXED SPOTIFY FOR NO REASON
-         * ?????????????????????????????????????????????????????????????????????????????????????????????????????????
-         * I DONT GET IT; IT MAKES 0 SENSE
+        I understand now
+        The SpotifySourceManager just searches the spotify songs on youtube and plays those
+        what a nice way to do it man, wtf am i witnessing lol
+        can play localfiles too tho if wanted, not integrated rn
          */
 
         this.audioManager = guild.getAudioManager();
