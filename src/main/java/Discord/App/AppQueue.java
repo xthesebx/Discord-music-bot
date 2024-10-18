@@ -28,6 +28,8 @@ public class AppQueue {
 
 
     public void initQueue() {
+        repeat();
+        volume();
         int size = trackScheduler.queue.size() - trackScheduler.i + trackScheduler.queue2.size() + 1;
         String[] titles = new String[size];
         String[] authors = new String[size];
@@ -117,5 +119,15 @@ public class AppQueue {
         DecimalFormat format = new DecimalFormat("00");
         long seconds = (long) Math.floor(duration % 60);
         return (minutes + ":" + format.format(seconds));
+    }
+
+    public void repeat() {
+        object.put("repeat", server.getTrackScheduler().repeating);
+        debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
+    }
+
+    public void volume() {
+        object.put("volume", server.getPlayer().getVolume());
+        debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
     }
 }
