@@ -33,7 +33,7 @@ public class TrackScheduler extends AudioEventAdapter {
 	 * boolean if its repeating mode
 	 */
 	public RepeatState repeating = RepeatState.NO_REPEAT;
-	public int i = 0;
+	public int i = 1;
 	/**
 	 * <p>Constructor for TrackScheduler.</p>
 	 *
@@ -199,5 +199,16 @@ public class TrackScheduler extends AudioEventAdapter {
 		}
 		queue.addAll(temp);
 		queue2.addAll(temp2);
+	}
+
+	public void previousTrack() {
+		if (i < 2) return;
+		i--;
+		i--;
+		server.getAppInstances().forEach(instance -> {
+			instance.getAppQueue().insertQueue(queue.get(i), "0");
+			instance.getAppQueue().insertQueue(queue.get(i + 1), "1");
+		});
+		nextTrack();
 	}
 }
