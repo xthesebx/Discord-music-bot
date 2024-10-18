@@ -295,6 +295,7 @@ public class Server {
             case "streamerrole" -> new StreamerRoleCommand(event, this);
             case "appconnect" -> new AppConnectionCommand(event, this);
             case "togglerequests" -> new ToggleRequestCommand(event, this);
+            case "previous" -> new PrevCommand(event, this);
         }
     }
 
