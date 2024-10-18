@@ -151,6 +151,7 @@ public class TrackScheduler extends AudioEventAdapter {
 			case REPEAT_QUEUE -> repeating = RepeatState.REPEAT_SINGLE;
 			case REPEAT_SINGLE -> repeating = RepeatState.NO_REPEAT;
 		}
+		server.getAppInstances().forEach(instance -> instance.getAppQueue().repeat());
 		return repeating;
 	}
 
