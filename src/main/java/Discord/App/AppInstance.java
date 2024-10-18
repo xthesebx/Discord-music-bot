@@ -61,6 +61,10 @@ public class AppInstance implements Runnable {
                 } else if (s.startsWith("streamer ")) {
                     String twitchname = s.substring(s.indexOf(" ") + 1);
                     StreamerModeCommands.setStreamer(server, server.members.get(uuid), twitchname);
+                } else if (s.startsWith("volume ")) {
+                    String volume = s.substring(s.indexOf(" ") + 1);
+                    server.getPlayer().setVolume(Integer.parseInt(volume));
+                    appQueue.volume();
                 } else {
                     switch (s) {
                         case "playpause" -> {
@@ -85,7 +89,9 @@ public class AppInstance implements Runnable {
                         case "shuffle" -> {
                             ShuffleCommand.shuffle(server);
                         }
-                        case "repeat" -> out.println(server.getTrackScheduler().toggleRepeat().name());
+                        case "repeat" -> server.getTrackScheduler().toggleRepeat();
+                        case "prevtrack" -> server.getTrackScheduler().previousTrack();
+                        case "toggle" -> server.getChatBotListener().requests = !server.getChatBotListener().requests;
                     }
                 }
             }
