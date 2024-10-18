@@ -35,6 +35,7 @@ public class VolumeCommand extends BasicCommand {
             event.reply("Setting the volume to " + volString).queue();
             server.getPlayer().setVolume(volumeInt);
             server.setVolume(volumeInt);
+            server.getAppInstances().forEach(appInstance -> appInstance.getAppQueue().volume());
             NewMain.write(volString, new File("volumes/" + server.getGuildId()));
         } catch (NumberFormatException e) {
             event.reply("Failed to set volume to " + volString + ".\nPlease use a legal Integer Value! (max 2147483647)").queue();
