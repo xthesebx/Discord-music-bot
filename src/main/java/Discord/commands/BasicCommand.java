@@ -16,7 +16,6 @@ public abstract class BasicCommand {
     TextChannel channel;
     SlashCommandInteractionEvent event;
     Server server;
-    ButtonInteractionEvent buttonEvent;
 
     /**
      * <p>Constructor for BasicCommand.</p>
