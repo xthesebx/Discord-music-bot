@@ -15,9 +15,6 @@
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-databind/2.17.2/jackson-databind-2.17.2.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/hawolt/hawolt-core/IO/898c981f5b/IO-898c981f5b.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/hawolt/hawolt-core/Logger/898c981f5b/Logger-898c981f5b.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/lavalink-devs/lavaplayer/lava-common/2.2.1/lava-common-2.2.1.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/lavalink-devs/lavaplayer/lavaplayer-natives/2.2.1/lavaplayer-natives-2.2.1.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/lavalink-devs/lavaplayer/lavaplayer/2.2.1/lavaplayer-2.2.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/topi314/lavalyrics/lavalyrics/1.0.0/lavalyrics-1.0.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/topi314/lavasearch/lavasearch/1.0.0/lavasearch-1.0.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/topi314/lavasrc/lavasrc/4.2.0/lavasrc-4.2.0.jar" path-in-jar="/" />
