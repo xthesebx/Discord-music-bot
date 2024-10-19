@@ -61,6 +61,9 @@
       <element id="extracted-dir" path="$PROJECT_DIR$/libs/youtube-common-1.8.3.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/libs/youtube-v2-1.8.3.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/libs/lavasrc-4.3.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/lavalink-devs/lavaplayer/lava-common/2.2.2/lava-common-2.2.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/lavalink-devs/lavaplayer/lavaplayer-natives/2.2.2/lavaplayer-natives-2.2.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/lavalink-devs/lavaplayer/lavaplayer/2.2.2/lavaplayer-2.2.2.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

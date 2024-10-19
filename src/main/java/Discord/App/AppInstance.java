@@ -40,14 +40,14 @@ public class AppInstance implements Runnable {
         this.server = server;
         this.uuid = uuid;
         this.appQueue = new AppQueue(server, this);
-        if (server.getAudioManager().getConnectedChannel() != null)
-            setChannel(server.getAudioManager().getConnectedChannel().getJumpUrl());
-        AppQueue.debouncer.debounce("appqueue", () ->
-                appQueue.initQueue(), 1, TimeUnit.SECONDS);
     }
 
     @Override
     public void run() {
+        if (server.getAudioManager().getConnectedChannel() != null)
+            setChannel(server.getAudioManager().getConnectedChannel().getJumpUrl());
+        AppQueue.debouncer.debounce("appqueue", () ->
+                appQueue.initQueue(), 1, TimeUnit.SECONDS);
         String s;
         try {
             while ((s = in.readLine()) != null) {
