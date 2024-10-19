@@ -104,6 +104,7 @@ public class AppInstance implements Runnable {
 
     public void close() {
         try {
+            out.println("close");
             in.close();
             out.close();
             clientSocket.close();

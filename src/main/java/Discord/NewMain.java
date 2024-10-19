@@ -26,7 +26,7 @@ import java.util.TimeZone;
  */
 public class NewMain extends ListenerAdapter {
     private final JDA jda;
-    private final HashMap<String, Server> map = new HashMap<>();
+    public final HashMap<String, Server> map = new HashMap<>();
     /** Constant <code>clientid</code>
      * Constant <code>clientsecret</code>
      * Constant <code>spdc</code>
@@ -72,6 +72,7 @@ public class NewMain extends ListenerAdapter {
             map.put(guild.getId(), new Server(guild));
         }
         jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.customStatus("Playing some Banger Music"));
+        Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownHook(this)));
     }
 
     /**
