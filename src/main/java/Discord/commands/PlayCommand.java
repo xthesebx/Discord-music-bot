@@ -29,7 +29,7 @@ public class PlayCommand extends BasicCommand {
         assert optionMapping != null;
         String link = optionMapping.getAsString();
         if (!audioManager.isConnected() || !audioManager.getConnectedChannel().getId().equals(event.getMember().getVoiceState().getChannel().getId())) {
-            switch (server.join(event)) {
+            switch (server.join(event.getMember().getVoiceState().getChannel())) {
                 case NOTINVOICE -> {
                     event.reply("You must be in a Voice-Channel for me to join your Channel!").queue();
                     return;

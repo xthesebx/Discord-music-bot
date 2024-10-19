@@ -1,5 +1,6 @@
 package Discord.App;
 
+import Discord.commands.VolumeCommand;
 import Discord.playerHandlers.PlayMethods;
 import Discord.Server;
 import Discord.commands.ShuffleCommand;
@@ -39,6 +40,8 @@ public class AppInstance implements Runnable {
         this.server = server;
         this.uuid = uuid;
         this.appQueue = new AppQueue(server, this);
+        if (server.getAudioManager().getConnectedChannel() != null)
+            setChannel(server.getAudioManager().getConnectedChannel().getJumpUrl());
         AppQueue.debouncer.debounce("appqueue", () ->
                 appQueue.initQueue(), 1, TimeUnit.SECONDS);
     }
@@ -64,8 +67,7 @@ public class AppInstance implements Runnable {
                     StreamerModeCommands.setStreamer(server, server.members.get(uuid), twitchname);
                 } else if (s.startsWith("volume ")) {
                     String volume = s.substring(s.indexOf(" ") + 1);
-                    server.getPlayer().setVolume(Integer.parseInt(volume));
-                    appQueue.volume();
+                    VolumeCommand.setVolume(server, Integer.parseInt(volume));
                 } else {
                     switch (s) {
                         case "playpause" -> {
@@ -76,7 +78,7 @@ public class AppInstance implements Runnable {
                             server.getTrackScheduler().nextTrack();
                         }
                         case "join" -> {
-                            server.join(server.members.get(uuid));
+                            server.join(server.members.get(uuid).getVoiceState().getChannel());
                         }
                         case "leave" -> {
                             server.leave();
@@ -86,6 +88,7 @@ public class AppInstance implements Runnable {
                             server.getDc().startTimer();
                             if (server.getPlayer().isPaused()) server.getPlayer().setPaused(false);
                             server.getTrackScheduler().repeating = RepeatState.NO_REPEAT;
+                            setIdlePresence();
                         }
                         case "shuffle" -> {
                             ShuffleCommand.shuffle(server);
@@ -118,5 +121,13 @@ public class AppInstance implements Runnable {
         } catch (IOException e) {
             Logger.error(e);
         }
+    }
+
+    public void setIdlePresence() {
+        out.println("idle");
+    }
+
+    public void setChannel(String channel) {
+        out.println("channel " + channel);
     }
 }

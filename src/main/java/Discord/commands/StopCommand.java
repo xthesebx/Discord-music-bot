@@ -1,5 +1,6 @@
 package Discord.commands;
 
+import Discord.App.AppInstance;
 import Discord.Server;
 import Discord.playerHandlers.RepeatState;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -33,6 +34,7 @@ public class StopCommand extends BasicCommand {
         player.stopTrack();
         server.getDc().startTimer();
         if (server.getPlayer().isPaused()) server.getPlayer().setPaused(false);
+        server.getAppInstances().forEach(AppInstance::setIdlePresence);
         event.reply("Stopped!").queue();
     }
 }

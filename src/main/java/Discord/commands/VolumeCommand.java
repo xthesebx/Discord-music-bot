@@ -33,10 +33,7 @@ public class VolumeCommand extends BasicCommand {
         try {
             int volumeInt = Integer.parseInt(volString);
             event.reply("Setting the volume to " + volString).queue();
-            server.getPlayer().setVolume(volumeInt);
-            server.setVolume(volumeInt);
-            server.getAppInstances().forEach(appInstance -> appInstance.getAppQueue().volume());
-            NewMain.write(volString, new File("volumes/" + server.getGuildId()));
+            setVolume(server, volumeInt);
         } catch (NumberFormatException e) {
             event.reply("Failed to set volume to " + volString + ".\nPlease use a legal Integer Value! (max 2147483647)").queue();
         } catch (Exception e) {
@@ -44,5 +41,13 @@ public class VolumeCommand extends BasicCommand {
             event.reply("Failed to set volume to " + volString + ".").queue();
             event.getJDA().retrieveUserById("277064996264083456").complete().openPrivateChannel().complete().sendMessage(e.toString()).queue();
         }
+    }
+
+    public static void setVolume(Server server, int volume) {
+        server.getPlayer().setVolume(volume);
+        server.setVolume(volume);
+        server.getAppInstances().forEach(appInstance -> appInstance.getAppQueue().volume());
+        NewMain.write(String.valueOf(volume), new File("volumes/" + server.getGuildId()));
+        server.getAppInstances().forEach(instance -> instance.getAppQueue().volume());
     }
 }

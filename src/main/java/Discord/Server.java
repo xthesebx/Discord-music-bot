@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -198,27 +199,21 @@ public class Server {
         return Integer.parseInt(NewMain.read(f));
     }
 
-    /**
-     * join function to join channels
-     *
-     * @param event event of the channel to join
-     * @return the JoinState so we know what happened/how it went
-     */
-    public JoinStates join (SlashCommandInteractionEvent event) {
+    public JoinStates join (AudioChannelUnion channel) {
         //TODO: Monitor, might have some issues doing it regularly or something, sometimes get rate limits out of nowhere
         if (player.getPlayingTrack() == null) {
             dc.startTimer();
         }
-        if (event.getMember().getVoiceState().getChannel() == null) {
+        if (channel == null) {
             return JoinStates.NOTINVOICE;
         }
-        if (!guild.getSelfMember().hasPermission(event.getMember().getVoiceState().getChannel(), Permission.VOICE_CONNECT)) {
+        if (!guild.getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT)) {
             // The bot does not have permission to join any voice channel. Don't forget the .queue()!
             return JoinStates.NOPERMS;
         }
         // Creates a variable equal to the channel that the user is in.
 
-        VoiceChannel connectedChannel = event.getMember().getVoiceState().getChannel().asVoiceChannel();
+        VoiceChannel connectedChannel = channel.asVoiceChannel();
         // Checks if they are in a channel -- not being in a channel means that the variable = null.
         // Gets the audio manager.
         if (audioManager.isConnected() && audioManager.getConnectedChannel().asVoiceChannel().equals(connectedChannel)) {
@@ -228,33 +223,7 @@ public class Server {
         // Connects to the channel.
         audioManager.openAudioConnection(connectedChannel);
         // Obviously people do not notice someone/something connecting.
-        return JoinStates.JOINED;
-    }
-
-    public JoinStates join (Member member) {
-        //TODO: Monitor, might have some issues doing it regularly or something, sometimes get rate limits out of nowhere
-        if (player.getPlayingTrack() == null) {
-            dc.startTimer();
-        }
-        if (member.getVoiceState().getChannel() == null) {
-            return JoinStates.NOTINVOICE;
-        }
-        if (!guild.getSelfMember().hasPermission(member.getVoiceState().getChannel(), Permission.VOICE_CONNECT)) {
-            // The bot does not have permission to join any voice channel. Don't forget the .queue()!
-            return JoinStates.NOPERMS;
-        }
-        // Creates a variable equal to the channel that the user is in.
-
-        VoiceChannel connectedChannel = member.getVoiceState().getChannel().asVoiceChannel();
-        // Checks if they are in a channel -- not being in a channel means that the variable = null.
-        // Gets the audio manager.
-        if (audioManager.isConnected() && audioManager.getConnectedChannel().asVoiceChannel().equals(connectedChannel)) {
-            return JoinStates.ALREADYCONNECTED;
-        }
-        audioManager.setSendingHandler(audioPlayerHandler);
-        // Connects to the channel.
-        audioManager.openAudioConnection(connectedChannel);
-        // Obviously people do not notice someone/something connecting.
+        appInstances.forEach(instance -> instance.setChannel(channel.getJumpUrl()));
         return JoinStates.JOINED;
     }
 
@@ -269,6 +238,7 @@ public class Server {
         dc.stopTimer();
         if (player.isPaused()) player.setPaused(false);
         trackScheduler.repeating = RepeatState.NO_REPEAT;
+        appInstances.forEach(AppInstance::setIdlePresence);
         return true;
     }
 

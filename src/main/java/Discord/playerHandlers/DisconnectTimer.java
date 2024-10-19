@@ -43,9 +43,7 @@ public class DisconnectTimer implements Runnable{
 				if (i < loops) {
 					i++;
 				} else {
-					audioManager.closeAudioConnection();
-					if (server.getPlayer().isPaused()) server.getPlayer().setPaused(false);
-					server.getTrackScheduler().repeating = RepeatState.NO_REPEAT;
+					server.leave();
 				}
 			}
 		}

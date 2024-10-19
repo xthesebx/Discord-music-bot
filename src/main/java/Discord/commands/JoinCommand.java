@@ -19,7 +19,7 @@ public class JoinCommand extends BasicCommand {
      */
     public JoinCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
-        switch (server.join(event)) {
+        switch (server.join(event.getMember().getVoiceState().getChannel())) {
             case ALREADYCONNECTED -> {
                 event.reply("Already connected to that Voice-Channel").queue();
                 return;

@@ -52,7 +52,7 @@ public class StreamerModeCommands extends BasicCommand {
             return StreamerFeedback.RUNNING_BY_SOMEONE;
         }
         server.setStreamer(member);
-        server.join(member);
+        server.join(member.getVoiceState().getChannel());
         try {
             server.getChatBotListener().connect(twitchacc);
         } catch (IOException | NullPointerException e) {
