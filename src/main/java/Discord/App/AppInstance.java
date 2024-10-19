@@ -107,7 +107,6 @@ public class AppInstance implements Runnable {
         close();
         synchronized (server.getAppInstances()) {
             server.getAppInstances().remove(this);
-            Logger.error("remove instance");
         }
     }
 
