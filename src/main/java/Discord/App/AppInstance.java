@@ -5,6 +5,7 @@ import Discord.Server;
 import Discord.commands.ShuffleCommand;
 import Discord.commands.StreamerModeCommands;
 import Discord.playerHandlers.RepeatState;
+import com.hawolt.logger.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -97,21 +98,26 @@ public class AppInstance implements Runnable {
             }
         } catch (IOException e) {
             if (e instanceof SocketException) {
-                close();
+                closeClient();
             }
+        }
+    }
+
+    private void closeClient() {
+        close();
+        synchronized (server.getAppInstances()) {
+            server.getAppInstances().remove(this);
+            Logger.error("remove instance");
         }
     }
 
     public void close() {
         try {
             out.println("close");
-            in.close();
-            out.close();
             clientSocket.close();
             server.members.remove(uuid);
-            server.getAppInstances().remove(this);
         } catch (IOException e) {
-
+            Logger.error(e);
         }
     }
 }
