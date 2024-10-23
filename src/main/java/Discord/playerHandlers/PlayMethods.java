@@ -49,6 +49,7 @@ public class PlayMethods {
 
             @Override
             public void trackLoaded (AudioTrack audioTrack) {
+                dc.stopTimer();
                 trackScheduler.queue(audioTrack);
                 text = "```Added \"" + audioTrack.getInfo().title + "\" by " + audioTrack.getInfo().author + " to Queue```";
                 event.getHook().editOriginal(text).queue();
@@ -56,8 +57,8 @@ public class PlayMethods {
 
             @Override
             public void playlistLoaded (AudioPlaylist audioPlaylist) {
+                dc.stopTimer();
                 if (finalLink.startsWith("ytsearch:") || finalLink.startsWith("ytmsearch:") || finalLink.startsWith("spsearch:")) {
-                    dc.stopTimer();
                     int x = 5;
                     if (audioPlaylist.getTracks().size() < x) x = audioPlaylist.getTracks().size();
                     Button[] rows = new Button[x];
