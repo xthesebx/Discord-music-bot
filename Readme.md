@@ -1,3 +1,3 @@
-to run this project you have to put youtube-common-1.8.3.jar and youtube-v2-1.8.3.jar into a libs dir inside this project. you can download them [here](https://github.com/lavalink-devs/youtube-source/releases). <br>
-you can add the music bot with this [link](https://discord.com/oauth2/authorize?client_id=1178647694923792404). <br> <br>
+To build this project you have to put youtube-common-1.8.3.jar and youtube-v2-1.8.3.jar into a libs dir inside this project. You can download them [here](https://github.com/lavalink-devs/youtube-source/releases). The Project is using Java 17.<br>
+Alternatively, you can simply add the music bot with this [link](https://discord.com/oauth2/authorize?client_id=1178647694923792404). <br> <br>
 The [app](https://github.com/xthesebx/musicbot-app) can be used in combination with this bot and is intended for this bot.
