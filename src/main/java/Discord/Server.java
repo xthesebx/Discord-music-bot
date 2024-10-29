@@ -237,6 +237,10 @@ public class Server {
         player.stopTrack();
         dc.stopTimer();
         if (player.isPaused()) player.setPaused(false);
+        if (streamer != null) {
+            chatBotListener.disconnect();
+            streamer = null;
+        }
         trackScheduler.repeating = RepeatState.NO_REPEAT;
         appInstances.forEach(AppInstance::setIdlePresence);
         return true;
