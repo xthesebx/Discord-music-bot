@@ -1,6 +1,5 @@
 package Discord;
 
-import Discord.App.AppInstance;
 
 public class ShutdownHook implements Runnable {
     NewMain main;
