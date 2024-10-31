@@ -64,14 +64,14 @@ public class NewMain extends ListenerAdapter {
         clientsecret = original.substring(original.indexOf("\n") + 1).substring(0, original.indexOf("\n"));
         spdc = original.substring(original.indexOf("\n") + 1).substring(original.indexOf("\n") + 1);
         apikey = read(new File("apikey.env"));
-        jda = JDABuilder.createDefault(apikey.strip()).enableIntents(GatewayIntent.MESSAGE_CONTENT).enableIntents(GatewayIntent.GUILD_MESSAGES).enableIntents(GatewayIntent.GUILD_MESSAGE_TYPING).setStatus(OnlineStatus.OFFLINE).build();
+        jda = JDABuilder.createDefault(apikey.strip()).enableIntents(GatewayIntent.GUILD_MESSAGES).enableIntents(GatewayIntent.GUILD_MESSAGE_TYPING).setStatus(OnlineStatus.OFFLINE).build();
         jda.addEventListener(this);
         jda.awaitReady();
         for (Guild guild : jda.getGuilds()) {
             Logger.debug(guild.getName());
             map.put(guild.getId(), new Server(guild));
         }
-        jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.customStatus("Playing some Banger Music"));
+        jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.playing("some banger music!"));
         Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownHook(this)));
     }
 
