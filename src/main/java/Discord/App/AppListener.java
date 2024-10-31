@@ -26,6 +26,7 @@ public class AppListener {
             try {
                 while (true) {
                     clientSocket = serverSocket.accept();
+                    Logger.debug(clientSocket.getInetAddress().getAddress());
                     in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                     out = new PrintWriter(clientSocket.getOutputStream(), true);
                     String s = in.readLine();
