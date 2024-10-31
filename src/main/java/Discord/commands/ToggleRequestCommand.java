@@ -1,7 +1,7 @@
 package Discord.commands;
 
-import Discord.NewMain;
 import Discord.Server;
+import com.seb.io.Reader;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.io.File;
@@ -15,7 +15,7 @@ public class ToggleRequestCommand extends BasicCommand {
      */
     public ToggleRequestCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
-        String roleid = NewMain.read(new File("roles/" + event.getGuild().getId()));
+        String roleid = Reader.read(new File("roles/" + event.getGuild().getId()));
         if (roleid.isEmpty()) {
             event.reply("setup streamerrole first").queue();
             return;

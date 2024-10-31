@@ -1,7 +1,7 @@
 package Discord.commands;
 
-import Discord.NewMain;
 import Discord.Server;
+import com.seb.io.Writer;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.io.File;
@@ -15,7 +15,7 @@ public class StreamerRoleCommand extends BasicCommand {
      */
     public StreamerRoleCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
-        NewMain.write(event.getOption("streamerrole").getAsRole().getId(), new File("roles/" + event.getGuild().getId()));
+        Writer.write(event.getOption("streamerrole").getAsRole().getId(), new File("roles/" + event.getGuild().getId()));
         event.reply("set streamer role").queue();
     }
 }

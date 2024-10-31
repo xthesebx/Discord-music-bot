@@ -1,9 +1,9 @@
 package Discord.commands;
 
-import Discord.NewMain;
 import Discord.Server;
 import Discord.twitchIntegration.StreamerFeedback;
 import com.hawolt.logger.Logger;
+import com.seb.io.Reader;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
@@ -35,8 +35,8 @@ public class StreamerModeCommands extends BasicCommand {
     }
 
     public static StreamerFeedback setStreamer(Server server, Member member, String twitchacc) {
-        String roleid = NewMain.read(new File("roles/" + server.getGuild().getId()));
-        if (roleid.equals("null")) {
+        String roleid = Reader.read(new File("roles/" + server.getGuild().getId()));
+        if (roleid == null) {
             return StreamerFeedback.NO_STREAMER_ROLE;
         }
         if (!member.getRoles().contains(server.getGuild().getRoleById(roleid))) {

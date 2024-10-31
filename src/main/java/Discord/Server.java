@@ -5,6 +5,8 @@ import Discord.commands.*;
 import Discord.playerHandlers.*;
 import Discord.twitchIntegration.ChatBotListener;
 import com.github.topi314.lavalyrics.LyricsManager;
+import com.seb.io.Reader;
+import com.seb.io.Writer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -194,9 +196,9 @@ public class Server {
         File f = new File("volumes/" + guildId);
         f.getParentFile().mkdirs();
         if (!f.exists()) {
-            NewMain.write("100", f);
+            Writer.write("100", f);
         }
-        return Integer.parseInt(NewMain.read(f));
+        return Integer.parseInt(Reader.read(f));
     }
 
     public JoinStates join (AudioChannelUnion channel) {

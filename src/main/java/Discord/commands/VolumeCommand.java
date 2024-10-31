@@ -1,8 +1,8 @@
 package Discord.commands;
 
-import Discord.NewMain;
 import Discord.Server;
 import com.hawolt.logger.Logger;
+import com.seb.io.Writer;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
@@ -47,7 +47,7 @@ public class VolumeCommand extends BasicCommand {
         server.getPlayer().setVolume(volume);
         server.setVolume(volume);
         server.getAppInstances().forEach(appInstance -> appInstance.getAppQueue().volume());
-        NewMain.write(String.valueOf(volume), new File("volumes/" + server.getGuildId()));
+        Writer.write(String.valueOf(volume), new File("volumes/" + server.getGuildId()));
         server.getAppInstances().forEach(instance -> instance.getAppQueue().volume());
     }
 }

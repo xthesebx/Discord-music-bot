@@ -2,6 +2,7 @@ package Discord;
 
 import Discord.App.AppListener;
 import com.hawolt.logger.Logger;
+import com.seb.io.Reader;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -59,11 +60,11 @@ public class NewMain extends ListenerAdapter {
      */
     public NewMain() throws InterruptedException, IOException {
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));
-        String original = NewMain.read(new File("spotify.env"));
+        String original = Reader.read(new File("spotify.env"));
         clientid = original.substring(0, original.indexOf("\n"));
         clientsecret = original.substring(original.indexOf("\n") + 1).substring(0, original.indexOf("\n"));
         spdc = original.substring(original.indexOf("\n") + 1).substring(original.indexOf("\n") + 1);
-        apikey = read(new File("apikey.env"));
+        apikey = Reader.read(new File("apikey.env"));
         jda = JDABuilder.createDefault(apikey.strip()).enableIntents(GatewayIntent.GUILD_MESSAGES).enableIntents(GatewayIntent.GUILD_MESSAGE_TYPING).setStatus(OnlineStatus.OFFLINE).build();
         jda.addEventListener(this);
         jda.awaitReady();
@@ -75,74 +76,6 @@ public class NewMain extends ListenerAdapter {
         Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownHook(this)));
     }
 
-    /**
-     * reads text of a file
-     *
-     * @param file the file to read from
-     * @return String builder with text from the File
-     */
-    public static String readJSON(File file) {
-        if (!file.exists()) {
-            try {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
-                writer.write("{}");
-                writer.close();
-            } catch (IOException ignored) {
-            }
-        }
-        return readFinal(file);
-    }
-
-    /**
-     * reads text of a file
-     *
-     * @param file the file to read from
-     * @return String builder with text from the File
-     */
-    public static String read(File file) {
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException ignored) {
-            }
-        }
-        return readFinal(file);
-    }
-
-    private static String readFinal(File file) {
-        StringBuilder text = new StringBuilder();
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(file.getAbsoluteFile()));
-            String temp;
-            temp = reader.readLine();
-            text.append(temp);
-            while (true) {
-                temp = reader.readLine();
-                if (temp == null) break;
-                text.append("\n").append(temp);
-            }
-            reader.close();
-        } catch (IOException ignored) {
-        }
-        return text.toString();
-    }
-
-    /**
-     * write text to a file
-     *
-     * @param text text to write
-     * @param file file to write the text to
-     */
-    public static void write(String text, File file) {
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
-            writer.write(text);
-            writer.close();
-        } catch (FileNotFoundException e) {
-            file.getParentFile().mkdirs();
-            write(text, file);
-        } catch (IOException ignored) {}
-    }
 
     /**
      * {@inheritDoc}
