@@ -35,9 +35,8 @@ public class StreamerModeCommands extends BasicCommand {
     }
 
     public static StreamerFeedback setStreamer(Server server, Member member, String twitchacc) {
-
         String roleid = NewMain.read(new File("roles/" + server.getGuild().getId()));
-        if (roleid.isEmpty()) {
+        if (roleid.equals("null")) {
             return StreamerFeedback.NO_STREAMER_ROLE;
         }
         if (!member.getRoles().contains(server.getGuild().getRoleById(roleid))) {

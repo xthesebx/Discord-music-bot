@@ -81,7 +81,7 @@ public class NewMain extends ListenerAdapter {
      * @param file the file to read from
      * @return String builder with text from the File
      */
-    public static String read (File file) {
+    public static String readJSON(File file) {
         if (!file.exists()) {
             try {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(file.getAbsoluteFile()));
@@ -90,6 +90,26 @@ public class NewMain extends ListenerAdapter {
             } catch (IOException ignored) {
             }
         }
+        return readFinal(file);
+    }
+
+    /**
+     * reads text of a file
+     *
+     * @param file the file to read from
+     * @return String builder with text from the File
+     */
+    public static String read(File file) {
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException ignored) {
+            }
+        }
+        return readFinal(file);
+    }
+
+    private static String readFinal(File file) {
         StringBuilder text = new StringBuilder();
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file.getAbsoluteFile()));
