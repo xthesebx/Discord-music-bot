@@ -25,6 +25,9 @@ public class TrackScheduler extends AudioEventAdapter {
 	 * the queue
 	 */
 	public final List<AudioTrack> queue;
+	/**
+	 * the queue for requests from twitch stream in streamermode
+	 */
 	public final BlockingQueue<AudioTrack> queue2;
 	private final AudioPlayer player;
 	private final Server server;
@@ -33,6 +36,9 @@ public class TrackScheduler extends AudioEventAdapter {
 	 * boolean if its repeating mode
 	 */
 	public RepeatState repeating = RepeatState.NO_REPEAT;
+	/**
+	 * the current position in queue
+	 */
 	public int i = 1;
 	/**
 	 * <p>Constructor for TrackScheduler.</p>
@@ -68,7 +74,8 @@ public class TrackScheduler extends AudioEventAdapter {
 	/**
 	 * Song requests from twitch chat
 	 * get added to sperate queue
-	 * @param track
+	 *
+	 * @param track a {@link com.sedmelluq.discord.lavaplayer.track.AudioTrack} object
 	 */
 	public void request(AudioTrack track) {
 		if (!player.startTrack(track, true)) {
@@ -144,6 +151,8 @@ public class TrackScheduler extends AudioEventAdapter {
 
 	/**
 	 * toggles the repeat functionality
+	 *
+	 * @return a {@link Discord.playerHandlers.RepeatState} object
 	 */
 	public RepeatState toggleRepeat() {
 		switch (repeating) {
@@ -155,6 +164,11 @@ public class TrackScheduler extends AudioEventAdapter {
 		return repeating;
 	}
 
+	/**
+	 * <p>removeFromQueue.</p>
+	 *
+	 * @param id a {@link org.json.JSONArray} object
+	 */
 	public void removeFromQueue (JSONArray id) {
 		AudioTrack[] temp2 = new AudioTrack[queue2.size()];
 		AudioTrack[] temp = new AudioTrack[queue.size()];
@@ -178,6 +192,12 @@ public class TrackScheduler extends AudioEventAdapter {
 		}
 	}
 
+	/**
+	 * <p>move.</p>
+	 *
+	 * @param from a int
+	 * @param to a int
+	 */
 	public void move(int from, int to) {
 		List<AudioTrack> temp = new ArrayList<>();
 		List<AudioTrack> temp2 = new ArrayList<>();
@@ -202,6 +222,9 @@ public class TrackScheduler extends AudioEventAdapter {
 		queue2.addAll(temp2);
 	}
 
+	/**
+	 * <p>previousTrack.</p>
+	 */
 	public void previousTrack() {
 		if (i < 2) return;
 		i--;

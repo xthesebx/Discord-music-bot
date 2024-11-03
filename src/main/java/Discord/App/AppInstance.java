@@ -19,6 +19,12 @@ import java.net.SocketException;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * <p>AppInstance class.</p>
+ *
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
+ */
 public class AppInstance implements Runnable {
 
     Socket clientSocket;
@@ -27,12 +33,26 @@ public class AppInstance implements Runnable {
     Server server;
     UUID uuid;
 
+    /**
+     * <p>Getter for the field <code>appQueue</code>.</p>
+     *
+     * @return a {@link Discord.App.AppQueue} object
+     */
     public AppQueue getAppQueue() {
         return appQueue;
     }
 
     AppQueue appQueue;
 
+    /**
+     * <p>Constructor for AppInstance.</p>
+     *
+     * @param clientSocket a {@link java.net.Socket} object
+     * @param server a {@link Discord.Server} object
+     * @param uuid a {@link java.util.UUID} object
+     * @param out a {@link java.io.PrintWriter} object
+     * @throws java.io.IOException if any.
+     */
     public AppInstance(Socket clientSocket, Server server, UUID uuid, PrintWriter out) throws IOException {
         this.clientSocket = clientSocket;
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -42,6 +62,7 @@ public class AppInstance implements Runnable {
         this.appQueue = new AppQueue(server, this);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void run() {
         if (server.getAudioManager().getConnectedChannel() != null)
@@ -113,6 +134,9 @@ public class AppInstance implements Runnable {
         }
     }
 
+    /**
+     * <p>close.</p>
+     */
     public void close() {
         try {
             out.println("close");
@@ -123,10 +147,18 @@ public class AppInstance implements Runnable {
         }
     }
 
+    /**
+     * <p>setIdlePresence.</p>
+     */
     public void setIdlePresence() {
         out.println("idle");
     }
 
+    /**
+     * <p>setChannel.</p>
+     *
+     * @param channel a {@link java.lang.String} object
+     */
     public void setChannel(String channel) {
         out.println("channel " + channel);
     }

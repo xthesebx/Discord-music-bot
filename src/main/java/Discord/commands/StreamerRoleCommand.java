@@ -6,6 +6,12 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 
 import java.io.File;
 
+/**
+ * <p>StreamerRoleCommand class.</p>
+ *
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
+ */
 public class StreamerRoleCommand extends BasicCommand {
     /**
      * <p>Constructor for BasicCommand.</p>

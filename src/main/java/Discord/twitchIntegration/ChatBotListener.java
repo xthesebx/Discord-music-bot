@@ -13,6 +13,12 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
 
+/**
+ * <p>ChatBotListener class.</p>
+ *
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
+ */
 public class ChatBotListener implements Runnable {
 
 
@@ -21,9 +27,13 @@ public class ChatBotListener implements Runnable {
     private BufferedReader in;
     private final Server server;
     private String channel;
+    /**
+     * {@code requests} toggle to enable requests
+     */
     public boolean requests = true;
     /**
      * constructor for the tcp listener
+     *
      * @param server discord server regarding streamer mode
      */
     public ChatBotListener(Server server) {
@@ -32,8 +42,9 @@ public class ChatBotListener implements Runnable {
 
     /**
      * connects to tcp socket
+     *
      * @param channel the twitch chat required
-     * @throws IOException because of sockets you know
+     * @throws java.io.IOException because of sockets you know
      */
     public void connect(String channel) throws IOException {
         this.channel = channel;
@@ -43,6 +54,7 @@ public class ChatBotListener implements Runnable {
         out.println(channel);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void run() {
         outerloop:
@@ -86,6 +98,11 @@ public class ChatBotListener implements Runnable {
         }
     }
 
+    /**
+     * <p>addedRequest.</p>
+     *
+     * @param track a {@link com.sedmelluq.discord.lavaplayer.track.AudioTrack} object
+     */
     public void addedRequest(AudioTrack track) {
         out.println("added \"" + track.getInfo().title + "\" to queue");
     }

@@ -109,14 +109,29 @@ public class Server {
     private final String guildId;
     private int volume;
 
+    /**
+     * <p>Getter for the field <code>guild</code>.</p>
+     *
+     * @return a {@link net.dv8tion.jda.api.entities.Guild} object
+     */
     public Guild getGuild() {
         return guild;
     }
 
+    /**
+     * <p>Getter for the field <code>streamer</code>.</p>
+     *
+     * @return a {@link net.dv8tion.jda.api.entities.Member} object
+     */
     public Member getStreamer() {
         return streamer;
     }
 
+    /**
+     * <p>Setter for the field <code>streamer</code>.</p>
+     *
+     * @param streamer a {@link net.dv8tion.jda.api.entities.Member} object
+     */
     public void setStreamer(Member streamer) {
         this.streamer = streamer;
     }
@@ -130,19 +145,37 @@ public class Server {
     private final AudioPlayerHandler audioPlayerHandler = new AudioPlayerHandler(player);
     private final DisconnectTimer dc;
 
+    /**
+     * <p>Getter for the field <code>tracks</code>.</p>
+     *
+     * @return an array of {@link com.sedmelluq.discord.lavaplayer.track.AudioTrack} objects
+     */
     public AudioTrack[] getTracks() {
         return tracks;
     }
 
     private final AudioTrack[] tracks = new AudioTrack[5];
     private final LyricsManager lyricsManager = new LyricsManager();
+    /**
+     * members connected to the app
+     */
     public final HashMap<UUID, Member> members = new HashMap<>();
     private final List<AppInstance> appInstances = new ArrayList();
 
+    /**
+     * <p>Getter for the field <code>appInstances</code>.</p>
+     *
+     * @return a {@link java.util.List} object
+     */
     public List<AppInstance> getAppInstances() {
         return appInstances;
     }
 
+    /**
+     * <p>Getter for the field <code>chatBotListener</code>.</p>
+     *
+     * @return a {@link Discord.twitchIntegration.ChatBotListener} object
+     */
     public ChatBotListener getChatBotListener() {
         return chatBotListener;
     }
@@ -153,6 +186,7 @@ public class Server {
      * Server creation
      *
      * @param guild to get needed info from
+     * @throws java.io.IOException if any.
      */
     public Server(Guild guild) throws IOException {
         this.guild = guild;
@@ -201,6 +235,12 @@ public class Server {
         return Integer.parseInt(Reader.read(f));
     }
 
+    /**
+     * <p>join.</p>
+     *
+     * @param channel a {@link net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion} object
+     * @return a {@link Discord.JoinStates} object
+     */
     public JoinStates join (AudioChannelUnion channel) {
         //TODO: Monitor, might have some issues doing it regularly or something, sometimes get rate limits out of nowhere
         if (player.getPlayingTrack() == null) {
@@ -229,6 +269,11 @@ public class Server {
         return JoinStates.JOINED;
     }
 
+    /**
+     * <p>leave.</p>
+     *
+     * @return a boolean
+     */
     public boolean leave() {
         if (!audioManager.isConnected()) {
             return false;

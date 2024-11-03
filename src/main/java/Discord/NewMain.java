@@ -27,12 +27,22 @@ import java.util.TimeZone;
  */
 public class NewMain extends ListenerAdapter {
     private final JDA jda;
+    /**
+     * map for the discord servers
+     */
     public final HashMap<String, Server> map = new HashMap<>();
     /** Constant <code>clientid</code>
      * Constant <code>clientsecret</code>
      * Constant <code>spdc</code>
      * Constant <code>apikey</code> */
+    /** Constant <code>clientsecret=""</code> */
+    /** Constant <code>spdc=""</code> */
+    /** Constant <code>apikey=""</code> */
+    /** Constant <code>clientsecret=""</code> */
+    /** Constant <code>spdc=""</code> */
+    /** Constant <code>apikey=""</code> */
     public static String clientid, clientsecret, spdc, apikey;
+    /** Constant <code>APP_LISTENER</code> */
     public static final AppListener APP_LISTENER;
 
     static {
@@ -48,6 +58,7 @@ public class NewMain extends ListenerAdapter {
      *
      * @param args args
      * @throws java.lang.InterruptedException because of main throwing it
+     * @throws java.io.IOException if any.
      */
     public static void main (String[] args) throws InterruptedException, IOException {
         new NewMain();
@@ -57,6 +68,7 @@ public class NewMain extends ListenerAdapter {
      * basically just setting up jda
      *
      * @throws java.lang.InterruptedException because of awaitReady
+     * @throws java.io.IOException if any.
      */
     public NewMain() throws InterruptedException, IOException {
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/Berlin"));

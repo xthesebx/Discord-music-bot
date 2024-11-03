@@ -6,6 +6,12 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 
 import java.io.File;
 
+/**
+ * <p>ToggleRequestCommand class.</p>
+ *
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
+ */
 public class ToggleRequestCommand extends BasicCommand {
     /**
      * <p>Constructor for BasicCommand.</p>

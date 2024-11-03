@@ -13,8 +13,10 @@ import java.net.ConnectException;
 
 /**
  * Guild specific command, can be used in combination with my Twitch request bot to create a bot that plays song requests
+ *
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
  */
-
 public class StreamerModeCommands extends BasicCommand {
     /**
      * <p>Constructor for BasicCommand.</p>
@@ -34,6 +36,14 @@ public class StreamerModeCommands extends BasicCommand {
         }
     }
 
+    /**
+     * <p>setStreamer.</p>
+     *
+     * @param server a {@link Discord.Server} object
+     * @param member a {@link net.dv8tion.jda.api.entities.Member} object
+     * @param twitchacc a {@link java.lang.String} object
+     * @return a {@link Discord.twitchIntegration.StreamerFeedback} object
+     */
     public static StreamerFeedback setStreamer(Server server, Member member, String twitchacc) {
         String roleid = Reader.read(new File("roles/" + server.getGuild().getId()));
         if (roleid == null) {

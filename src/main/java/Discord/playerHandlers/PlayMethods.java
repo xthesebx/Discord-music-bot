@@ -17,6 +17,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 
+/**
+ * <p>PlayMethods class.</p>
+ *
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
+ */
 public class PlayMethods {
 
     /**
@@ -24,6 +30,7 @@ public class PlayMethods {
      *
      * @param link link or songtitle to search for/play
      * @param event is the event, either buttoninteraction or slashcommandinteraction
+     * @param server a {@link Discord.Server} object
      */
     public static void play(String link, SlashCommandInteractionEvent event, Server server) {
         play(link, event, 0, server);
@@ -35,6 +42,7 @@ public class PlayMethods {
      * @param link link or songtitle to search for/play
      * @param event is the event, either buttoninteraction or slashcommandinteraction
      * @param retries number of iterations
+     * @param server a {@link Discord.Server} object
      */
     public static void play(String link, SlashCommandInteractionEvent event, int retries, Server server) {
         AudioPlayerManager audioPlayerManager = server.getAudioPlayerManager();
@@ -101,9 +109,10 @@ public class PlayMethods {
 
     /**
      * for usage in streamer mode
+     *
      * @param link link to song request
+     * @param server a {@link Discord.Server} object
      */
-
     public static void play(String link, Server server) {
         AudioPlayerManager audioPlayerManager = server.getAudioPlayerManager();
         TrackScheduler trackScheduler = server.getTrackScheduler();
@@ -131,6 +140,12 @@ public class PlayMethods {
         });
     }
 
+    /**
+     * <p>playApp.</p>
+     *
+     * @param link a {@link java.lang.String} object
+     * @param server a {@link Discord.Server} object
+     */
     public static void playApp(String link, Server server) {
         if (link.startsWith("http") && (!link.contains("spotify") || link.contains("youtu"))) {
             try {

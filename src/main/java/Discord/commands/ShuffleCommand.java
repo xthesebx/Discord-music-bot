@@ -30,6 +30,11 @@ public class ShuffleCommand extends BasicCommand {
         event.reply("Shuffled the queue").queue();
     }
 
+    /**
+     * <p>shuffle.</p>
+     *
+     * @param server a {@link Discord.Server} object
+     */
     public static void shuffle(Server server) {
         List<AudioTrack> tracks = new ArrayList<>();
         int size = server.getTrackScheduler().queue.size();

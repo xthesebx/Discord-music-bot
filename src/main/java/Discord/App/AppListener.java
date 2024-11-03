@@ -12,14 +12,26 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.UUID;
 
+/**
+ * <p>AppListener class.</p>
+ *
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
+ */
 public class AppListener {
 
     ServerSocket serverSocket;
     Socket clientSocket;
     BufferedReader in;
     PrintWriter out;
+    /** Constant <code>auth</code> */
     public static HashMap<UUID, Server> auth = new HashMap<>();
 
+    /**
+     * <p>Constructor for AppListener.</p>
+     *
+     * @throws java.io.IOException if any.
+     */
     public AppListener() throws IOException {
         serverSocket = new ServerSocket(4269);
         new Thread(() -> {

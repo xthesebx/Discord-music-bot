@@ -6,6 +6,12 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 
 import java.util.UUID;
 
+/**
+ * <p>AppConnectionCommand class.</p>
+ *
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
+ */
 public class AppConnectionCommand extends BasicCommand {
     /**
      * <p>Constructor for BasicCommand.</p>

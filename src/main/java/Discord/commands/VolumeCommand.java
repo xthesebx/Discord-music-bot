@@ -43,6 +43,12 @@ public class VolumeCommand extends BasicCommand {
         }
     }
 
+    /**
+     * <p>setVolume.</p>
+     *
+     * @param server a {@link Discord.Server} object
+     * @param volume a int
+     */
     public static void setVolume(Server server, int volume) {
         server.getPlayer().setVolume(volume);
         server.setVolume(volume);

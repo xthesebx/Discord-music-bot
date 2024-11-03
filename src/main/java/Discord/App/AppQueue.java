@@ -10,8 +10,15 @@ import org.json.JSONObject;
 import java.text.DecimalFormat;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * <p>AppQueue class.</p>
+ *
+ * @author xXTheSebXx
+ * @version 1.0-SNAPSHOT
+ */
 public class AppQueue {
 
+    /** Constant <code>debouncer</code> */
     public static Debouncer debouncer = new Debouncer();
     AppInstance instance;
     TrackScheduler trackScheduler;
@@ -19,6 +26,12 @@ public class AppQueue {
     JSONArray queue = new JSONArray();
     Server server;
 
+    /**
+     * <p>Constructor for AppQueue.</p>
+     *
+     * @param server a {@link Discord.Server} object
+     * @param instance a {@link Discord.App.AppInstance} object
+     */
     public AppQueue(Server server, AppInstance instance) {
         this.trackScheduler = server.getTrackScheduler();
         this.instance = instance;
@@ -27,6 +40,9 @@ public class AppQueue {
 
 
 
+    /**
+     * <p>initQueue.</p>
+     */
     public void initQueue() {
         repeat();
         volume();
@@ -67,6 +83,11 @@ public class AppQueue {
         nextQueue();
     }
 
+    /**
+     * <p>addQueue.</p>
+     *
+     * @param track a {@link com.sedmelluq.discord.lavaplayer.track.AudioTrack} object
+     */
     public void addQueue(AudioTrack track) {
         String length = getLength(track);
         queue.put(song(track.getInfo().title, track.getInfo().author, length, track.getInfo().uri));
@@ -74,6 +95,12 @@ public class AppQueue {
         debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
     }
 
+    /**
+     * <p>insertQueue.</p>
+     *
+     * @param track a {@link com.sedmelluq.discord.lavaplayer.track.AudioTrack} object
+     * @param pos a {@link java.lang.String} object
+     */
     public void insertQueue(AudioTrack track, String pos) {
         String length = getLength(track);
         insert.put(pos ,song(track.getInfo().title, track.getInfo().author, length, track.getInfo().uri));
@@ -81,6 +108,9 @@ public class AppQueue {
         debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
     }
 
+    /**
+     * <p>nextQueue.</p>
+     */
     public void nextQueue() {
         int i = 1;
         try {
@@ -92,6 +122,9 @@ public class AppQueue {
         debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
     }
 
+    /**
+     * <p>clearQueue.</p>
+     */
     public void clearQueue() {
         object.put("clear", "clear");
         debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
@@ -121,11 +154,17 @@ public class AppQueue {
         return (minutes + ":" + format.format(seconds));
     }
 
+    /**
+     * <p>repeat.</p>
+     */
     public void repeat() {
         object.put("repeat", server.getTrackScheduler().repeating);
         debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
     }
 
+    /**
+     * <p>volume.</p>
+     */
     public void volume() {
         object.put("volume", server.getPlayer().getVolume());
         debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
