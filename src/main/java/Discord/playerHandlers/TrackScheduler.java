@@ -167,7 +167,7 @@ public class TrackScheduler extends AudioEventAdapter {
 					int i = (int) o;
 					if (i < temp2.length) {
 						temp2[i + j.get()] = null;
-					} else temp[i - temp2.length + j.get()] = null;
+					} else temp[i - temp2.length + j.get() + this.i] = null;
 					j.getAndIncrement();
 				});
 		for (AudioTrack t : temp2) {
@@ -190,13 +190,13 @@ public class TrackScheduler extends AudioEventAdapter {
 			track = temp2.get(from);
 			temp2.remove(from);
 		} else {
-			track = temp.get(from - temp2.size());
-			temp.remove(from - temp2.size());
+			track = temp.get(from - temp2.size() + i);
+			temp.remove(from - temp2.size() + i);
 		}
 		if (to < temp2.size()) {
 			temp2.add(to, track);
 		} else {
-			temp.add(to - temp2.size(), track);
+			temp.add(to - temp2.size() + i, track);
 		}
 		queue.addAll(temp);
 		queue2.addAll(temp2);
