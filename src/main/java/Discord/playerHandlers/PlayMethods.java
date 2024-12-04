@@ -45,6 +45,7 @@ public class PlayMethods {
      * @param server a {@link Discord.Server} object
      */
     public static void play(String link, SlashCommandInteractionEvent event, int retries, Server server) {
+        link = resolveLink(link);
         AudioPlayerManager audioPlayerManager = server.getAudioPlayerManager();
         TrackScheduler trackScheduler = server.getTrackScheduler();
         DisconnectTimer dc = server.getDc();
@@ -114,6 +115,7 @@ public class PlayMethods {
      * @param server a {@link Discord.Server} object
      */
     public static void play(String link, Server server) {
+        link = resolveLink(link);
         AudioPlayerManager audioPlayerManager = server.getAudioPlayerManager();
         TrackScheduler trackScheduler = server.getTrackScheduler();
         DisconnectTimer dc = server.getDc();
@@ -147,18 +149,7 @@ public class PlayMethods {
      * @param server a {@link Discord.Server} object
      */
     public static void playApp(String link, Server server) {
-        if (link.startsWith("http") && (!link.contains("spotify") || link.contains("youtu"))) {
-            try {
-                URL url = new URL(link);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.setInstanceFollowRedirects(false);
-                connection.connect();
-                link = connection.getHeaderField("Location");
-            } catch (IOException e) {
-                Logger.error(e);
-            }
-        }
+        link = resolveLink(link);
         AudioPlayerManager audioPlayerManager = server.getAudioPlayerManager();
         TrackScheduler trackScheduler = server.getTrackScheduler();
         DisconnectTimer dc = server.getDc();
@@ -189,5 +180,21 @@ public class PlayMethods {
                 Logger.debug("load failed");
             }
         });
+    }
+
+    private static String resolveLink(String link) {
+        if (link.startsWith("http") && (!link.contains("spotify") && !link.contains("youtu"))) {
+            try {
+                URL url = new URL(link);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setInstanceFollowRedirects(false);
+                connection.connect();
+                link = connection.getHeaderField("Location");
+            } catch (IOException e) {
+                Logger.error(e);
+            }
+        }
+        return link;
     }
 }

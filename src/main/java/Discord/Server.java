@@ -10,6 +10,7 @@ import com.seb.io.Writer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.source.local.LocalAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
 import dev.lavalink.youtube.clients.*;
@@ -200,8 +201,10 @@ public class Server {
         //i think thats it for now? seems like web was broken, replaced with ios
         //can create new ClientOptions for clients to disable certain features when broken, need working ones for everything tho
 
-        YoutubeAudioSourceManager ytsrc = new YoutubeAudioSourceManager(true, new TvHtml5EmbeddedWithThumbnail(), new IosWithThumbnail(), new AndroidMusicWithThumbnail(), new MusicWithThumbnail());
+
+        YoutubeAudioSourceManager ytsrc = new YoutubeAudioSourceManager(true, new AndroidMusicWithThumbnail(), new IosWithThumbnail(), new Music(), new TvHtml5Embedded());
         audioPlayerManager.registerSourceManager(ytsrc);
+        ytsrc.useOauth2("1//09yQnqUNAhS6uCgYIARAAGAkSNwF-L9Irt6INKIZanQdQvefUXMJSGBj2zNdZpaoZ1kll27Xc8Tmm86PDXqfx8oukjZv73XPj6Fo", true);
         //???? other clients work, i guess i just do this for now
         SpotifySourceManager spsrc = new SpotifySourceManager(null, NewMain.clientid, NewMain.clientsecret, "de", audioPlayerManager, NewMain.spdc);
         audioPlayerManager.registerSourceManager(spsrc);

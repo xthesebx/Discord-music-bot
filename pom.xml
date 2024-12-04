@@ -72,21 +72,21 @@
         <dependency>
             <groupId>dev.lavalink.youtube</groupId>
             <artifactId>youtube-common</artifactId>
-            <version>1.8.3</version>
+            <version>1.10.2</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/libs/youtube-common-1.8.3.jar</systemPath>
+            <systemPath>${project.basedir}/libs/youtube-common-1.10.2.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>dev.lavalink.youtube</groupId>
             <artifactId>youtube-v2</artifactId>
-            <version>1.8.3</version>
+            <version>1.10.2</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/libs/youtube-v2-1.8.3.jar</systemPath>
+            <systemPath>${project.basedir}/libs/youtube-v2-1.10.2.jar</systemPath>
         </dependency>
     </dependencies>
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <build>
@@ -96,7 +96,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.6.2</version>
                 <configuration>
-                    <source>17</source>
+                    <source>21</source>
                     <defaultAuthor>xXTheSebXx</defaultAuthor>
                     <defaultVersion>${project.version}</defaultVersion>
                     <version>true</version>
