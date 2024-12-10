@@ -143,6 +143,7 @@ public class TrackScheduler extends AudioEventAdapter {
 			return;
 		} else {
 			queue.clear();
+			i = 1;
 			server.getAppInstances().forEach(instance -> {
 				instance.getAppQueue().clearQueue();
 			});
