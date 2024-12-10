@@ -7,6 +7,7 @@
     <groupId>Discord</groupId>
     <artifactId>discordbot</artifactId>
     <version>1.0-SNAPSHOT</version>
+
     <repositories>
         <repository>
             <id>TopiWTF-releases</id>
@@ -72,16 +73,16 @@
         <dependency>
             <groupId>dev.lavalink.youtube</groupId>
             <artifactId>youtube-common</artifactId>
-            <version>1.8.3</version>
+            <version>1.11.1</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/libs/youtube-common-1.8.3.jar</systemPath>
+            <systemPath>${project.basedir}/libs/youtube-common-1.11.1.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>dev.lavalink.youtube</groupId>
             <artifactId>youtube-v2</artifactId>
-            <version>1.8.3</version>
+            <version>1.11.1</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/libs/youtube-v2-1.8.3.jar</systemPath>
+            <systemPath>${project.basedir}/libs/youtube-v2-1.11.1.jar</systemPath>
         </dependency>
     </dependencies>
     <properties>

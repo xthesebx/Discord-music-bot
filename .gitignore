@@ -46,3 +46,4 @@ build/
 /spotify.env
 /libs/
 /roles/
+/youtubetoken.env

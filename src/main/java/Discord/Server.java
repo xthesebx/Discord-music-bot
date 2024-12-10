@@ -200,8 +200,9 @@ public class Server {
         //i think thats it for now? seems like web was broken, replaced with ios
         //can create new ClientOptions for clients to disable certain features when broken, need working ones for everything tho
 
-        YoutubeAudioSourceManager ytsrc = new YoutubeAudioSourceManager(true, new TvHtml5EmbeddedWithThumbnail(), new IosWithThumbnail(), new AndroidMusicWithThumbnail(), new MusicWithThumbnail());
+        YoutubeAudioSourceManager ytsrc = new YoutubeAudioSourceManager(true, new AndroidMusicWithThumbnail(), new IosWithThumbnail(), new Music(), new TvHtml5Embedded());
         audioPlayerManager.registerSourceManager(ytsrc);
+        ytsrc.useOauth2(Reader.read(new File("youtubetoken.env")), true);
         //???? other clients work, i guess i just do this for now
         SpotifySourceManager spsrc = new SpotifySourceManager(null, NewMain.clientid, NewMain.clientsecret, "de", audioPlayerManager, NewMain.spdc);
         audioPlayerManager.registerSourceManager(spsrc);
