@@ -1,6 +1,7 @@
 package Discord.playerHandlers;
 
 import Discord.Server;
+import com.hawolt.logger.Logger;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -137,7 +138,12 @@ public class TrackScheduler extends AudioEventAdapter {
 	@Override
 	public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
 		// Only start the next track if the end reason is suitable for it (FINISHED or LOAD_FAILED)
+		//TODO: add a way to handle the error of failing to load something in a way that is okay for every source (requests, app, discord)
+		//TODO: probably have to add more info to the track which could cause issues, not sure how to do it rn.
 		if (endReason.mayStartNext) {
+			if (endReason.equals(AudioTrackEndReason.LOAD_FAILED))
+				Logger.error("loading " + track.getInfo().title +  " from source " + track.getInfo().uri +
+						" failed. might be spotify issue or youtube dying again.");
 			nextTrack();
 		} else if (endReason.equals(AudioTrackEndReason.REPLACED)) {
 			return;
