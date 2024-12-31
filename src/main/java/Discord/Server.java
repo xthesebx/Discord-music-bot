@@ -286,7 +286,7 @@ public class Server {
         dc.stopTimer();
         if (player.isPaused()) player.setPaused(false);
         if (streamer != null) {
-            chatBotListener.disconnect();
+            chatBotListener.disconnect(false);
             streamer = null;
         }
         trackScheduler.repeating = RepeatState.NO_REPEAT;

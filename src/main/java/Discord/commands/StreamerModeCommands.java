@@ -55,7 +55,7 @@ public class StreamerModeCommands extends BasicCommand {
         if (server.getStreamer() != null) {
             if (server.getStreamer().equals(member)) {
                 server.setStreamer(null);
-                server.getChatBotListener().disconnect();
+                server.getChatBotListener().disconnect(false);
                 return StreamerFeedback.DEACTIVATED;
             }
             return StreamerFeedback.RUNNING_BY_SOMEONE;

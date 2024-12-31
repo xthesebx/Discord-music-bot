@@ -130,14 +130,17 @@ public class PlayMethods {
 
             @Override
             public void playlistLoaded (AudioPlaylist audioPlaylist) {
+                server.getChatBotListener().print("No Playlists allowed, only single songs");
             }
 
             @Override
             public void noMatches() {
+                server.getChatBotListener().print("No Song with that url found");
             }
 
             @Override
             public void loadFailed (FriendlyException e) {
+                server.getChatBotListener().print("Error I guess");
             }
         });
     }

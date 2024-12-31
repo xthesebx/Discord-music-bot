@@ -27,6 +27,7 @@ public class ChatBotListener implements Runnable {
     private BufferedReader in;
     private final Server server;
     private String channel;
+    private boolean reconnect = true;
     /**
      * {@code requests} toggle to enable requests
      */
@@ -62,20 +63,24 @@ public class ChatBotListener implements Runnable {
             try {
                 String s = in.readLine();
                 if (s.equals("song?")) {
-                    out.println(server.getPlayer().getPlayingTrack().getInfo().uri);
+                    if (server.getPlayer().getPlayingTrack() == null)
+                        out.println("no Song currently playing");
+                    else out.println(server.getPlayer().getPlayingTrack().getInfo().uri);
                 } else if (requests)
                     PlayMethods.play(s, server);
                 else out.println("requests are currently disabled");
             } catch (IOException e) {
                 if (e instanceof SocketException) {
-                    disconnect();
-                    for (int i = 1; i < 6; i++) {
-                        try {
-                            Thread.sleep(i * 5000);
-                            Logger.error("trying to reconnect");
-                            connect(channel);
-                            continue outerloop;
-                        } catch (InterruptedException | IOException ignored) {
+                    if (reconnect) {
+                        disconnect(true);
+                        for (int i = 1; i < 6; i++) {
+                            try {
+                                Thread.sleep(i * 5000);
+                                Logger.error("trying to reconnect");
+                                connect(channel);
+                                continue outerloop;
+                            } catch (InterruptedException | IOException ignored) {
+                            }
                         }
                     }
                     server.setStreamer(null);
@@ -88,11 +93,10 @@ public class ChatBotListener implements Runnable {
     /**
      * disconnects from the socket
      */
-    public void disconnect() {
+    public void disconnect(boolean reconnect) {
+        this.reconnect = reconnect;
         out.println("close");
-        out.close();
         try {
-            in.close();
             socket.close();
         } catch (IOException ignored) {
         }
@@ -105,5 +109,8 @@ public class ChatBotListener implements Runnable {
      */
     public void addedRequest(AudioTrack track) {
         out.println("added \"" + track.getInfo().title + "\" to queue");
+    }
+    public void print(String s) {
+        out.println(s);
     }
 }
