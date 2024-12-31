@@ -85,6 +85,8 @@ public class ChatBotListener implements Runnable {
                     }
                     server.setStreamer(null);
                     return;
+                } else {
+                    Logger.error(e);
                 }
             }
         }
