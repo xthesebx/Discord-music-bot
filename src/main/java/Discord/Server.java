@@ -200,7 +200,7 @@ public class Server {
         //i think thats it for now? seems like web was broken, replaced with ios
         //can create new ClientOptions for clients to disable certain features when broken, need working ones for everything tho
 
-        YoutubeAudioSourceManager ytsrc = new YoutubeAudioSourceManager(true, new AndroidMusicWithThumbnail(), new IosWithThumbnail(), new Music(), new TvHtml5Embedded());
+        YoutubeAudioSourceManager ytsrc = new YoutubeAudioSourceManager(true, new TvHtml5Embedded(), new AndroidMusicWithThumbnail(), new IosWithThumbnail(), new Music());
         audioPlayerManager.registerSourceManager(ytsrc);
         ytsrc.useOauth2(Reader.read(new File("youtubetoken.env")), true);
         //???? other clients work, i guess i just do this for now
