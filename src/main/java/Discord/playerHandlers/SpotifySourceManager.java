@@ -1,7 +1,6 @@
 package Discord.playerHandlers;
 
 import com.github.topi314.lavasrc.ExtendedAudioPlaylist;
-import com.github.topi314.lavasrc.mirror.DefaultMirroringAudioTrackResolver;
 import com.github.topi314.lavasrc.spotify.SpotifyAudioPlaylist;
 import com.github.topi314.lavasrc.spotify.SpotifyAudioTrack;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
