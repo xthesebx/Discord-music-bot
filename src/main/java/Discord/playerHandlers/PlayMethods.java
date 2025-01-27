@@ -152,11 +152,15 @@ public class PlayMethods {
      * @param server a {@link Discord.Server} object
      */
     public static void playApp(String link, Server server) {
+        if (!link.startsWith("http")) {
+            link = "ytsearch:" + link;
+        }
         link = resolveLink(link);
         AudioPlayerManager audioPlayerManager = server.getAudioPlayerManager();
         TrackScheduler trackScheduler = server.getTrackScheduler();
         DisconnectTimer dc = server.getDc();
 
+        String finalLink = link;
         audioPlayerManager.loadItem(link, new AudioLoadResultHandler() {
 
             @Override
@@ -167,6 +171,11 @@ public class PlayMethods {
 
             @Override
             public void playlistLoaded (AudioPlaylist audioPlaylist) {
+                if (finalLink.startsWith("ytsearch")) {
+                    trackScheduler.queue(audioPlaylist.getTracks().get(0));
+                    dc.stopTimer();
+                    return;
+                }
                 for (AudioTrack track : audioPlaylist.getTracks()) {
                 trackScheduler.queue(track);
                 }

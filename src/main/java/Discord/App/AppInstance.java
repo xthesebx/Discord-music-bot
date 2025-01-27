@@ -73,6 +73,7 @@ public class AppInstance implements Runnable {
         try {
             while ((s = in.readLine()) != null) {
                 if (s.startsWith("play ")) {
+                    server.join(server.members.get(uuid).getVoiceState().getChannel());
                     PlayMethods.playApp(s.substring(s.indexOf(" ") + 1), server);
                 } else if (s.startsWith("{\"delete")) {
                     JSONObject object = new JSONObject(s);
