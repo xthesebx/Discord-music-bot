@@ -1,9 +1,8 @@
 package Discord.commands;
 
 import Discord.Server;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 
 /**
  * Abstract class for same code in every Command
@@ -13,7 +12,7 @@ import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
  */
 public abstract class BasicCommand {
     String cid;
-    TextChannel channel;
+    GuildMessageChannel channel;
     SlashCommandInteractionEvent event;
     Server server;
 
@@ -27,6 +26,6 @@ public abstract class BasicCommand {
         this.event = event;
         this.server = server;
         cid = event.getChannel().getId();
-        channel = event.getChannel().asTextChannel();
+        channel = event.getChannel().asGuildMessageChannel();
     }
 }
