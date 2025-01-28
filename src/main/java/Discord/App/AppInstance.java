@@ -72,6 +72,7 @@ public class AppInstance implements Runnable {
         String s;
         try {
             while ((s = in.readLine()) != null) {
+                Logger.debug(clientSocket.getInetAddress().getHostAddress() + " : " + s);
                 if (s.startsWith("play ")) {
                     server.join(server.members.get(uuid).getVoiceState().getChannel());
                     PlayMethods.playApp(s.substring(s.indexOf(" ") + 1), server);
