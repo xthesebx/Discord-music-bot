@@ -169,7 +169,6 @@ public class Server {
      * @return a {@link java.util.List} object
      */
     public List<AppInstance> getAppInstances() {
-        appInstances.forEach(instance -> Logger.error(instance.getClientSocket().getInetAddress().getHostAddress()));
         return appInstances;
     }
 
