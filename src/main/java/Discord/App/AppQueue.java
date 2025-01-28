@@ -18,8 +18,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class AppQueue {
 
-    /** Constant <code>debouncer</code> */
-    public static Debouncer debouncer = new Debouncer();
     AppInstance instance;
     TrackScheduler trackScheduler;
     JSONObject object = new JSONObject(), insert = new JSONObject();
@@ -79,7 +77,7 @@ public class AppQueue {
             queue.put(song(titles[j], authors[j], length[j], urls[j]));
         }
         object.put("queue", queue);
-        debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
+        instance.debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
         nextQueue();
     }
 
@@ -92,7 +90,7 @@ public class AppQueue {
         String length = getLength(track);
         queue.put(song(track.getInfo().title, track.getInfo().author, length, track.getInfo().uri));
         object.put("queue", queue);
-        debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
+        instance.debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
     }
 
     /**
@@ -105,7 +103,7 @@ public class AppQueue {
         String length = getLength(track);
         insert.put(pos ,song(track.getInfo().title, track.getInfo().author, length, track.getInfo().uri));
         object.put("insert", insert);
-        debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
+        instance.debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
     }
 
     /**
@@ -119,7 +117,7 @@ public class AppQueue {
 
         }
         object.put("next", i);
-        debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
+        instance.debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
     }
 
     /**
@@ -127,7 +125,7 @@ public class AppQueue {
      */
     public void clearQueue() {
         object.put("clear", "clear");
-        debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
+        instance.debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
     }
 
     private JSONObject song(String title, String author, String duration, String url) {
@@ -159,7 +157,7 @@ public class AppQueue {
      */
     public void repeat() {
         object.put("repeat", server.getTrackScheduler().repeating);
-        debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
+        instance.debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
     }
 
     /**
@@ -167,6 +165,6 @@ public class AppQueue {
      */
     public void volume() {
         object.put("volume", server.getPlayer().getVolume());
-        debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
+        instance.debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
     }
 }

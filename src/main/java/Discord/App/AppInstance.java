@@ -36,6 +36,7 @@ public class AppInstance implements Runnable {
     PrintWriter out;
     Server server;
     UUID uuid;
+    Debouncer debouncer = new Debouncer();
 
     /**
      * <p>Getter for the field <code>appQueue</code>.</p>
@@ -71,7 +72,7 @@ public class AppInstance implements Runnable {
     public void run() {
         if (server.getAudioManager().getConnectedChannel() != null)
             setChannel(server.getAudioManager().getConnectedChannel().getJumpUrl());
-        AppQueue.debouncer.debounce("appqueue", () ->
+        debouncer.debounce("appqueue", () ->
                 appQueue.initQueue(), 1, TimeUnit.SECONDS);
         String s;
         try {
