@@ -5,6 +5,7 @@ import Discord.commands.*;
 import Discord.playerHandlers.*;
 import Discord.twitchIntegration.ChatBotListener;
 import com.github.topi314.lavalyrics.LyricsManager;
+import com.hawolt.logger.Logger;
 import com.seb.io.Reader;
 import com.seb.io.Writer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -168,6 +169,7 @@ public class Server {
      * @return a {@link java.util.List} object
      */
     public List<AppInstance> getAppInstances() {
+        appInstances.forEach(instance -> Logger.error(instance.getClientSocket().getInetAddress().getHostAddress()));
         return appInstances;
     }
 

@@ -27,6 +27,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class AppInstance implements Runnable {
 
+    public Socket getClientSocket() {
+        return clientSocket;
+    }
+
     Socket clientSocket;
     BufferedReader in;
     PrintWriter out;
@@ -113,9 +117,7 @@ public class AppInstance implements Runnable {
                             server.getTrackScheduler().repeating = RepeatState.NO_REPEAT;
                             setIdlePresence();
                         }
-                        case "shuffle" -> {
-                            ShuffleCommand.shuffle(server);
-                        }
+                        case "shuffle" -> ShuffleCommand.shuffle(server);
                         case "repeat" -> server.getTrackScheduler().toggleRepeat();
                         case "prevtrack" -> server.getTrackScheduler().previousTrack();
                         case "toggle" -> server.getChatBotListener().requests = !server.getChatBotListener().requests;
