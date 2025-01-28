@@ -54,6 +54,6 @@ public class InfoCommand extends BasicCommand {
         else time = possecs + "/" + dursecs + "```";
         event.reply("```Currently playing: " + player.getPlayingTrack().getInfo().title +
                 " by: " + player.getPlayingTrack().getInfo().author +
-                " " + time).queue();
+                " " + time + " link: " + player.getPlayingTrack().getInfo().uri).queue();
     }
 }
