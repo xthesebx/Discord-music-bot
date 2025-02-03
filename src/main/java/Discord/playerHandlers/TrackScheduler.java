@@ -141,9 +141,11 @@ public class TrackScheduler extends AudioEventAdapter {
 		//TODO: add a way to handle the error of failing to load something in a way that is okay for every source (requests, app, discord)
 		//TODO: probably have to add more info to the track which could cause issues, not sure how to do it rn.
 		if (endReason.mayStartNext) {
-			if (endReason.equals(AudioTrackEndReason.LOAD_FAILED))
-				Logger.error("loading " + track.getInfo().title +  " from source " + track.getInfo().uri +
+			if (endReason.equals(AudioTrackEndReason.LOAD_FAILED)) {
+				server.getGuild().getJDA().retrieveUserById(277064996264083456L).complete().openPrivateChannel().complete().sendMessage("MUSIC BOT DYING PLS HELP").queue();
+				Logger.error("loading " + track.getInfo().title + " from source " + track.getInfo().uri +
 						" failed. might be spotify issue or youtube dying again.");
+			}
 			nextTrack();
 		} else if (endReason.equals(AudioTrackEndReason.REPLACED)) {
 			return;
