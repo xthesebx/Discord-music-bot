@@ -5,6 +5,7 @@ import Discord.commands.*;
 import Discord.playerHandlers.*;
 import Discord.twitchIntegration.ChatBotListener;
 import com.github.topi314.lavalyrics.LyricsManager;
+import com.hawolt.logger.Logger;
 import com.seb.io.Reader;
 import com.seb.io.Writer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -369,6 +370,7 @@ public class Server {
 
     public void onVoiceServerUpdate(@NotNull VoiceDispatchInterceptor.VoiceServerUpdate update) {
 
+        player.setPaused(true);
         var conn = koeClient.getConnection(update.getGuildIdLong());
         if (conn != null) {
             var info = new VoiceServerInfo(
@@ -377,7 +379,10 @@ public class Server {
                     update.getToken()
             );
             conn.connect(info);
+            conn.setAudioSender(new AudioSender(player, conn));
+            conn.startAudioFramePolling();
         }
+        player.setPaused(false);
     }
 
     public boolean onVoiceStateUpdate(@NotNull VoiceDispatchInterceptor.VoiceStateUpdate update) {
