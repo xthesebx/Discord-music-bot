@@ -64,8 +64,11 @@ public class NewMain extends ListenerAdapter {
      * @throws java.io.IOException if any.
      */
     public static void main (String[] args) throws InterruptedException, IOException {
-        String test = "slf4j/" + Date.from(Instant.now()).toString().replace(" ", "_").replace(":", "_") + ".txt";
-        Writer.write(Reader.read(new File("log.txt")), new File(test));
+        String filepath = "slf4j/" + Date.from(Instant.now()).toString().replace(" ", "_").replace(":", "_") + ".txt";
+        File log = new File("log.txt");
+        if (log.exists()) {
+            Writer.write(Reader.read(log), new File(filepath));
+        }
         new NewMain();
     }
 
