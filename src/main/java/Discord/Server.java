@@ -193,7 +193,7 @@ public class Server {
     }
 
     private final ChatBotListener chatBotListener = new ChatBotListener(this);
-    private final static YoutubeAudioSourceManager ytsrc = new YoutubeAudioSourceManager(true, new TvHtml5Embedded(), new AndroidMusicWithThumbnail(), new IosWithThumbnail(), new Music());
+    private final static YoutubeAudioSourceManager ytsrc = new YoutubeAudioSourceManager(true, new AndroidWithThumbnail(), new AndroidMusicWithThumbnail(), new IosWithThumbnail(), new Music());
     static {
         ytsrc.useOauth2(Reader.read(new File("youtubetoken.env")), true);
     }
