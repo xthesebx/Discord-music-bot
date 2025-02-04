@@ -3,6 +3,7 @@ package Discord;
 import Discord.App.AppListener;
 import com.hawolt.logger.Logger;
 import com.seb.io.Reader;
+import com.seb.io.Writer;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -16,6 +17,8 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.time.Instant;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.TimeZone;
 
@@ -61,6 +64,8 @@ public class NewMain extends ListenerAdapter {
      * @throws java.io.IOException if any.
      */
     public static void main (String[] args) throws InterruptedException, IOException {
+        String test = "slf4j/" + Date.from(Instant.now()).toString().replace(" ", "_").replace(":", "_") + ".txt";
+        Writer.write(Reader.read(new File("log.txt")), new File(test));
         new NewMain();
     }
 

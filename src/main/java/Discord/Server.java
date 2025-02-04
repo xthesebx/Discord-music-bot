@@ -5,7 +5,6 @@ import Discord.commands.*;
 import Discord.playerHandlers.*;
 import Discord.twitchIntegration.ChatBotListener;
 import com.github.topi314.lavalyrics.LyricsManager;
-import com.hawolt.logger.Logger;
 import com.seb.io.Reader;
 import com.seb.io.Writer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -212,7 +211,7 @@ public class Server {
         I understand now
         The SpotifySourceManager just searches the spotify songs on youtube and plays those
         what a nice way to do it man, wtf am i witnessing lol
-        can play localfiles too tho if wanted, not integrated rn
+        can play local files too tho if wanted, not integrated rn
          */
 
         this.audioManager = guild.getAudioManager();
