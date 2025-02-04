@@ -215,8 +215,8 @@ public class Server {
         //can create new ClientOptions for clients to disable certain features when broken, need working ones for everything tho
 
         YoutubeAudioSourceManager ytsrc = new YoutubeAudioSourceManager(true, new TvHtml5Embedded(), new AndroidMusicWithThumbnail(), new IosWithThumbnail(), new Music());
-        audioPlayerManager.registerSourceManager(ytsrc);
         ytsrc.useOauth2(Reader.read(new File("youtubetoken.env")), true);
+        audioPlayerManager.registerSourceManager(ytsrc);
         //???? other clients work, i guess i just do this for now
         SpotifySourceManager spsrc = new SpotifySourceManager(null, NewMain.clientid, NewMain.clientsecret, "de", audioPlayerManager, NewMain.spdc);
         audioPlayerManager.registerSourceManager(spsrc);
