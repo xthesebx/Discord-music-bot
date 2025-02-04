@@ -5,7 +5,6 @@ import Discord.commands.*;
 import Discord.playerHandlers.*;
 import Discord.twitchIntegration.ChatBotListener;
 import com.github.topi314.lavalyrics.LyricsManager;
-import com.hawolt.logger.Logger;
 import com.seb.io.Reader;
 import com.seb.io.Writer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -42,6 +41,8 @@ import static com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats.D
  * @version 1.0-SNAPSHOT
  */
 public class Server {
+    //TODO: test lag, if not good enough learn how to implement the other stuff (https://github.com/KyokoBot/koe/tree/master/ext-udpqueue)
+
     Koe koe;
     KoeClient koeClient;
 
@@ -154,7 +155,6 @@ public class Server {
     private final AudioPlayer player = audioPlayerManager.createPlayer();
     private final AudioManager audioManager;
     private final TrackScheduler trackScheduler;
-    private final AudioPlayerHandler audioPlayerHandler = new AudioPlayerHandler(player);
     private final DisconnectTimer dc;
 
     /**
@@ -172,7 +172,7 @@ public class Server {
      * members connected to the app
      */
     public final HashMap<UUID, Member> members = new HashMap<>();
-    private final List<AppInstance> appInstances = new ArrayList();
+    private final ArrayList<AppInstance> appInstances = new ArrayList<>();
 
     /**
      * <p>Getter for the field <code>appInstances</code>.</p>
