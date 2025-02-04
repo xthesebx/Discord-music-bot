@@ -5,14 +5,19 @@ import Discord.commands.*;
 import Discord.playerHandlers.*;
 import Discord.twitchIntegration.ChatBotListener;
 import com.github.topi314.lavalyrics.LyricsManager;
+import com.hawolt.logger.Logger;
 import com.seb.io.Reader;
 import com.seb.io.Writer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
 import dev.lavalink.youtube.clients.*;
+import io.netty.buffer.ByteBuf;
+import moe.kyokobot.koe.*;
+import moe.kyokobot.koe.media.OpusAudioFrameProvider;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -20,10 +25,15 @@ import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.managers.AudioManager;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.*;
+
+import static com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats.DISCORD_OPUS;
 
 /**
  * The class for every server
@@ -32,6 +42,8 @@ import java.util.*;
  * @version 1.0-SNAPSHOT
  */
 public class Server {
+    Koe koe;
+    KoeClient koeClient;
 
     /**
      * setter for Volume
@@ -192,6 +204,8 @@ public class Server {
         this.guild = guild;
         guildId = guild.getId();
         volume = readVolume();
+        koe = Koe.koe();
+        koeClient = koe.newClient(guild.getJDA().getSelfUser().getIdLong());
         //web issues for a lot of songs
         // new AndroidMusicWithThumbnail() works partly for songs and for spotify
         // new IOSWithThumbnail works for yt vids
@@ -262,8 +276,8 @@ public class Server {
         if (audioManager.isConnected() && audioManager.getConnectedChannel().asVoiceChannel().equals(connectedChannel)) {
             return JoinStates.ALREADYCONNECTED;
         }
-        audioManager.setSendingHandler(audioPlayerHandler);
-        // Connects to the channel.
+        var conn = koeClient.createConnection(Long.parseLong(guildId));
+        conn.setAudioSender(new AudioSender(player, conn));
         audioManager.openAudioConnection(connectedChannel);
         // Obviously people do not notice someone/something connecting.
         appInstances.forEach(instance -> instance.setChannel(channel.getJumpUrl()));
@@ -276,7 +290,7 @@ public class Server {
      * @return a boolean
      */
     public boolean leave() {
-        if (!audioManager.isConnected()) {
+        if (koeClient.getConnection(guild.getIdLong()) == null) {
             return false;
         }
         // Disconnect from the channel.
@@ -348,6 +362,51 @@ public class Server {
             } else event.getHook().editOriginal("```Search is no longer available due to a bot restart```").queue();
         } catch (NullPointerException e) {
             event.getHook().editOriginal("```Button is from old Bot Task, cant execute it```").queue();
+        }
+    }
+
+    public void onVoiceServerUpdate(@NotNull VoiceDispatchInterceptor.VoiceServerUpdate update) {
+
+        var conn = koeClient.getConnection(update.getGuildIdLong());
+        if (conn != null) {
+            var info = new VoiceServerInfo(
+                    update.getSessionId(),
+                    update.getEndpoint(),
+                    update.getToken()
+            );
+            conn.connect(info);
+        }
+    }
+
+    public boolean onVoiceStateUpdate(@NotNull VoiceDispatchInterceptor.VoiceStateUpdate update) {
+        if (update.getVoiceState().getIdLong() == guild.getJDA().getSelfUser().getIdLong() && update.getChannel().getIdLong() == 0) {
+            koeClient.destroyConnection(update.getGuildIdLong());
+        }
+        return true;
+    }
+
+    private static class AudioSender extends OpusAudioFrameProvider {
+        private final AudioPlayer player;
+        private final MutableAudioFrame frame;
+        private final ByteBuffer frameBuffer;
+
+        AudioSender(AudioPlayer player, MediaConnection connection) {
+            super(connection);
+            this.player = player;
+            this.frame = new MutableAudioFrame();
+            this.frameBuffer = ByteBuffer.allocate(DISCORD_OPUS.maximumChunkSize());
+            frame.setBuffer(frameBuffer);
+            frame.setFormat(DISCORD_OPUS);
+        }
+
+        @Override
+        public boolean canProvide() {
+            return player.provide(frame);
+        }
+
+        @Override
+        public void retrieveOpusFrame(ByteBuf targetBuffer) {
+            targetBuffer.writeBytes(frameBuffer.array(), 0, frame.getDataLength());
         }
     }
 }

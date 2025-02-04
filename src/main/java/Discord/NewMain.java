@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,7 +29,7 @@ import java.util.TimeZone;
  * @author xXTheSebXx
  * @version 1.0-SNAPSHOT
  */
-public class NewMain extends ListenerAdapter {
+public class NewMain extends ListenerAdapter implements VoiceDispatchInterceptor {
     private final JDA jda;
     /**
      * map for the discord servers
@@ -55,6 +56,7 @@ public class NewMain extends ListenerAdapter {
             throw new RuntimeException(e);
         }
     }
+
 
     /**
      * Main function
@@ -85,7 +87,7 @@ public class NewMain extends ListenerAdapter {
         clientsecret = original.substring(original.indexOf("\n") + 1).substring(0, original.indexOf("\n"));
         spdc = original.substring(original.indexOf("\n") + 1).substring(original.indexOf("\n") + 1);
         apikey = Reader.read(new File("apikey.env"));
-        jda = JDABuilder.createDefault(apikey.strip()).enableIntents(GatewayIntent.GUILD_MESSAGES).enableIntents(GatewayIntent.GUILD_MESSAGE_TYPING).setStatus(OnlineStatus.OFFLINE).build();
+        jda = JDABuilder.createDefault(apikey.strip()).enableIntents(GatewayIntent.GUILD_MESSAGES).enableIntents(GatewayIntent.GUILD_MESSAGE_TYPING).setStatus(OnlineStatus.OFFLINE).setVoiceDispatchInterceptor(this).build();
         jda.addEventListener(this);
         jda.awaitReady();
         for (Guild guild : jda.getGuilds()) {
@@ -134,5 +136,16 @@ public class NewMain extends ListenerAdapter {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void onVoiceServerUpdate(@NotNull VoiceDispatchInterceptor.VoiceServerUpdate update) {
+
+        map.get(update.getGuild().getId()).onVoiceServerUpdate(update);
+    }
+
+    @Override
+    public boolean onVoiceStateUpdate(@NotNull VoiceDispatchInterceptor.VoiceStateUpdate update) {
+        return map.get(update.getGuild().getId()).onVoiceStateUpdate(update);
     }
 }
