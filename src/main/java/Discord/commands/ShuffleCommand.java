@@ -46,6 +46,7 @@ public class ShuffleCommand extends BasicCommand {
         for (AudioTrack track : tracks) {
             server.getTrackScheduler().queue.add(track);
         }
+        server.getTrackScheduler().i = 0;
         server.getAppInstances().forEach(instance -> {
             instance.getAppQueue().clearQueue();
             instance.getAppQueue().initQueue();
