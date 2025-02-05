@@ -30,12 +30,12 @@ public class LyricsCommand extends BasicCommand {
             for (AudioLyrics.Line line : lines) {
                 if (line.getLine().equals("♪") || line.getLine().isEmpty()) continue;
                 if (lyrics.length() >= 1800) {
-                    event.getChannel().asTextChannel().sendMessage(lyrics + "```").queue();
+                    event.reply(lyrics + "```").queue();
                     lyrics = new StringBuilder("```");
                 }
                 lyrics.append(line.getLine()).append("\n");
             }
-            event.reply(lyrics + "```").queue();
+            channel.sendMessage(lyrics + "```").queue();
         } catch (NullPointerException e) {
             event.reply("```No Lyrics found```").queue();
         }
