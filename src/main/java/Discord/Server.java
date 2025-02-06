@@ -17,6 +17,7 @@ import dev.lavalink.youtube.YoutubeAudioSourceManager;
 import dev.lavalink.youtube.clients.*;
 import io.netty.buffer.ByteBuf;
 import moe.kyokobot.koe.*;
+import moe.kyokobot.koe.codec.udpqueue.UdpQueueFramePollerFactory;
 import moe.kyokobot.koe.media.OpusAudioFrameProvider;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -209,7 +210,7 @@ public class Server {
         this.guild = guild;
         guildId = guild.getId();
         volume = readVolume();
-        koe = Koe.koe();
+        koe = Koe.koe(KoeOptions.builder().setFramePollerFactory(new UdpQueueFramePollerFactory()).create());
         koeClient = koe.newClient(guild.getJDA().getSelfUser().getIdLong());
         //web issues for a lot of songs
         // new AndroidMusicWithThumbnail() works partly for songs and for spotify
