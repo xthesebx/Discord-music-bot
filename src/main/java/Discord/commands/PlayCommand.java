@@ -38,6 +38,10 @@ public class PlayCommand extends BasicCommand {
                     event.reply("I do not have permissions to join a voice channel!").queue();
                     return;
                 }
+                case CHANNELFULL -> {
+                    event.reply("I can't join because the channel is full").queue();
+                    return;
+                }
             }
         }
         event.deferReply().queue();

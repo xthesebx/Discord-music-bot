@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
@@ -282,7 +283,11 @@ public class Server {
         }
         var conn = koeClient.createConnection(Long.parseLong(guildId));
         conn.setAudioSender(new AudioSender(player, conn));
-        audioManager.openAudioConnection(connectedChannel);
+        try {
+            audioManager.openAudioConnection(connectedChannel);
+        } catch (InsufficientPermissionException e) {
+            return JoinStates.CHANNELFULL;
+        }
         // Obviously people do not notice someone/something connecting.
         appInstances.forEach(instance -> instance.setChannel(channel.getJumpUrl()));
         return JoinStates.JOINED;

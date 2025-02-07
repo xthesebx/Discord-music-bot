@@ -22,5 +22,6 @@ public enum JoinStates {
     /**
      * joined successfully
      */
-    JOINED
+    JOINED,
+    CHANNELFULL
 }
