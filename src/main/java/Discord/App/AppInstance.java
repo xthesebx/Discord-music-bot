@@ -7,6 +7,7 @@ import Discord.commands.ShuffleCommand;
 import Discord.commands.StreamerModeCommands;
 import Discord.playerHandlers.RepeatState;
 import com.hawolt.logger.Logger;
+import net.dv8tion.jda.api.entities.Member;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -79,7 +80,7 @@ public class AppInstance implements Runnable {
             while ((s = in.readLine()) != null) {
                 Logger.debug(clientSocket.getInetAddress().getHostAddress() + " : " + s);
                 if (s.startsWith("play ")) {
-                    Logger.debug(server.join(server.members.get(uuid).getVoiceState().getChannel()));
+                    server.join(server.getGuild().retrieveMemberVoiceState(server.members.get(uuid)).complete().getChannel());
                     PlayMethods.playApp(s.substring(s.indexOf(" ") + 1), server);
                 } else if (s.startsWith("{\"delete")) {
                     JSONObject object = new JSONObject(s);
@@ -106,7 +107,8 @@ public class AppInstance implements Runnable {
                             server.getTrackScheduler().nextTrack();
                         }
                         case "join" -> {
-                            Logger.debug(server.join(server.members.get(uuid).getVoiceState().getChannel()));
+                            Member member = server.members.get(uuid);
+                            server.join(server.getGuild().retrieveMemberVoiceState(member).complete().getChannel());
                         }
                         case "leave" -> {
                             server.leave();

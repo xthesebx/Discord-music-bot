@@ -278,9 +278,6 @@ public class Server {
         VoiceChannel connectedChannel = channel.asVoiceChannel();
         // Checks if they are in a channel -- not being in a channel means that the variable = null.
         // Gets the audio manager.
-        if (audioManager.isConnected() && audioManager.getConnectedChannel().asVoiceChannel().equals(connectedChannel)) {
-            return JoinStates.ALREADYCONNECTED;
-        }
         var conn = koeClient.createConnection(Long.parseLong(guildId));
         conn.setAudioSender(new AudioSender(player, conn));
         try {
@@ -304,6 +301,7 @@ public class Server {
         }
         // Disconnect from the channel.
         audioManager.closeAudioConnection();
+        koeClient.getConnection(guild.getIdLong()).disconnect();
         // Notify the user.
         player.stopTrack();
         dc.stopTimer();
