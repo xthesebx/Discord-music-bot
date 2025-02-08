@@ -79,7 +79,7 @@ public class AppInstance implements Runnable {
             while ((s = in.readLine()) != null) {
                 Logger.debug(clientSocket.getInetAddress().getHostAddress() + " : " + s);
                 if (s.startsWith("play ")) {
-                    server.join(server.members.get(uuid).getVoiceState().getChannel());
+                    Logger.debug(server.join(server.members.get(uuid).getVoiceState().getChannel()));
                     PlayMethods.playApp(s.substring(s.indexOf(" ") + 1), server);
                 } else if (s.startsWith("{\"delete")) {
                     JSONObject object = new JSONObject(s);
@@ -106,7 +106,7 @@ public class AppInstance implements Runnable {
                             server.getTrackScheduler().nextTrack();
                         }
                         case "join" -> {
-                            server.join(server.members.get(uuid).getVoiceState().getChannel());
+                            Logger.debug(server.join(server.members.get(uuid).getVoiceState().getChannel()));
                         }
                         case "leave" -> {
                             server.leave();
