@@ -80,7 +80,7 @@ public class AppInstance implements Runnable {
             while ((s = in.readLine()) != null) {
                 Logger.debug(clientSocket.getInetAddress().getHostAddress() + " : " + s);
                 if (s.startsWith("play ")) {
-                    server.join(server.getGuild().retrieveMemberVoiceState(server.members.get(uuid)).complete().getChannel());
+                    server.join(server.getGuild().retrieveMemberVoiceStateById(server.members.get(uuid)).complete().getChannel());
                     PlayMethods.playApp(s.substring(s.indexOf(" ") + 1), server);
                 } else if (s.startsWith("{\"delete")) {
                     JSONObject object = new JSONObject(s);
@@ -93,7 +93,7 @@ public class AppInstance implements Runnable {
                     server.getTrackScheduler().move(from, to);
                 } else if (s.startsWith("streamer ")) {
                     String twitchname = s.substring(s.indexOf(" ") + 1);
-                    StreamerModeCommands.setStreamer(server, server.members.get(uuid), twitchname);
+                    StreamerModeCommands.setStreamer(server, server.getGuild().retrieveMemberById(server.members.get(uuid)).complete(), twitchname);
                 } else if (s.startsWith("volume ")) {
                     String volume = s.substring(s.indexOf(" ") + 1);
                     VolumeCommand.setVolume(server, Integer.parseInt(volume));
@@ -107,8 +107,7 @@ public class AppInstance implements Runnable {
                             server.getTrackScheduler().nextTrack();
                         }
                         case "join" -> {
-                            Member member = server.members.get(uuid);
-                            server.join(server.getGuild().retrieveMemberVoiceState(member).complete().getChannel());
+                            server.join(server.getGuild().retrieveMemberVoiceStateById(server.members.get(uuid)).complete().getChannel());
                         }
                         case "leave" -> {
                             server.leave();

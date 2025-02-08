@@ -25,6 +25,6 @@ public class AppConnectionCommand extends BasicCommand {
         AppListener.auth.put(uuid, server);
         event.reply("send in private chat").queue();
         event.getUser().openPrivateChannel().complete().sendMessage(uuid.toString()).queue();
-        server.members.put(uuid, event.getMember());
+        server.members.put(uuid, event.getMember().getId());
     }
 }

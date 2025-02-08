@@ -174,7 +174,7 @@ public class Server {
     /**
      * members connected to the app
      */
-    public final HashMap<UUID, Member> members = new HashMap<>();
+    public final HashMap<UUID, String> members = new HashMap<>();
     private final ArrayList<AppInstance> appInstances = new ArrayList<>();
 
     /**
