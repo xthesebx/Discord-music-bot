@@ -100,8 +100,14 @@ public class AppInstance implements Runnable {
                 } else {
                     switch (s) {
                         case "playpause" -> {
-                            if (server.getPlayer().isPaused()) server.getPlayer().setPaused(false);
-                            else server.getPlayer().setPaused(true);
+                            if (server.getPlayer().isPaused()) {
+                                server.getPlayer().setPaused(false);
+                                server.getAppInstances().forEach(instance -> instance.out.println("playing"));
+                            }
+                            else {
+                                server.getPlayer().setPaused(true);
+                                server.getAppInstances().forEach(AppInstance::setIdlePresence);
+                            }
                         }
                         case "nexttrack" -> {
                             server.getTrackScheduler().nextTrack();
