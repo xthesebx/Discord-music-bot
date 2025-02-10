@@ -123,7 +123,8 @@ public class AppInstance implements Runnable {
                             server.getDc().startTimer();
                             if (server.getPlayer().isPaused()) server.getPlayer().setPaused(false);
                             server.getTrackScheduler().repeating = RepeatState.NO_REPEAT;
-                            setIdlePresence();
+                            server.getAppInstances().forEach(instance -> instance.appQueue.repeat());
+                            server.getAppInstances().forEach(AppInstance::setIdlePresence);
                         }
                         case "shuffle" -> ShuffleCommand.shuffle(server);
                         case "repeat" -> server.getTrackScheduler().toggleRepeat();

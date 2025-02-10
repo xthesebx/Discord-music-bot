@@ -311,6 +311,7 @@ public class Server {
             streamer = null;
         }
         trackScheduler.repeating = RepeatState.NO_REPEAT;
+        appInstances.forEach(instance -> instance.getAppQueue().repeat());
         appInstances.forEach(AppInstance::setIdlePresence);
         return true;
     }
