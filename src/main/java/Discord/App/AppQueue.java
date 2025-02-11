@@ -49,6 +49,9 @@ public class AppQueue {
         String[] authors = new String[size];
         String[] length = new String[size];
         String[] urls = new String[size];
+        if (trackScheduler.queue.isEmpty() && trackScheduler.queue2.isEmpty()) {
+            return;
+        }
         titles[0] = server.getPlayer().getPlayingTrack().getInfo().title;
         authors[0] = server.getPlayer().getPlayingTrack().getInfo().author;
         length[0] = getLength(server.getPlayer().getPlayingTrack());
