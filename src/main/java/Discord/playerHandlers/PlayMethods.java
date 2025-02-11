@@ -177,7 +177,7 @@ public class PlayMethods {
                     return;
                 }
                 for (AudioTrack track : audioPlaylist.getTracks()) {
-                trackScheduler.queue(track);
+                    trackScheduler.queue(track);
                 }
                 dc.stopTimer();
             }

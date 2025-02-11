@@ -102,7 +102,14 @@ public class AppInstance implements Runnable {
                         case "playpause" -> {
                             if (server.getPlayer().isPaused()) {
                                 server.getPlayer().setPaused(false);
-                                server.getAppInstances().forEach(instance -> instance.out.println("playing"));
+                                server.getAppInstances().forEach(instance -> {
+                                    try {
+                                        instance.out.println("playing");
+                                    } catch (Exception e) {
+                                        instance.closeClient();
+                                        Logger.error(instance.uuid + ": " + e);
+                                    }
+                                });
                             }
                             else {
                                 server.getPlayer().setPaused(true);
@@ -135,6 +142,7 @@ public class AppInstance implements Runnable {
             }
         } catch (IOException e) {
             if (e instanceof SocketException) {
+                Logger.error(e);
                 closeClient();
             }
         }

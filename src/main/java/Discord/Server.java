@@ -44,7 +44,6 @@ import static com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats.D
  * @version 1.0-SNAPSHOT
  */
 public class Server {
-    //TODO: test lag, if not good enough learn how to implement the other stuff (https://github.com/KyokoBot/koe/tree/master/ext-udpqueue)
 
     Koe koe;
     KoeClient koeClient;
@@ -196,6 +195,13 @@ public class Server {
     }
 
     private final ChatBotListener chatBotListener = new ChatBotListener(this);
+    //web issues for a lot of songs
+    // new AndroidMusicWithThumbnail() works partly for songs and for spotify
+    // new IOSWithThumbnail works for yt vids
+    // music for ytmusic search
+    //tvhtml5 for ytsearch
+    //i think thats it for now? seems like web was broken, replaced with ios
+    //can create new ClientOptions for clients to disable certain features when broken, need working ones for everything tho
     private final static YoutubeAudioSourceManager ytsrc = new YoutubeAudioSourceManager(true, new TvHtml5EmbeddedWithThumbnail(), new AndroidMusicWithThumbnail(), new IosWithThumbnail(), new Music());
     static {
         ytsrc.useOauth2(Reader.read(new File("youtubetoken.env")), true);
@@ -213,24 +219,13 @@ public class Server {
         volume = readVolume();
         koe = Koe.koe(KoeOptions.builder().setFramePollerFactory(new UdpQueueFramePollerFactory()).create());
         koeClient = koe.newClient(guild.getJDA().getSelfUser().getIdLong());
-        //web issues for a lot of songs
-        // new AndroidMusicWithThumbnail() works partly for songs and for spotify
-        // new IOSWithThumbnail works for yt vids
-        // music for ytmusic search
-        //tvhtml5 for ytsearch
-        //i think thats it for now? seems like web was broken, replaced with ios
-        //can create new ClientOptions for clients to disable certain features when broken, need working ones for everything tho
 
         audioPlayerManager.registerSourceManager(ytsrc);
-        //???? other clients work, i guess i just do this for now
         SpotifySourceManager spsrc = new SpotifySourceManager(null, NewMain.clientid, NewMain.clientsecret, "de", audioPlayerManager, NewMain.spdc);
         audioPlayerManager.registerSourceManager(spsrc);
         lyricsManager.registerLyricsManager(spsrc);
         /*
-        I understand now
-        The SpotifySourceManager just searches the spotify songs on youtube and plays those
-        what a nice way to do it man, wtf am i witnessing lol
-        can play local files too tho if wanted, not integrated rn
+        can play local files too if wanted, not integrated rn
          */
 
         this.audioManager = guild.getAudioManager();
