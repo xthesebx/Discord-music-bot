@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -41,8 +42,8 @@ public class AppListener {
                     Logger.debug(clientSocket.getInetAddress().getHostAddress());
                     in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                     out = new PrintWriter(clientSocket.getOutputStream(), true);
-                    String s = in.readLine();
                     try {
+                        String s = in.readLine();
                         if (auth.containsKey(UUID.fromString(s))) {
                             Server server = auth.get(UUID.fromString(s));
                             AppInstance instance = new AppInstance(clientSocket, server, UUID.fromString(s), out);
@@ -61,6 +62,8 @@ public class AppListener {
                         out.close();
                         in.close();
                         clientSocket.close();
+                    } catch (SocketException e) {
+                        Logger.debug("reset socket on connect I guess");
                     }
                 }
             } catch (IOException e) {
