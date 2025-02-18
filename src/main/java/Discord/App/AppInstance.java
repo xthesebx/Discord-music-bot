@@ -8,6 +8,7 @@ import Discord.commands.StreamerModeCommands;
 import Discord.playerHandlers.RepeatState;
 import com.hawolt.logger.Logger;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -80,8 +81,12 @@ public class AppInstance implements Runnable {
             while ((s = in.readLine()) != null) {
                 Logger.debug(clientSocket.getInetAddress().getHostAddress() + " : " + s);
                 if (s.startsWith("play ")) {
-                    server.join(server.getGuild().retrieveMemberVoiceStateById(server.members.get(uuid)).complete().getChannel());
-                    PlayMethods.playApp(s.substring(s.indexOf(" ") + 1), server);
+                    try {
+                        server.join(server.getGuild().retrieveMemberVoiceStateById(server.members.get(uuid)).complete().getChannel());
+                        PlayMethods.playApp(s.substring(s.indexOf(" ") + 1), server);
+                    } catch (ErrorResponseException e) {
+                        Logger.debug("not in channel? : " + e);
+                    }
                 } else if (s.startsWith("{\"delete")) {
                     JSONObject object = new JSONObject(s);
                     JSONArray array = object.getJSONArray("delete");
@@ -120,7 +125,11 @@ public class AppInstance implements Runnable {
                             server.getTrackScheduler().nextTrack();
                         }
                         case "join" -> {
-                            server.join(server.getGuild().retrieveMemberVoiceStateById(server.members.get(uuid)).complete().getChannel());
+                            try {
+                                server.join(server.getGuild().retrieveMemberVoiceStateById(server.members.get(uuid)).complete().getChannel());
+                            } catch (ErrorResponseException e) {
+                                Logger.debug("not in channel? : " + e);
+                            }
                         }
                         case "leave" -> {
                             server.leave();
