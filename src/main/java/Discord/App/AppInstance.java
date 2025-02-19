@@ -102,6 +102,8 @@ public class AppInstance implements Runnable {
                 } else if (s.startsWith("volume ")) {
                     String volume = s.substring(s.indexOf(" ") + 1);
                     VolumeCommand.setVolume(server, Integer.parseInt(volume));
+                } else if (s.equals("hello")) {
+                    out.println("hello");
                 } else {
                     switch (s) {
                         case "playpause" -> {
