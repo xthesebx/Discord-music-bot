@@ -44,6 +44,9 @@ public class AppListener {
                     out = new PrintWriter(clientSocket.getOutputStream(), true);
                     try {
                         String s = in.readLine();
+                        if (s.isEmpty()) {
+                            return;
+                        }
                         if (auth.containsKey(UUID.fromString(s))) {
                             Server server = auth.get(UUID.fromString(s));
                             AppInstance instance = new AppInstance(clientSocket, server, UUID.fromString(s), out);
