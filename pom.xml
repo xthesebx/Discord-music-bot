@@ -68,9 +68,9 @@
         <dependency>
             <groupId>dev.lavalink.youtube</groupId>
             <artifactId>youtube-common</artifactId>
-            <version>1.11.4</version>
+            <version>1.11.5</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/libs/youtube-common-1.11.4.jar</systemPath>
+            <systemPath>${project.basedir}/libs/youtube-common-1.11.5.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>moe.kyokobot.koe</groupId>
@@ -85,9 +85,9 @@
         <dependency>
             <groupId>dev.lavalink.youtube</groupId>
             <artifactId>youtube-v2</artifactId>
-            <version>1.11.4</version>
+            <version>1.11.5</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/libs/youtube-v2-1.11.4.jar</systemPath>
+            <systemPath>${project.basedir}/libs/youtube-v2-1.11.5.jar</systemPath>
         </dependency>
     </dependencies>
     <properties>

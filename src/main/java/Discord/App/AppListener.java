@@ -44,7 +44,7 @@ public class AppListener {
                     out = new PrintWriter(clientSocket.getOutputStream(), true);
                     try {
                         String s = in.readLine();
-                        if (s.isEmpty()) {
+                        if (s == null || s.isEmpty()) {
                             return;
                         }
                         if (auth.containsKey(UUID.fromString(s))) {
