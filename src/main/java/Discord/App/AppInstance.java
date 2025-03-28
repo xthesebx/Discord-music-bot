@@ -62,6 +62,8 @@ public class AppInstance implements Runnable {
      */
     public AppInstance(Socket clientSocket, Server server, UUID uuid, PrintWriter out) throws IOException {
         this.clientSocket = clientSocket;
+        this.clientSocket.setSoTimeout(0);
+        this.clientSocket.setKeepAlive(true);
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         this.out = out;
         this.server = server;
