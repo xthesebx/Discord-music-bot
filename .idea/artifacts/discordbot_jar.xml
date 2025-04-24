@@ -16,8 +16,6 @@
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/lavalink-devs/lavaplayer/lavaplayer/2.2.3/lavaplayer-2.2.3.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/topi314/lavalyrics/lavalyrics/1.0.0/lavalyrics-1.0.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/topi314/lavasearch/lavasearch/1.0.0/lavasearch-1.0.0.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/topi314/lavasrc/lavasrc/4.2.0/lavasrc-4.2.0.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/topi314/lavasrc/protocol-jvm/4.2.0/protocol-jvm-4.2.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/xthesebx/hawolt-core/IO/2afca6c8b4/IO-2afca6c8b4.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/xthesebx/hawolt-core/Logger/2afca6c8b4/Logger-2afca6c8b4.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar" path-in-jar="/" />
@@ -34,7 +32,6 @@
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/commons-io/commons-io/2.13.0/commons-io-2.13.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/commons-logging/commons-logging/1.2/commons-logging-1.2.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/dev/schlaubi/lyrics/client-jvm/2.2.2/client-jvm-2.2.2.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/dev/schlaubi/lyrics/protocol-jvm/2.2.2/protocol-jvm-2.2.2.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/io/netty/netty-buffer/4.1.112.Final/netty-buffer-4.1.112.Final.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/io/netty/netty-codec-http/4.1.112.Final/netty-codec-http-4.1.112.Final.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/io/netty/netty-codec/4.1.112.Final/netty-codec-4.1.112.Final.jar" path-in-jar="/" />
@@ -68,8 +65,10 @@
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/mozilla/rhino/1.7.14/rhino-1.7.14.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/slf4j/slf4j-simple/1.7.36/slf4j-simple-1.7.36.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/dev/lavalink/youtube/common/1.12.0/common-1.12.0.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/dev/lavalink/youtube/v2/1.12.0/v2-1.12.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/topi314/lavasrc/lavasrc/4.6.0/lavasrc-4.6.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/topi314/lavasrc/protocol-jvm/4.6.0/protocol-jvm-4.6.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/youtube-common-130561e2d2f76605eb08b2c9cc4facbf400caccb-SNAPSHOT.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/youtube-v2-130561e2d2f76605eb08b2c9cc4facbf400caccb-SNAPSHOT.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
