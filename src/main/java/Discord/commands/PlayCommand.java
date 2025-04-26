@@ -14,7 +14,7 @@ import net.dv8tion.jda.api.managers.AudioManager;
  */
 public class PlayCommand extends BasicCommand {
 
-    AudioManager audioManager;
+    private final AudioManager audioManager;
 
     /**
      * in case of /command

@@ -1,14 +1,13 @@
 package Discord.commands;
 
-import Discord.App.AppQueue;
 import Discord.Server;
+import Discord.playerHandlers.PlayMethods;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * <p>ShuffleCommand class.</p>
@@ -36,6 +35,13 @@ public class ShuffleCommand extends BasicCommand {
      * @param server a {@link Discord.Server} object
      */
     public static void shuffle(Server server) {
+        while (PlayMethods.servers.contains(server)) {
+          try {
+            Thread.sleep(10);
+          } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+          }
+        }
         List<AudioTrack> tracks = new ArrayList<>();
         int size = server.getTrackScheduler().queue.size();
         for (int i = 0; i < size; i ++) {

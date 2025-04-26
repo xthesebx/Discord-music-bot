@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.utils.messages.MessageEditData;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,6 +25,7 @@ import java.util.List;
  * @version 1.0-SNAPSHOT
  */
 public class PlayMethods {
+    public static List<Server> servers = new ArrayList<>();
 
     /**
      * to play the actual thingy
@@ -45,6 +47,7 @@ public class PlayMethods {
      * @param server a {@link Discord.Server} object
      */
     public static void play(String link, SlashCommandInteractionEvent event, int retries, Server server) {
+        servers.add(server);
         link = resolveLink(link);
         AudioPlayerManager audioPlayerManager = server.getAudioPlayerManager();
         TrackScheduler trackScheduler = server.getTrackScheduler();
@@ -58,7 +61,6 @@ public class PlayMethods {
 
             @Override
             public void trackLoaded (AudioTrack audioTrack) {
-                dc.stopTimer();
                 trackScheduler.queue(audioTrack);
                 text = "```Added \"" + audioTrack.getInfo().title + "\" by " + audioTrack.getInfo().author + " to Queue```";
                 event.getHook().editOriginal(text).queue();
@@ -86,10 +88,7 @@ public class PlayMethods {
                     event.getHook().editOriginal(messageEditData).queue();
                     return;
                 }
-
-                for (AudioTrack track : audioPlaylist.getTracks()) {
-                    trackScheduler.queue(track);
-                }
+                trackScheduler.queue(audioPlaylist.getTracks());
                 text = "```Added \"" + audioPlaylist.getName() + "\" to Queue```";
                 event.getHook().editOriginal(text).queue();
             }
@@ -106,6 +105,7 @@ public class PlayMethods {
                 else event.getHook().editOriginal(e.getMessage()).queue();
             }
         });
+        servers.remove(server);
     }
 
     /**
@@ -115,6 +115,7 @@ public class PlayMethods {
      * @param server a {@link Discord.Server} object
      */
     public static void play(String link, Server server) {
+        servers.add(server);
         link = resolveLink(link);
         AudioPlayerManager audioPlayerManager = server.getAudioPlayerManager();
         TrackScheduler trackScheduler = server.getTrackScheduler();
@@ -143,6 +144,7 @@ public class PlayMethods {
                 server.getChatBotListener().print("Error I guess");
             }
         });
+        servers.remove(server);
     }
 
     /**
@@ -152,6 +154,7 @@ public class PlayMethods {
      * @param server a {@link Discord.Server} object
      */
     public static void playApp(String link, Server server) {
+        servers.add(server);
         if (!link.startsWith("http")) {
             link = "ytsearch:" + link;
         }
@@ -166,20 +169,15 @@ public class PlayMethods {
             @Override
             public void trackLoaded (AudioTrack audioTrack) {
                 trackScheduler.queue(audioTrack);
-                dc.stopTimer();
             }
 
             @Override
             public void playlistLoaded (AudioPlaylist audioPlaylist) {
                 if (finalLink.startsWith("ytsearch")) {
                     trackScheduler.queue(audioPlaylist.getTracks().get(0));
-                    dc.stopTimer();
                     return;
                 }
-                for (AudioTrack track : audioPlaylist.getTracks()) {
-                    trackScheduler.queue(track);
-                }
-                dc.stopTimer();
+                trackScheduler.queue(audioPlaylist.getTracks());
             }
 
             @Override
@@ -192,6 +190,7 @@ public class PlayMethods {
                 Logger.debug("load failed");
             }
         });
+        servers.remove(server);
     }
 
     private static String resolveLink(String link) {

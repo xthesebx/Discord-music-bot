@@ -45,8 +45,8 @@ import static com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats.D
  */
 public class Server {
 
-    Koe koe;
-    KoeClient koeClient;
+    private final Koe koe;
+    private final KoeClient koeClient;
 
     /**
      * setter for Volume
@@ -142,6 +142,7 @@ public class Server {
         return streamer;
     }
 
+    
     /**
      * <p>Setter for the field <code>streamer</code>.</p>
      *
@@ -227,7 +228,7 @@ public class Server {
         /*
         can play local files too if wanted, not integrated rn
          */
-
+        audioPlayerManager.setItemLoaderThreadPoolSize(Runtime.getRuntime().availableProcessors());
         this.audioManager = guild.getAudioManager();
         trackScheduler = new TrackScheduler(this);
         player.addListener(trackScheduler);

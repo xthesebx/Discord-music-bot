@@ -52,6 +52,17 @@ public class TrackScheduler extends AudioEventAdapter {
 		this.queue = new ArrayList<>();
 		this.queue2 = new LinkedBlockingQueue<>();
 	}
+
+	public void queue(List<AudioTrack> tracks) {
+		server.getDc().stopTimer();
+		queue.addAll(tracks);
+		new Thread(() -> {
+			for (AudioTrack track : queue) {
+				server.getAppInstances().forEach(instance -> instance.getAppQueue().addQueue(track));
+			}
+		}).start();
+		if (player.startTrack(tracks.get(0).makeClone(), true)) server.getAppInstances().forEach(instance -> instance.getAppQueue().nextQueue());
+	}
 	
 	/**
 	 * Add the next track to queue or play right away if nothing is in the queue.
@@ -61,6 +72,7 @@ public class TrackScheduler extends AudioEventAdapter {
 	 * @param track The track to play or add to queue.
 	 */
 	public void queue(AudioTrack track) {
+		server.getDc().stopTimer();
 		// Calling startTrack with the noInterrupt set to true will start the track only if nothing is currently playing. If
 		// something is playing, it returns false and does nothing. In that case the player was already playing so this
 		// track goes to the queue instead.

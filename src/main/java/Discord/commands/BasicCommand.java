@@ -11,10 +11,10 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
  * @version 1.0-SNAPSHOT
  */
 public abstract class BasicCommand {
-    String cid;
-    GuildMessageChannel channel;
-    SlashCommandInteractionEvent event;
-    Server server;
+    protected String cid;
+    protected GuildMessageChannel channel;
+    protected SlashCommandInteractionEvent event;
+    protected Server server;
 
     /**
      * <p>Constructor for BasicCommand.</p>
