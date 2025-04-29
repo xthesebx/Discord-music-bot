@@ -12,7 +12,7 @@
         <repository>
             <id>arbjergDev-releases</id>
             <name>Lavalink Repository</name>
-            <url>https://maven.lavalink.dev/releases</url>
+            <url>https://maven.lavalink.dev/snapshots</url>
         </repository>
         <repository>
             <id>TopiWTF-releases</id>
@@ -73,9 +73,7 @@
         <dependency>
             <groupId>dev.lavalink.youtube</groupId>
             <artifactId>common</artifactId>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/youtube-common-130561e2d2f76605eb08b2c9cc4facbf400caccb-SNAPSHOT.jar</systemPath>
-            <version>130561e2d2f76605eb08b2c9cc4facbf400caccb-SNAPSHOT</version>
+            <version>b4f2c98ce72ff7fc2affa449456d47757352f5a5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>moe.kyokobot.koe</groupId>
@@ -90,9 +88,7 @@
         <dependency>
             <groupId>dev.lavalink.youtube</groupId>
             <artifactId>v2</artifactId>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/youtube-v2-130561e2d2f76605eb08b2c9cc4facbf400caccb-SNAPSHOT.jar</systemPath>
-            <version>130561e2d2f76605eb08b2c9cc4facbf400caccb-SNAPSHOT</version>
+            <version>b4f2c98ce72ff7fc2affa449456d47757352f5a5-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <properties>
