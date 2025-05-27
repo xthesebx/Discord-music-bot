@@ -6,7 +6,10 @@ import com.seb.io.Writer;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  * command /volume
@@ -54,8 +57,14 @@ public class VolumeCommand extends BasicCommand {
         server.setVolume(volume);
         server.getAppInstances().forEach(appInstance -> appInstance.getAppQueue().volume());
         File f = new File("volumes/" + server.getGuildId());
-        Logger.debug(f.getAbsolutePath());
-        Writer.write(String.valueOf(volume), f);
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(f));
+            writer.write(volume);
+            writer.close();
+        } catch (IOException e) {
+            Logger.error(e);
+            Logger.debug(f.getAbsolutePath());
+        }
         server.getAppInstances().forEach(instance -> instance.getAppQueue().volume());
     }
 }
