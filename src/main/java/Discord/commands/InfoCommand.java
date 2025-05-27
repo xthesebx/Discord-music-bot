@@ -50,10 +50,10 @@ public class InfoCommand extends BasicCommand {
         String time;
         if (durhour > 0)
             time = poshours + ":" + posmins + ":" + possecs + "/" + durhours + ":" + durmins + ":" + dursecs + "```";
-        else if (durmin > 0) time = posmins + ":" + possecs + "/" + durmins + ":" + dursecs + "```";
+        else if (durmin > 0) time = posmins + ":" + possecs + "/" + durmins + ":" + dursecs;
         else time = possecs + "/" + dursecs + "```";
         event.reply("```Currently playing: " + player.getPlayingTrack().getInfo().title +
                 " by: " + player.getPlayingTrack().getInfo().author +
-                " " + time + " link: " + player.getPlayingTrack().getInfo().uri).queue();
+                " " + time + " link: " + player.getPlayingTrack().getInfo().uri + "```").queue();
     }
 }
