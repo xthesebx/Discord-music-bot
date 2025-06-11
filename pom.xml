@@ -12,7 +12,7 @@
         <repository>
             <id>arbjergDev-releases</id>
             <name>Lavalink Repository</name>
-            <url>https://maven.lavalink.dev/snapshots</url>
+            <url>https://maven.lavalink.dev/releases</url>
         </repository>
         <repository>
             <id>TopiWTF-releases</id>
@@ -73,7 +73,7 @@
         <dependency>
             <groupId>dev.lavalink.youtube</groupId>
             <artifactId>common</artifactId>
-            <version>b4f2c98ce72ff7fc2affa449456d47757352f5a5-SNAPSHOT</version>
+            <version>1.13.3</version>
         </dependency>
         <dependency>
             <groupId>moe.kyokobot.koe</groupId>
@@ -88,7 +88,7 @@
         <dependency>
             <groupId>dev.lavalink.youtube</groupId>
             <artifactId>v2</artifactId>
-            <version>b4f2c98ce72ff7fc2affa449456d47757352f5a5-SNAPSHOT</version>
+            <version>1.13.3</version>
         </dependency>
     </dependencies>
     <properties>

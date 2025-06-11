@@ -67,8 +67,8 @@
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/slf4j/slf4j-simple/1.7.36/slf4j-simple-1.7.36.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/topi314/lavasrc/lavasrc/4.6.0/lavasrc-4.6.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/topi314/lavasrc/protocol-jvm/4.6.0/protocol-jvm-4.6.0.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/dev/lavalink/youtube/v2/b4f2c98ce72ff7fc2affa449456d47757352f5a5-SNAPSHOT/v2-b4f2c98ce72ff7fc2affa449456d47757352f5a5-20250428.235839-1.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/dev/lavalink/youtube/common/b4f2c98ce72ff7fc2affa449456d47757352f5a5-SNAPSHOT/common-b4f2c98ce72ff7fc2affa449456d47757352f5a5-20250428.235839-1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/dev/lavalink/youtube/common/1.13.3/common-1.13.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/dev/lavalink/youtube/v2/1.13.3/v2-1.13.3.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
