@@ -62,11 +62,16 @@ public class QueueCommand extends BasicCommand {
         StringBuilder result = new StringBuilder("```");
         result.append("Currently are " + size + " songs in queue\n");
         for (j = 0; j < titles.length; j++) {
-            result.append(titles[j]).append(" by ").append(authors[j]).append(" ").append(length[j]).append("\n");
+            StringBuilder temp = new StringBuilder();
+            temp.append(titles[j]).append(" by ").append(authors[j]).append(" ").append(length[j]).append("\n");
+            if (result.length() + temp.length() > 1990) {
+                break;
+            } else {
+                result.append(temp);
+            }
         }
         result.append("```");
         String response = result.toString();
-        if (response.length() > 2000) response = response.substring(0, 1990) + "...```";
         event.reply(response).queue();
     }
 }

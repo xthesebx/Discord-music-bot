@@ -7,7 +7,6 @@ import Discord.commands.ShuffleCommand;
 import Discord.commands.StreamerModeCommands;
 import Discord.playerHandlers.RepeatState;
 import com.hawolt.logger.Logger;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -155,7 +154,6 @@ public class AppInstance implements Runnable {
             }
         } catch (IOException e) {
             if (e instanceof SocketException) {
-                Logger.error(e);
                 closeClient();
             }
         }
@@ -175,7 +173,6 @@ public class AppInstance implements Runnable {
         try {
             out.println("close");
             clientSocket.close();
-            server.members.remove(uuid);
         } catch (IOException e) {
             Logger.error(e);
         }
