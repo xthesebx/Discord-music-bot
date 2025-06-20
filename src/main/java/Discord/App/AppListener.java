@@ -53,7 +53,6 @@ public class AppListener {
                                         server.getAppInstances().add(instance);
                                         out.println("yes");
                                         new Thread(instance).start();
-                                        auth.remove(UUID.fromString(s));
                                     } else {
                                         out.println("no");
                                         out.close();
@@ -61,6 +60,7 @@ public class AppListener {
                                         clientSocket.close();
                                     }
                                 } catch (IllegalArgumentException e) {
+                                    Logger.error(e);
                                     out.println("no");
                                     out.close();
                                     in.close();
