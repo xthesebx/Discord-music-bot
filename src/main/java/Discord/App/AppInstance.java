@@ -76,7 +76,7 @@ public class AppInstance implements Runnable {
         if (server.getAudioManager().getConnectedChannel() != null)
             setChannel(server.getAudioManager().getConnectedChannel().getJumpUrl());
         debouncer.debounce("appqueue", () ->
-                appQueue.initQueue(), 1, TimeUnit.SECONDS);
+                appQueue.initQueue(false), 1, TimeUnit.SECONDS);
         String s;
         try {
             while ((s = in.readLine()) != null) {

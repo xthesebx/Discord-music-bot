@@ -135,7 +135,7 @@ public class TrackScheduler extends AudioEventAdapter {
 				} else {
 					i = 0;
 					player.startTrack(queue.get(i).makeClone(), false);
-					server.getAppInstances().forEach(instance -> instance.getAppQueue().initQueue());
+					server.getAppInstances().forEach(instance -> instance.getAppQueue().initQueue(true));
 					i++;
 				}
 			}

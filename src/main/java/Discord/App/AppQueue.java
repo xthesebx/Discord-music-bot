@@ -41,7 +41,7 @@ public class AppQueue {
     /**
      * <p>initQueue.</p>
      */
-    public void initQueue() {
+    public void initQueue(boolean repeat) {
         repeat();
         volume();
         int size = trackScheduler.queue.size() - trackScheduler.i + trackScheduler.queue2.size() + 1;
@@ -81,7 +81,11 @@ public class AppQueue {
         }
         object.put("queue", queue);
         JSONObject pos = new JSONObject();
-        pos.put("position", server.getPlayer().getPlayingTrack().getPosition());
+        if (!repeat) {
+            pos.put("position", server.getPlayer().getPlayingTrack().getPosition());
+        } else {
+            pos.put("position", System.currentTimeMillis());
+        }
         pos.put("timestamp", System.currentTimeMillis());
         object.put("pos", pos);
         instance.debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
