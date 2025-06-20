@@ -80,6 +80,10 @@ public class AppQueue {
             queue.put(song(titles[j], authors[j], length[j], urls[j]));
         }
         object.put("queue", queue);
+        JSONObject pos = new JSONObject();
+        pos.put("position", server.getPlayer().getPlayingTrack().getPosition());
+        pos.put("timestamp", System.currentTimeMillis());
+        object.put("pos", pos);
         instance.debouncer.debounce("send", () -> send(), 1, TimeUnit.SECONDS);
         nextQueue();
     }

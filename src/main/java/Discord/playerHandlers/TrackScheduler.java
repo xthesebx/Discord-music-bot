@@ -124,6 +124,7 @@ public class TrackScheduler extends AudioEventAdapter {
 				if (!queue2.isEmpty()) {
 					player.startTrack(queue2.poll(), false);
 				} else player.startTrack(queue.get(i - 1).makeClone(), false);
+				return;
 			}
 			case REPEAT_QUEUE -> {
 				if (!queue2.isEmpty()) {
@@ -134,6 +135,7 @@ public class TrackScheduler extends AudioEventAdapter {
 				} else {
 					i = 0;
 					player.startTrack(queue.get(i).makeClone(), false);
+					server.getAppInstances().forEach(instance -> instance.getAppQueue().initQueue());
 					i++;
 				}
 			}
