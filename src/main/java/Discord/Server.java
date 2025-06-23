@@ -5,7 +5,6 @@ import Discord.commands.*;
 import Discord.playerHandlers.*;
 import Discord.twitchIntegration.ChatBotListener;
 import com.github.topi314.lavalyrics.LyricsManager;
-import com.hawolt.logger.Logger;
 import com.seb.io.Reader;
 import com.seb.io.Writer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;

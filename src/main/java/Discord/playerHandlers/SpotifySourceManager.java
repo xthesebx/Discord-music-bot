@@ -45,7 +45,7 @@ public class SpotifySourceManager extends com.github.topi314.lavasrc.spotify.Spo
     /** {@inheritDoc} */
     @Override
     public AudioItem getPlaylist(String id, boolean preview) throws IOException {
-        var json = this.getJson(API_BASE + "playlists/" + id);
+        var json = this.getJson(API_BASE + "playlists/" + id, false, true);
         if (json == null) {
             return AudioReference.NO_TRACK;
         }
@@ -54,7 +54,7 @@ public class SpotifySourceManager extends com.github.topi314.lavasrc.spotify.Spo
         var offset = 0;
         var pages = 0;
         do {
-            page = this.getJson(API_BASE + "playlists/" + id + "/tracks?limit=" + PLAYLIST_MAX_PAGE_ITEMS + "&offset=" + offset);
+            page = this.getJson(API_BASE + "playlists/" + id + "/tracks?limit=" + PLAYLIST_MAX_PAGE_ITEMS + "&offset=" + offset, false, true);
             offset += PLAYLIST_MAX_PAGE_ITEMS;
 
             for (var value : page.get("items").values()) {
