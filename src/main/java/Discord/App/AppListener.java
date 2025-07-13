@@ -51,7 +51,7 @@ public class AppListener {
                                         Server server = auth.get(UUID.fromString(s));
                                         AppInstance instance = new AppInstance(clientSocket, server, UUID.fromString(s), out);
                                         server.getAppInstances().add(instance);
-                                        out.println("yes");
+                                        out.println(server.getGuild().getName());
                                         new Thread(instance).start();
                                     } else {
                                         out.println("no");
