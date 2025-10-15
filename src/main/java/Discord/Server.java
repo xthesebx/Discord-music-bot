@@ -13,6 +13,7 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
+import dev.lavalink.youtube.YoutubeSourceOptions;
 import dev.lavalink.youtube.clients.*;
 import io.netty.buffer.ByteBuf;
 import moe.kyokobot.koe.*;
@@ -202,7 +203,8 @@ public class Server {
     //tvhtml5 for ytsearch
     //i think thats it for now? seems like web was broken, replaced with ios
     //can create new ClientOptions for clients to disable certain features when broken, need working ones for everything tho
-    private final static YoutubeAudioSourceManager ytsrc = new YoutubeAudioSourceManager(true, new TvHtml5EmbeddedWithThumbnail(), new AndroidMusicWithThumbnail(), new IosWithThumbnail(), new Music());
+    private final static YoutubeSourceOptions youtubeSourceOptions = new YoutubeSourceOptions().setAllowSearch(true).setRemoteCipher("https://cipher.kikkia.dev/", null, null);
+    private final static YoutubeAudioSourceManager ytsrc = new YoutubeAudioSourceManager(youtubeSourceOptions, new TvHtml5EmbeddedWithThumbnail(), new AndroidMusicWithThumbnail(), new IosWithThumbnail(), new Music());
     static {
         ytsrc.useOauth2(Reader.read(new File("youtubetoken.env")), true);
     }

@@ -12,9 +12,19 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.user.GenericUserEvent;
+import net.dv8tion.jda.api.events.user.UserActivityEndEvent;
+import net.dv8tion.jda.api.events.user.UserActivityStartEvent;
+import net.dv8tion.jda.api.events.user.update.GenericUserPresenceEvent;
+import net.dv8tion.jda.api.events.user.update.UserUpdateActivitiesEvent;
+import net.dv8tion.jda.api.events.user.update.UserUpdateActivityOrderEvent;
+import net.dv8tion.jda.api.events.user.update.UserUpdateOnlineStatusEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -87,7 +97,7 @@ public class NewMain extends ListenerAdapter implements VoiceDispatchInterceptor
         clientsecret = original.substring(original.indexOf("\n") + 1).substring(0, original.indexOf("\n"));
         spdc = original.substring(original.indexOf("\n") + 1).substring(original.indexOf("\n") + 1);
         apikey = Reader.read(new File("apikey.env"));
-        jda = JDABuilder.createDefault(apikey.strip()).enableIntents(GatewayIntent.GUILD_MESSAGES).enableIntents(GatewayIntent.GUILD_MESSAGE_TYPING).setStatus(OnlineStatus.OFFLINE).setVoiceDispatchInterceptor(this).build();
+        jda = JDABuilder.createDefault(apikey.strip()).enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_TYPING, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_MEMBERS).setStatus(OnlineStatus.OFFLINE).setMemberCachePolicy(MemberCachePolicy.ALL).enableCache(CacheFlag.ACTIVITY, CacheFlag.ONLINE_STATUS).setVoiceDispatchInterceptor(this).build();
         jda.addEventListener(this);
         jda.awaitReady();
         for (Guild guild : jda.getGuilds()) {
@@ -148,4 +158,39 @@ public class NewMain extends ListenerAdapter implements VoiceDispatchInterceptor
     public boolean onVoiceStateUpdate(@NotNull VoiceDispatchInterceptor.VoiceStateUpdate update) {
         return map.get(update.getGuild().getId()).onVoiceStateUpdate(update);
     }
+/*
+    @Override
+    public void onUserUpdateActivities(@NotNull UserUpdateActivitiesEvent event) {
+        Logger.error(event);
+    }
+
+    @Override
+    public void onUserActivityStart(@NotNull UserActivityStartEvent event) {
+        Logger.error(event);
+    }
+
+    @Override
+    public void onUserActivityEnd(@NotNull UserActivityEndEvent event) {
+        Logger.error(event);
+    }
+
+    @Override
+    public void onUserUpdateActivityOrder(@NotNull UserUpdateActivityOrderEvent event) {
+        Logger.error(event);
+    }
+
+    @Override
+    public void onGenericUser(@NotNull GenericUserEvent event) {
+        Logger.error(event);
+    }
+
+    @Override
+    public void onUserUpdateOnlineStatus(@NotNull UserUpdateOnlineStatusEvent event) {
+        Logger.error(event);
+    }
+
+    @Override
+    public void onGenericUserPresence(@NotNull GenericUserPresenceEvent event) {
+        Logger.error(event);
+    }*/
 }
