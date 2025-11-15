@@ -36,6 +36,10 @@ public class AppListener {
                 while (true) {
                     try {
                         Socket clientSocket = serverSocket.accept();
+                        if (clientSocket.getInetAddress().getHostAddress().startsWith("172")) {
+                            clientSocket.close();
+                            continue;
+                        }
                         new Thread(() -> {
                             try {
                                 Logger.debug(clientSocket.getInetAddress().getHostAddress());
