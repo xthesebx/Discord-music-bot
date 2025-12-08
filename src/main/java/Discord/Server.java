@@ -5,6 +5,7 @@ import Discord.commands.*;
 import Discord.playerHandlers.*;
 import Discord.twitchIntegration.ChatBotListener;
 import com.github.topi314.lavalyrics.LyricsManager;
+import com.github.topi314.lavasrc.spotify.SpotifySourceManager;
 import com.seb.io.Reader;
 import com.seb.io.Writer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -223,7 +224,8 @@ public class Server {
         koeClient = koe.newClient(guild.getJDA().getSelfUser().getIdLong());
 
         audioPlayerManager.registerSourceManager(ytsrc);
-        SpotifySourceManager spsrc = new SpotifySourceManager(null, NewMain.clientid, NewMain.clientsecret, "de", audioPlayerManager, NewMain.spdc);
+        SpotifySourceManager spsrc = new SpotifySourceManager(NewMain.clientid, NewMain.clientsecret, NewMain.spdc, "de", unused -> audioPlayerManager, new DefaultMirroringAudioTrackResolver(null));
+        spsrc.setPlaylistPageLimit(100);
         audioPlayerManager.registerSourceManager(spsrc);
         lyricsManager.registerLyricsManager(spsrc);
         /*
