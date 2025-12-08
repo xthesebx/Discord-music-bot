@@ -23,10 +23,15 @@ import java.util.ArrayList;
  *
  * @see com.github.topi314.lavasrc.spotify.SpotifySourceManager
  * just added songs so bigger playlists are possible
+ * Doesn't work anymore, using official Class now. Can set page limit there too.
+ * No reason to use it anymore
  * @author xXTheSebXx
  * @version 1.0-SNAPSHOT
  */
+@Deprecated
 public class SpotifySourceManager extends com.github.topi314.lavasrc.spotify.SpotifySourceManager {
+
+    private boolean preferAnonymousToken;
 
     /**
      * Constructor for Source Manager
@@ -45,7 +50,9 @@ public class SpotifySourceManager extends com.github.topi314.lavasrc.spotify.Spo
     /** {@inheritDoc} */
     @Override
     public AudioItem getPlaylist(String id, boolean preview) throws IOException {
-        var json = this.getJson(API_BASE + "playlists/" + id, false, true);
+        var anonymous = id.startsWith("37i9dQZ");
+
+        var json = this.getJson(API_BASE + "playlists/" + id, anonymous, this.preferAnonymousToken);
         if (json == null) {
             return AudioReference.NO_TRACK;
         }
