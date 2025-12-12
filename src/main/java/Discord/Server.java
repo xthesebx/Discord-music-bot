@@ -46,7 +46,6 @@ import static com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats.D
  */
 public class Server {
 
-    private final Koe koe;
     private final KoeClient koeClient;
 
     /**
@@ -220,7 +219,7 @@ public class Server {
         this.guild = guild;
         guildId = guild.getId();
         volume = readVolume();
-        koe = Koe.koe(KoeOptions.builder().setFramePollerFactory(new UdpQueueFramePollerFactory()).create());
+        Koe koe = Koe.koe(KoeOptions.builder().setFramePollerFactory(new UdpQueueFramePollerFactory()).create());
         koeClient = koe.newClient(guild.getJDA().getSelfUser().getIdLong());
 
         audioPlayerManager.registerSourceManager(ytsrc);
@@ -362,7 +361,7 @@ public class Server {
         event.getMessage().delete().queue();
         event.deferReply().queue();
         try {
-            AudioTrack track = tracks[Integer.parseInt(event.getButton().getId())];
+            AudioTrack track = tracks[Integer.parseInt(event.getButton().getCustomId())];
             if (track != null) {
                 trackScheduler.queue(track);
                 event.getHook().editOriginal("```Added " + track.getInfo().title + " by " + track.getInfo().author + " to queue```").queue();

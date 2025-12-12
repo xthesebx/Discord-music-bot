@@ -7,8 +7,9 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageEditData;
 
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -84,7 +86,7 @@ public class PlayMethods {
                         else
                             rows[i] = Button.primary(String.valueOf(i), track.getInfo().title + " by " + track.getInfo().author);
                     }
-                    MessageEditData messageEditData = new MessageEditBuilder().setActionRow(rows).setContent("Which one?").build();
+                    MessageEditData messageEditData = new MessageEditBuilder().setComponents(ActionRow.of(Arrays.asList(rows))).setContent("Which one?").build();
                     event.getHook().editOriginal(messageEditData).queue();
                     return;
                 }
@@ -161,7 +163,6 @@ public class PlayMethods {
         link = resolveLink(link);
         AudioPlayerManager audioPlayerManager = server.getAudioPlayerManager();
         TrackScheduler trackScheduler = server.getTrackScheduler();
-        DisconnectTimer dc = server.getDc();
 
         String finalLink = link;
         audioPlayerManager.loadItem(link, new AudioLoadResultHandler() {
