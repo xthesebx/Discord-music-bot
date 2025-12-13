@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -36,13 +37,12 @@ public class AppListener {
                 while (true) {
                     try {
                         Socket clientSocket = serverSocket.accept();
-                        if (clientSocket.getInetAddress().getHostAddress().startsWith("172")) {
+                        /*if (clientSocket.getInetAddress().getHostAddress().startsWith("172")) {
                             clientSocket.close();
                             continue;
-                        }
+                        }*/
                         new Thread(() -> {
                             try {
-                                Logger.debug(clientSocket.getInetAddress().getHostAddress());
                                 clientSocket.setSoTimeout(30000);
                                 BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -52,24 +52,26 @@ public class AppListener {
                                         return;
                                     }
                                     if (auth.containsKey(UUID.fromString(s))) {
+                                        Logger.debug(clientSocket.getInetAddress().getHostAddress());
                                         Server server = auth.get(UUID.fromString(s));
                                         AppInstance instance = new AppInstance(clientSocket, server, UUID.fromString(s), out);
                                         server.getAppInstances().add(instance);
                                         out.println(server.getGuild().getName());
                                         new Thread(instance).start();
                                     } else {
+                                        Logger.debug(clientSocket.getInetAddress().getHostAddress() + " tried to connect without doing command first");
                                         out.println("no");
                                         out.close();
                                         in.close();
                                         clientSocket.close();
                                     }
                                 } catch (IllegalArgumentException e) {
-                                    Logger.error(e);
+                                    Logger.error("illegal connection by ip: " + clientSocket.getInetAddress().getHostAddress());
                                     out.println("no");
                                     out.close();
                                     in.close();
                                     clientSocket.close();
-                                } catch (SocketException e) {
+                                } catch (SocketException | SocketTimeoutException e) {
                                     Logger.debug("reset socket on connect I guess");
                                 }
                             } catch (IOException ex) {
