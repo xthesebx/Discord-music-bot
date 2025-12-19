@@ -204,7 +204,7 @@ public class Server {
     //i think thats it for now? seems like web was broken, replaced with ios
     //can create new ClientOptions for clients to disable certain features when broken, need working ones for everything tho
     private final static YoutubeSourceOptions youtubeSourceOptions = new YoutubeSourceOptions().setAllowSearch(true).setRemoteCipher("https://cipher.kikkia.dev/", null, null);
-    private final static YoutubeAudioSourceManager ytsrc = new YoutubeAudioSourceManager(youtubeSourceOptions, new AndroidVrWithThumbnail(), new TvHtml5EmbeddedWithThumbnail(), new AndroidMusicWithThumbnail(), new IosWithThumbnail(), new Music());
+    private final static YoutubeAudioSourceManager ytsrc = new YoutubeAudioSourceManager(youtubeSourceOptions, new MWebWithThumbnail(), new AndroidVrWithThumbnail(), new TvHtml5EmbeddedWithThumbnail(), new AndroidMusicWithThumbnail(), new IosWithThumbnail(), new Music());
     static {
         ytsrc.useOauth2(Reader.read(new File("youtubetoken.env")), true);
     }
@@ -223,6 +223,7 @@ public class Server {
         koeClient = koe.newClient(guild.getJDA().getSelfUser().getIdLong());
 
         audioPlayerManager.registerSourceManager(ytsrc);
+        audioPlayerManager.setFrameBufferDuration(200);
         SpotifySourceManager spsrc = new SpotifySourceManager(NewMain.clientid, NewMain.clientsecret, NewMain.spdc, "de", unused -> audioPlayerManager, new DefaultMirroringAudioTrackResolver(null));
         spsrc.setPlaylistPageLimit(100);
         audioPlayerManager.registerSourceManager(spsrc);

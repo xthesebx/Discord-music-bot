@@ -33,6 +33,7 @@ public class StopCommand extends BasicCommand {
         }
         player.stopTrack();
         server.getDc().startTimer();
+        server.getAppInstances().forEach(AppInstance::setIdlePresence);
         if (server.getPlayer().isPaused()) server.getPlayer().setPaused(false);
         server.getAppInstances().forEach(AppInstance::setIdlePresence);
         event.reply("Stopped!").queue();

@@ -7,6 +7,8 @@ import Discord.commands.ShuffleCommand;
 import Discord.commands.StreamerModeCommands;
 import Discord.playerHandlers.RepeatState;
 import com.hawolt.logger.Logger;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -42,13 +44,13 @@ public class AppInstance implements Runnable {
     /**
      * <p>Getter for the field <code>appQueue</code>.</p>
      *
-     * @return a {@link Discord.App.AppQueue} object
+     * @return a {@link AppCommands} object
      */
-    public AppQueue getAppQueue() {
-        return appQueue;
+    public AppCommands getAppQueue() {
+        return appCommands;
     }
 
-    AppQueue appQueue;
+    AppCommands appCommands;
 
     /**
      * <p>Constructor for AppInstance.</p>
@@ -67,7 +69,26 @@ public class AppInstance implements Runnable {
         this.out = out;
         this.server = server;
         this.uuid = uuid;
-        this.appQueue = new AppQueue(server, this);
+        this.appCommands = new AppCommands(server, this);
+
+        server.getPlayer().addListener(new AudioEventAdapter() {
+            @Override
+            public void onPlayerPause(AudioPlayer player) {
+                server.getAppInstances().forEach(instance -> instance.out.println("paused " + server.getPlayer().getPlayingTrack().getPosition()));
+            }
+
+            @Override
+            public void onPlayerResume(AudioPlayer player) {
+                server.getAppInstances().forEach(instance -> {
+                    try {
+                        getAppQueue().initQueue(false);
+                    } catch (Exception e) {
+                        instance.closeClient();
+                        Logger.error(instance.uuid + ": " + e);
+                    }
+                });
+            }
+        });
     }
 
     /** {@inheritDoc} */
@@ -76,7 +97,7 @@ public class AppInstance implements Runnable {
         if (server.getAudioManager().getConnectedChannel() != null)
             setChannel(server.getAudioManager().getConnectedChannel().getJumpUrl());
         debouncer.debounce("appqueue", () ->
-                appQueue.initQueue(false), 1, TimeUnit.SECONDS);
+                appCommands.initQueue(false), 1, TimeUnit.SECONDS);
         String s;
         try {
             while ((s = in.readLine()) != null) {
@@ -107,26 +128,8 @@ public class AppInstance implements Runnable {
                     out.println("hello");
                 } else {
                     switch (s) {
-                        case "playpause" -> {
-                            if (server.getPlayer().isPaused()) {
-                                server.getPlayer().setPaused(false);
-                                server.getAppInstances().forEach(instance -> {
-                                    try {
-                                        instance.out.println("playing");
-                                    } catch (Exception e) {
-                                        instance.closeClient();
-                                        Logger.error(instance.uuid + ": " + e);
-                                    }
-                                });
-                            }
-                            else {
-                                server.getPlayer().setPaused(true);
-                                server.getAppInstances().forEach(AppInstance::setIdlePresence);
-                            }
-                        }
-                        case "nexttrack" -> {
-                            server.getTrackScheduler().nextTrack();
-                        }
+                        case "playpause" -> server.getPlayer().setPaused(!server.getPlayer().isPaused());
+                        case "nexttrack" -> server.getTrackScheduler().nextTrack();
                         case "join" -> {
                             try {
                                 server.join(server.getGuild().retrieveMemberVoiceStateById(server.members.get(uuid)).complete().getChannel());
@@ -134,15 +137,14 @@ public class AppInstance implements Runnable {
                                 Logger.debug("not in channel? : " + e);
                             }
                         }
-                        case "leave" -> {
-                            server.leave();
-                        }
+                        case "leave" -> server.leave();
                         case "stop" -> {
                             server.getPlayer().stopTrack();
                             server.getDc().startTimer();
+                            server.getAppInstances().forEach(AppInstance::setIdlePresence);
                             if (server.getPlayer().isPaused()) server.getPlayer().setPaused(false);
                             server.getTrackScheduler().repeating = RepeatState.NO_REPEAT;
-                            server.getAppInstances().forEach(instance -> instance.appQueue.repeat());
+                            server.getAppInstances().forEach(instance -> instance.appCommands.repeat());
                             server.getAppInstances().forEach(AppInstance::setIdlePresence);
                         }
                         case "shuffle" -> ShuffleCommand.shuffle(server);

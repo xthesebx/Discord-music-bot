@@ -1,5 +1,6 @@
 package Discord.playerHandlers;
 
+import Discord.App.AppInstance;
 import Discord.Server;
 import com.hawolt.logger.Logger;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -94,9 +95,7 @@ public class TrackScheduler extends AudioEventAdapter {
 		if (!player.startTrack(track, true)) {
 			queue2.offer(track);
 		} else server.getAppInstances().forEach(instance -> instance.getAppQueue().nextQueue());
-		server.getAppInstances().forEach(instance -> {
-			instance.getAppQueue().insertQueue(track, String.valueOf(queue2.size() - 1));
-		});
+		server.getAppInstances().forEach(instance -> instance.getAppQueue().insertQueue(track, String.valueOf(queue2.size() - 1)));
 		server.getDc().stopTimer();
 	}
 
@@ -118,6 +117,7 @@ public class TrackScheduler extends AudioEventAdapter {
 					player.stopTrack();
 					i++;
 					server.getDc().startTimer();
+					server.getAppInstances().forEach(AppInstance::setIdlePresence);
 				}
 			}
 			case REPEAT_SINGLE -> {
@@ -140,9 +140,7 @@ public class TrackScheduler extends AudioEventAdapter {
 				}
 			}
 		}
-		server.getAppInstances().forEach(instance -> {
-			instance.getAppQueue().nextQueue();
-		});
+		server.getAppInstances().forEach(instance -> instance.getAppQueue().nextQueue());
 	}
 	
 	/**
@@ -166,9 +164,7 @@ public class TrackScheduler extends AudioEventAdapter {
 		} else {
 			queue.clear();
 			i = 1;
-			server.getAppInstances().forEach(instance -> {
-				instance.getAppQueue().clearQueue();
-			});
+			server.getAppInstances().forEach(instance -> instance.getAppQueue().clearQueue());
 		}
 	}
 
@@ -222,10 +218,8 @@ public class TrackScheduler extends AudioEventAdapter {
 	 * @param to a int
 	 */
 	public void move(int from, int to) {
-		List<AudioTrack> temp = new ArrayList<>();
-		List<AudioTrack> temp2 = new ArrayList<>();
-		temp.addAll(queue);
-		temp2.addAll(queue2);
+        List<AudioTrack> temp = new ArrayList<>(queue);
+        List<AudioTrack> temp2 = new ArrayList<>(queue2);
 		queue.clear();
 		queue2.clear();
 		AudioTrack track;

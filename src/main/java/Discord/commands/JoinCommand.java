@@ -34,6 +34,7 @@ public class JoinCommand extends BasicCommand {
             }
             case JOINED -> {
                 event.reply("Connected to the voice channel!").queue();
+                return;
             }
             case CHANNELFULL -> {
                 event.reply("I can't join because the channel is full").queue();
