@@ -223,7 +223,7 @@ public class Server {
         koeClient = koe.newClient(guild.getJDA().getSelfUser().getIdLong());
 
         audioPlayerManager.registerSourceManager(ytsrc);
-        audioPlayerManager.setFrameBufferDuration(200);
+        audioPlayerManager.setFrameBufferDuration(500);
         SpotifySourceManager spsrc = new SpotifySourceManager(NewMain.clientid, NewMain.clientsecret, NewMain.spdc, "de", unused -> audioPlayerManager, new DefaultMirroringAudioTrackResolver(null));
         spsrc.setPlaylistPageLimit(100);
         audioPlayerManager.registerSourceManager(spsrc);
