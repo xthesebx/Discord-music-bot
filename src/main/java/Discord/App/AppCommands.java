@@ -44,6 +44,7 @@ public class AppCommands {
     public void initQueue(boolean repeat) {
         repeat();
         volume();
+        clearQueue();
         int size = trackScheduler.queue.size() - trackScheduler.i + trackScheduler.queue2.size() + 1;
         String[] titles = new String[size];
         String[] authors = new String[size];
