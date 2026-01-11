@@ -52,8 +52,8 @@ public class VolumeCommand extends BasicCommand {
     public static void setVolume(Server server, int volume) {
         server.getPlayer().setVolume(volume);
         server.setVolume(volume);
-        server.getAppInstances().forEach(appInstance -> appInstance.getAppQueue().volume());
+        server.getAppInstances().values().forEach(appInstance -> appInstance.getAppQueue().volume());
         Writer.write(String.valueOf(volume), new File("volumes/" + server.getGuildId()));
-        server.getAppInstances().forEach(instance -> instance.getAppQueue().volume());
+        server.getAppInstances().values().forEach(instance -> instance.getAppQueue().volume());
     }
 }

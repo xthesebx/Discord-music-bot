@@ -37,10 +37,10 @@ public class AppListener {
                 while (true) {
                     try {
                         Socket clientSocket = serverSocket.accept();
-                        /*if (clientSocket.getInetAddress().getHostAddress().startsWith("172")) {
+                        if (clientSocket.getInetAddress().getHostAddress().startsWith("172")) {
                             clientSocket.close();
                             continue;
-                        }*/
+                        }
                         new Thread(() -> {
                             try {
                                 clientSocket.setSoTimeout(30000);
@@ -55,7 +55,8 @@ public class AppListener {
                                         Logger.debug(clientSocket.getInetAddress().getHostAddress());
                                         Server server = auth.get(UUID.fromString(s));
                                         AppInstance instance = new AppInstance(clientSocket, server, UUID.fromString(s), out);
-                                        server.getAppInstances().add(instance);
+                                        if (server.getAppInstances().containsKey(UUID.fromString(s))) server.getAppInstances().get(UUID.fromString(s)).close();
+                                        server.getAppInstances().put(UUID.fromString(s), instance);
                                         out.println(server.getGuild().getName());
                                         new Thread(instance).start();
                                     } else {

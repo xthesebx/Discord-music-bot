@@ -49,6 +49,7 @@ public class AppInstance implements Runnable {
     public AppCommands getAppQueue() {
         return appCommands;
     }
+    private final AudioEventAdapter listener;
 
     AppCommands appCommands;
 
@@ -71,24 +72,27 @@ public class AppInstance implements Runnable {
         this.uuid = uuid;
         this.appCommands = new AppCommands(server, this);
 
-        server.getPlayer().addListener(new AudioEventAdapter() {
+        listener = new AudioEventAdapter() {
             @Override
             public void onPlayerPause(AudioPlayer player) {
-                server.getAppInstances().forEach(instance -> instance.out.println("paused " + server.getPlayer().getPlayingTrack().getPosition()));
+                out.println("paused " + server.getPlayer().getPlayingTrack().getPosition());
             }
 
             @Override
             public void onPlayerResume(AudioPlayer player) {
-                server.getAppInstances().forEach(instance -> {
-                    try {
-                        getAppQueue().initQueue(false);
-                    } catch (Exception e) {
-                        instance.closeClient();
-                        Logger.error(instance.uuid + ": " + e);
-                    }
-                });
+                Logger.error("resume");
+                try {
+                    //TODO: replace with proper handling, probably have to cache current playing song in app
+                    out.println("resumed " + server.getPlayer().getPlayingTrack().getPosition());
+                } catch (NullPointerException e) {
+
+                } catch (Exception e) {
+                    close();
+                    Logger.error(uuid + ": " + e);
+                }
             }
-        });
+        };
+        server.getPlayer().addListener(listener);
     }
 
     /** {@inheritDoc} */
@@ -141,11 +145,11 @@ public class AppInstance implements Runnable {
                         case "stop" -> {
                             server.getPlayer().stopTrack();
                             server.getDc().startTimer();
-                            server.getAppInstances().forEach(AppInstance::setIdlePresence);
+                            server.getAppInstances().values().forEach(AppInstance::setIdlePresence);
                             if (server.getPlayer().isPaused()) server.getPlayer().setPaused(false);
                             server.getTrackScheduler().repeating = RepeatState.NO_REPEAT;
-                            server.getAppInstances().forEach(instance -> instance.appCommands.repeat());
-                            server.getAppInstances().forEach(AppInstance::setIdlePresence);
+                            server.getAppInstances().values().forEach(instance -> instance.appCommands.repeat());
+                            server.getAppInstances().values().forEach(AppInstance::setIdlePresence);
                         }
                         case "shuffle" -> ShuffleCommand.shuffle(server);
                         case "repeat" -> server.getTrackScheduler().toggleRepeat();
@@ -156,16 +160,13 @@ public class AppInstance implements Runnable {
             }
         } catch (IOException e) {
             if (e instanceof SocketException) {
-                closeClient();
+                close();
             }
         }
     }
 
-    private void closeClient() {
-        close();
-        synchronized (server.getAppInstances()) {
-            server.getAppInstances().remove(this);
-        }
+    public void repeat() {
+        out.println("again");
     }
 
     /**
@@ -174,6 +175,10 @@ public class AppInstance implements Runnable {
     public void close() {
         try {
             out.println("close");
+            synchronized (server.getAppInstances()) {
+                server.getAppInstances().remove(this);
+            }
+            server.getPlayer().removeListener(listener);
             clientSocket.close();
         } catch (IOException e) {
             Logger.error(e);

@@ -5,6 +5,7 @@ import Discord.commands.*;
 import Discord.playerHandlers.*;
 import Discord.twitchIntegration.ChatBotListener;
 import com.github.topi314.lavalyrics.LyricsManager;
+import com.github.topi314.lavasrc.lrclib.LrcLibLyricsManager;
 import com.github.topi314.lavasrc.spotify.SpotifySourceManager;
 import com.seb.io.Reader;
 import com.seb.io.Writer;
@@ -175,14 +176,14 @@ public class Server {
      * members connected to the app
      */
     public final HashMap<UUID, String> members = new HashMap<>();
-    private final ArrayList<AppInstance> appInstances = new ArrayList<>();
+    private final HashMap<UUID, AppInstance> appInstances = new HashMap<>();
 
     /**
      * <p>Getter for the field <code>appInstances</code>.</p>
      *
      * @return a {@link java.util.List} object
      */
-    public List<AppInstance> getAppInstances() {
+    public HashMap<UUID, AppInstance> getAppInstances() {
         return appInstances;
     }
 
@@ -223,11 +224,11 @@ public class Server {
         koeClient = koe.newClient(guild.getJDA().getSelfUser().getIdLong());
 
         audioPlayerManager.registerSourceManager(ytsrc);
-        audioPlayerManager.setFrameBufferDuration(500);
+        audioPlayerManager.setFrameBufferDuration(2000);
         SpotifySourceManager spsrc = new SpotifySourceManager(NewMain.clientid, NewMain.clientsecret, NewMain.spdc, "de", unused -> audioPlayerManager, new DefaultMirroringAudioTrackResolver(null));
         spsrc.setPlaylistPageLimit(100);
         audioPlayerManager.registerSourceManager(spsrc);
-        lyricsManager.registerLyricsManager(spsrc);
+        lyricsManager.registerLyricsManager(new LrcLibLyricsManager());
         /*
         can play local files too if wanted, not integrated rn
          */
@@ -285,7 +286,7 @@ public class Server {
             return JoinStates.CHANNELFULL;
         }
         // Obviously people do not notice someone/something connecting.
-        appInstances.forEach(instance -> instance.setChannel(channel.getJumpUrl()));
+        appInstances.values().forEach(instance -> instance.setChannel(channel.getJumpUrl()));
         return JoinStates.JOINED;
     }
 
@@ -310,8 +311,8 @@ public class Server {
             streamer = null;
         }
         trackScheduler.repeating = RepeatState.NO_REPEAT;
-        appInstances.forEach(instance -> instance.getAppQueue().repeat());
-        appInstances.forEach(AppInstance::setIdlePresence);
+        appInstances.values().forEach(instance -> instance.getAppQueue().repeat());
+        appInstances.values().forEach(AppInstance::setIdlePresence);
         return true;
     }
 

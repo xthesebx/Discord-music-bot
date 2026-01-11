@@ -59,10 +59,10 @@ public class TrackScheduler extends AudioEventAdapter {
 		queue.addAll(tracks);
 		new Thread(() -> {
 			for (AudioTrack track : queue) {
-				server.getAppInstances().forEach(instance -> instance.getAppQueue().addQueue(track));
+				server.getAppInstances().values().forEach(instance -> instance.getAppQueue().addQueue(track));
 			}
 		}).start();
-		if (player.startTrack(tracks.get(0).makeClone(), true)) server.getAppInstances().forEach(instance -> instance.getAppQueue().nextQueue());
+		if (player.startTrack(tracks.get(0).makeClone(), true)) server.getAppInstances().values().forEach(instance -> instance.getAppQueue().nextQueue());
 	}
 	
 	/**
@@ -78,9 +78,9 @@ public class TrackScheduler extends AudioEventAdapter {
 		// something is playing, it returns false and does nothing. In that case the player was already playing so this
 		// track goes to the queue instead.
 		queue.add(track);
-		server.getAppInstances().forEach(instance -> instance.getAppQueue().addQueue(track));
+		server.getAppInstances().values().forEach(instance -> instance.getAppQueue().addQueue(track));
 		if (player.startTrack(track.makeClone(), true)) {
-			server.getAppInstances().forEach(instance -> instance.getAppQueue().nextQueue());
+			server.getAppInstances().values().forEach(instance -> instance.getAppQueue().nextQueue());
 		}
 	}
 
@@ -94,8 +94,8 @@ public class TrackScheduler extends AudioEventAdapter {
 	public void request(AudioTrack track) {
 		if (!player.startTrack(track, true)) {
 			queue2.offer(track);
-		} else server.getAppInstances().forEach(instance -> instance.getAppQueue().nextQueue());
-		server.getAppInstances().forEach(instance -> instance.getAppQueue().insertQueue(track, String.valueOf(queue2.size() - 1)));
+		} else server.getAppInstances().values().forEach(instance -> instance.getAppQueue().nextQueue());
+		server.getAppInstances().values().forEach(instance -> instance.getAppQueue().insertQueue(track, String.valueOf(queue2.size() - 1)));
 		server.getDc().stopTimer();
 	}
 
@@ -117,13 +117,16 @@ public class TrackScheduler extends AudioEventAdapter {
 					player.stopTrack();
 					i++;
 					server.getDc().startTimer();
-					server.getAppInstances().forEach(AppInstance::setIdlePresence);
+					server.getAppInstances().values().forEach(AppInstance::setIdlePresence);
 				}
 			}
 			case REPEAT_SINGLE -> {
 				if (!queue2.isEmpty()) {
 					player.startTrack(queue2.poll(), false);
-				} else player.startTrack(queue.get(i - 1).makeClone(), false);
+				} else {
+					player.startTrack(queue.get(i - 1).makeClone(), false);
+					server.getAppInstances().values().forEach(AppInstance::repeat);
+				}
 				return;
 			}
 			case REPEAT_QUEUE -> {
@@ -135,12 +138,12 @@ public class TrackScheduler extends AudioEventAdapter {
 				} else {
 					i = 0;
 					player.startTrack(queue.get(i).makeClone(), false);
-					server.getAppInstances().forEach(instance -> instance.getAppQueue().initQueue(true));
+					server.getAppInstances().values().forEach(instance -> instance.getAppQueue().initQueue(true));
 					i++;
 				}
 			}
 		}
-		server.getAppInstances().forEach(instance -> instance.getAppQueue().nextQueue());
+		server.getAppInstances().values().forEach(instance -> instance.getAppQueue().nextQueue());
 	}
 	
 	/**
@@ -164,7 +167,7 @@ public class TrackScheduler extends AudioEventAdapter {
 		} else {
 			queue.clear();
 			i = 1;
-			server.getAppInstances().forEach(instance -> instance.getAppQueue().clearQueue());
+			server.getAppInstances().values().forEach(instance -> instance.getAppQueue().clearQueue());
 		}
 	}
 
@@ -179,7 +182,7 @@ public class TrackScheduler extends AudioEventAdapter {
 			case REPEAT_QUEUE -> repeating = RepeatState.REPEAT_SINGLE;
 			case REPEAT_SINGLE -> repeating = RepeatState.NO_REPEAT;
 		}
-		server.getAppInstances().forEach(instance -> instance.getAppQueue().repeat());
+		server.getAppInstances().values().forEach(instance -> instance.getAppQueue().repeat());
 		return repeating;
 	}
 
@@ -246,7 +249,7 @@ public class TrackScheduler extends AudioEventAdapter {
 		if (i < 2) return;
 		i--;
 		i--;
-		server.getAppInstances().forEach(instance -> {
+		server.getAppInstances().values().forEach(instance -> {
 			instance.getAppQueue().insertQueue(queue.get(i), "0");
 			instance.getAppQueue().insertQueue(queue.get(i + 1), "1");
 		});
