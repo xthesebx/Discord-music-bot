@@ -347,7 +347,6 @@ public class Server {
     public void onVoiceServerUpdate(@NotNull VoiceDispatchInterceptor.VoiceServerUpdate update) {
         voiceState = new VoiceState(update.getToken(), update.getEndpoint(), update.getSessionId(), guild.getSelfMember().getVoiceState().getChannel().getId());
         lastVoiceState = voiceState;
-        Logger.error(lavalink.getLinkIfCached(getGuildId()));
         lavalink.getOrCreateLink(guildId).onVoiceServerUpdate(voiceState);
         getPlayer().ifPresent(player -> {
             player.setPaused(true);
