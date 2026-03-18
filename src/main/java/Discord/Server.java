@@ -4,25 +4,20 @@ import Discord.App.AppInstance;
 import Discord.commands.*;
 import Discord.playerHandlers.*;
 import Discord.twitchIntegration.ChatBotListener;
-import com.github.topi314.lavalyrics.LyricsManager;
-import com.github.topi314.lavasrc.lrclib.LrcLibLyricsManager;
-import com.github.topi314.lavasrc.spotify.SpotifySourceManager;
+import com.hawolt.logger.Logger;
 import com.seb.io.Reader;
 import com.seb.io.Writer;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame;
-import dev.lavalink.youtube.YoutubeAudioSourceManager;
-import dev.lavalink.youtube.YoutubeSourceOptions;
+import dev.arbjerg.lavalink.client.LavalinkClient;
+import dev.arbjerg.lavalink.client.Link;
+import dev.arbjerg.lavalink.client.player.LavalinkPlayer;
+import dev.arbjerg.lavalink.client.player.Track;
+import dev.arbjerg.lavalink.protocol.v4.VoiceState;
 import dev.lavalink.youtube.clients.*;
-import io.netty.buffer.ByteBuf;
 import moe.kyokobot.koe.*;
 import moe.kyokobot.koe.codec.udpqueue.UdpQueueFramePollerFactory;
-import moe.kyokobot.koe.media.OpusAudioFrameProvider;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion;
@@ -34,10 +29,8 @@ import net.dv8tion.jda.api.managers.AudioManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
-import java.nio.ByteBuffer;
 import java.util.*;
 
-import static com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats.DISCORD_OPUS;
 
 /**
  * The class for every server
@@ -46,6 +39,9 @@ import static com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats.D
  * @version 1.0-SNAPSHOT
  */
 public class Server {
+
+    Track[] tracks = new Track[5];
+
 
     private final KoeClient koeClient;
 
@@ -63,7 +59,7 @@ public class Server {
      *
      * @return guildId as string
      */
-    public String getGuildId() {
+    public Long getGuildId() {
         return guildId;
     }
 
@@ -86,15 +82,6 @@ public class Server {
     }
 
     /**
-     * getter for AudioPlayer
-     *
-     * @return the AudioPlayer
-     */
-    public AudioPlayer getPlayer() {
-        return player;
-    }
-
-    /**
      * getter for Dc
      *
      * @return the Dc
@@ -103,27 +90,13 @@ public class Server {
         return dc;
     }
 
-    /**
-     * getter for AudioPlayerManager
-     *
-     * @return the AudioPlayerManager
-     * currently not in use
-     */
-    public AudioPlayerManager getAudioPlayerManager() {
-        return audioPlayerManager;
-    }
 
-    /**
-     * getter for LyricsManager
-     *
-     * @return the LyricsManager
-     */
-    public LyricsManager getLyricsManager() {
-        return lyricsManager;
-    }
-
-    private final String guildId;
+    private final Long guildId;
     private int volume;
+
+    public int getVolume() {
+        return volume;
+    }
 
     /**
      * <p>Getter for the field <code>guild</code>.</p>
@@ -155,22 +128,13 @@ public class Server {
 
     private Member streamer;
     private final Guild guild;
-    private final AudioPlayerManager audioPlayerManager = new DefaultAudioPlayerManager();
-    private final AudioPlayer player = audioPlayerManager.createPlayer();
     private final AudioManager audioManager;
     private final TrackScheduler trackScheduler;
     private final DisconnectTimer dc;
+    private final LavalinkClient lavalink;
 
     /**
-     * <p>Getter for the field <code>tracks</code>.</p>
-     *
-     * @return an array of {@link com.sedmelluq.discord.lavaplayer.track.AudioTrack} objects
-     */
-    public AudioTrack[] getTracks() {
-        return tracks;
-    }
 
-    private final AudioTrack[] tracks = new AudioTrack[5];
     private final LyricsManager lyricsManager = new LyricsManager();
     /**
      * members connected to the app
@@ -204,42 +168,27 @@ public class Server {
     //tvhtml5 for ytsearch
     //i think thats it for now? seems like web was broken, replaced with ios
     //can create new ClientOptions for clients to disable certain features when broken, need working ones for everything tho
-    private final static YoutubeSourceOptions youtubeSourceOptions = new YoutubeSourceOptions().setAllowSearch(true).setRemoteCipher("https://cipher.kikkia.dev/", null, null);
-    private final static YoutubeAudioSourceManager ytsrc = new YoutubeAudioSourceManager(youtubeSourceOptions, new MWebWithThumbnail(), new AndroidVrWithThumbnail(), new TvHtml5EmbeddedWithThumbnail(), new AndroidMusicWithThumbnail(), new IosWithThumbnail(), new Music());
-    static {
-        ytsrc.useOauth2(Reader.read(new File("youtubetoken.env")), true);
-    }
-
     /**
      * Server creation
      *
      * @param guild to get needed info from
      * @throws java.io.IOException if any.
      */
-    public Server(Guild guild) throws IOException {
+    public Server(Guild guild, LavalinkClient lavalink) throws IOException {
+        this.lavalink = lavalink;
         this.guild = guild;
-        guildId = guild.getId();
+        guildId = guild.getIdLong();
         volume = readVolume();
         Koe koe = Koe.koe(KoeOptions.builder().setFramePollerFactory(new UdpQueueFramePollerFactory()).create());
         koeClient = koe.newClient(guild.getJDA().getSelfUser().getIdLong());
-
-        audioPlayerManager.registerSourceManager(ytsrc);
-        audioPlayerManager.setFrameBufferDuration(2000);
-        SpotifySourceManager spsrc = new SpotifySourceManager(NewMain.clientid, NewMain.clientsecret, NewMain.spdc, "de", unused -> audioPlayerManager, new DefaultMirroringAudioTrackResolver(null));
-        spsrc.setPlaylistPageLimit(100);
-        audioPlayerManager.registerSourceManager(spsrc);
-        lyricsManager.registerLyricsManager(new LrcLibLyricsManager());
         /*
         can play local files too if wanted, not integrated rn
          */
-        audioPlayerManager.setItemLoaderThreadPoolSize(Runtime.getRuntime().availableProcessors());
         this.audioManager = guild.getAudioManager();
         trackScheduler = new TrackScheduler(this);
-        player.addListener(trackScheduler);
         dc = new DisconnectTimer(this);
         Thread dcThread = new Thread(dc);
         dcThread.start();
-        player.setVolume(volume);
     }
 
     /**
@@ -263,7 +212,7 @@ public class Server {
      */
     public JoinStates join (AudioChannelUnion channel) {
         //TODO: Monitor, might have some issues doing it regularly or something, sometimes get rate limits out of nowhere
-        if (player.getPlayingTrack() == null) {
+        if (getPlayer().isEmpty() || getPlayer().get().getTrack() == null) {
             dc.startTimer();
         }
         if (channel == null) {
@@ -278,8 +227,10 @@ public class Server {
         VoiceChannel connectedChannel = channel.asVoiceChannel();
         // Checks if they are in a channel -- not being in a channel means that the variable = null.
         // Gets the audio manager.
-        var conn = koeClient.createConnection(Long.parseLong(guildId));
-        conn.setAudioSender(new AudioSender(player, conn));
+        lavalink.getOrCreateLink(guildId);
+        koeClient.createConnection(guildId);
+
+
         try {
             audioManager.openAudioConnection(connectedChannel);
         } catch (InsufficientPermissionException e) {
@@ -290,6 +241,17 @@ public class Server {
         return JoinStates.JOINED;
     }
 
+    public Optional<Link> getLink() {
+        return Optional.ofNullable(
+                NewMain.client.getLinkIfCached(guildId)
+        );
+    }
+
+    public Optional<LavalinkPlayer> getPlayer() {
+        return getLink().map(Link::getCachedPlayer);
+    }
+
+    VoiceState lastVoiceState;
     /**
      * <p>leave.</p>
      *
@@ -303,9 +265,11 @@ public class Server {
         audioManager.closeAudioConnection();
         koeClient.getConnection(guild.getIdLong()).disconnect();
         // Notify the user.
-        player.stopTrack();
+        getPlayer().ifPresent(player -> {
+            player.setTrack(null);
+            player.setPaused(false);
+        });
         dc.stopTimer();
-        if (player.isPaused()) player.setPaused(false);
         if (streamer != null) {
             chatBotListener.disconnect(false);
             streamer = null;
@@ -322,6 +286,7 @@ public class Server {
      * @param event the event coming from the newMain
      */
     public void onSlashCommandInteraction (SlashCommandInteractionEvent event) {
+
         String s = event.getName();
         if (streamer != null && (!event.getMember().equals(streamer) || !event.getUser().getId().equals("277064996264083456"))) {
             event.reply("streamer mode is active!").queue();
@@ -363,19 +328,31 @@ public class Server {
         event.getMessage().delete().queue();
         event.deferReply().queue();
         try {
-            AudioTrack track = tracks[Integer.parseInt(event.getButton().getCustomId())];
+            Track track = tracks[Integer.parseInt(event.getButton().getCustomId())];
             if (track != null) {
                 trackScheduler.queue(track);
-                event.getHook().editOriginal("```Added " + track.getInfo().title + " by " + track.getInfo().author + " to queue```").queue();
+                event.getHook().editOriginal("```Added " + track.getInfo().getTitle() + " by " + track.getInfo().getAuthor() + " to queue```").queue();
             } else event.getHook().editOriginal("```Search is no longer available due to a bot restart```").queue();
         } catch (NullPointerException e) {
             event.getHook().editOriginal("```Button is from old Bot Task, cant execute it```").queue();
         }
     }
 
-    public void onVoiceServerUpdate(@NotNull VoiceDispatchInterceptor.VoiceServerUpdate update) {
+    public Track[] getTracks() {
+        return tracks;
+    }
 
-        player.setPaused(true);
+    public VoiceState voiceState;
+
+    public void onVoiceServerUpdate(@NotNull VoiceDispatchInterceptor.VoiceServerUpdate update) {
+        voiceState = new VoiceState(update.getToken(), update.getEndpoint(), update.getSessionId(), guild.getSelfMember().getVoiceState().getChannel().getId());
+        lastVoiceState = voiceState;
+        Logger.error(lavalink.getLinkIfCached(getGuildId()));
+        lavalink.getOrCreateLink(guildId).onVoiceServerUpdate(voiceState);
+        getPlayer().ifPresent(player -> {
+            player.setPaused(true);
+        });
+        lavalink.getOrCreateLink(guildId);
         var conn = koeClient.getConnection(update.getGuildIdLong());
         if (conn != null) {
             var info = new VoiceServerInfo(
@@ -384,10 +361,11 @@ public class Server {
                     update.getToken()
             );
             conn.connect(info);
-            conn.setAudioSender(new AudioSender(player, conn));
             conn.startAudioFramePolling();
         }
-        player.setPaused(false);
+        getPlayer().ifPresent(player -> player.setPaused(false));
+
+        trackScheduler.ready = true;
     }
 
     public boolean onVoiceStateUpdate(@NotNull VoiceDispatchInterceptor.VoiceStateUpdate update) {
@@ -395,30 +373,5 @@ public class Server {
             koeClient.destroyConnection(update.getGuildIdLong());
         }
         return true;
-    }
-
-    private static class AudioSender extends OpusAudioFrameProvider {
-        private final AudioPlayer player;
-        private final MutableAudioFrame frame;
-        private final ByteBuffer frameBuffer;
-
-        AudioSender(AudioPlayer player, MediaConnection connection) {
-            super(connection);
-            this.player = player;
-            this.frame = new MutableAudioFrame();
-            this.frameBuffer = ByteBuffer.allocate(DISCORD_OPUS.maximumChunkSize());
-            frame.setBuffer(frameBuffer);
-            frame.setFormat(DISCORD_OPUS);
-        }
-
-        @Override
-        public boolean canProvide() {
-            return player.provide(frame);
-        }
-
-        @Override
-        public void retrieveOpusFrame(ByteBuf targetBuffer) {
-            targetBuffer.writeBytes(frameBuffer.array(), 0, frame.getDataLength());
-        }
     }
 }

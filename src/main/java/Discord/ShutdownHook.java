@@ -24,8 +24,11 @@ public class ShutdownHook implements Runnable {
     /** {@inheritDoc} */
     @Override
     public void run() {
-        for (String s : main.map.keySet()) {
+        for (Long s : main.map.keySet()) {
             main.map.get(s).getAppInstances().values().forEach(AppInstance::close);
+            if (NewMain.client.getLinkIfCached(s) != null)
+                NewMain.client.getLinkIfCached(s).destroy();
+            main.map.get(s).leave();
         }
     }
 }

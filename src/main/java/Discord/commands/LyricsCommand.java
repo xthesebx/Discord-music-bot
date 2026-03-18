@@ -24,7 +24,7 @@ public class LyricsCommand extends BasicCommand {
     public LyricsCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
         StringBuilder lyrics = new StringBuilder("```");
-        try {
+        /*try {
             List<AudioLyrics.Line> lines = server.getLyricsManager().loadLyrics(server.getPlayer().getPlayingTrack()).getLines();
             assert lines != null;
             for (AudioLyrics.Line line : lines) {
@@ -38,6 +38,6 @@ public class LyricsCommand extends BasicCommand {
             channel.sendMessage(lyrics + "```").queue();
         } catch (NullPointerException e) {
             event.reply("```No Lyrics found```").queue();
-        }
+        }*/
     }
 }

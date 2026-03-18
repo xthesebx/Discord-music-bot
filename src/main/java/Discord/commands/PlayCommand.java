@@ -1,7 +1,10 @@
 package Discord.commands;
 
+import Discord.NewMain;
+import Discord.playerHandlers.DiscordPlayCommand;
 import Discord.playerHandlers.PlayMethods;
 import Discord.Server;
+import dev.arbjerg.lavalink.client.Link;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -45,6 +48,10 @@ public class PlayCommand extends BasicCommand {
             }
         }
         event.deferReply().queue();
-        PlayMethods.play(link, event, server);
+        link = PlayMethods.resolveLink(link);
+        final Link test = NewMain.client.getOrCreateLink(server.getGuildId());
+
+        PlayMethods.servers.add(server);
+        test.loadItem(link).subscribe(new DiscordPlayCommand(event, server));
     }
 }

@@ -19,6 +19,6 @@ public class PauseCommand extends BasicCommand {
     public PauseCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
         event.reply("Pausing the Music").queue();
-        server.getPlayer().setPaused(true);
+        server.getPlayer().get().setPaused(true).subscribe();
     }
 }
