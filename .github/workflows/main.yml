@@ -22,6 +22,8 @@ jobs:
             echo "Starting deployment..."
             cd /home/discord/Discord-music-bot
             screen -X -S discordbot quit || true
-            git pull
+            git fetch
+            git checkouc ${{ github.ref_name }}
+            git pull origin ${{origin.ref_name }}
             cd ..
             ./start.sh
