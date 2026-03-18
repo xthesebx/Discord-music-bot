@@ -64,7 +64,7 @@ public class TrackScheduler {
 			}
 		}).start();
 		if (player == null || player.getTrack() == null) {
-			server.getPlayer().ifPresentOrElse(player -> player.setTrack(tracks.get(0).makeClone()), () -> {
+			server.getPlayer().ifPresentOrElse(player -> player.setTrack(tracks.get(0).makeClone()).subscribe(), () -> {
 				NewMain.client.getOrCreateLink(server.getGuildId()).createOrUpdatePlayer().setTrack(tracks.get(0)).setVolume(server.getVolume()).subscribe();
 			});
 			server.getAppInstances().values().forEach(instance -> instance.getAppQueue().nextQueue());
@@ -88,9 +88,8 @@ public class TrackScheduler {
 		if (player == null || player.getTrack() == null) {
 
 			Logger.error(server.getPlayer().isPresent());
-			server.getPlayer().ifPresentOrElse(player -> player.setTrack(track.makeClone()), () -> {
+			server.getPlayer().ifPresentOrElse(player -> player.setTrack(track.makeClone()).subscribe(), () -> {
 				NewMain.client.getOrCreateLink(server.getGuildId()).createOrUpdatePlayer().setTrack(track.makeClone()).setVolume(server.getVolume()).setPaused(false).subscribe();
-				Logger.error(NewMain.client.getLinkIfCached(server.getGuildId()));
 			});
 			server.getAppInstances().values().forEach(instance -> instance.getAppQueue().nextQueue());
 		}
