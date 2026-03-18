@@ -1,0 +1,35 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main
+      - LavalinkRework
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run SSH/SCP Pipeline
+        uses: xthesebx/Discord-music-bot@v1
+        with:
+          # --- Connection Details (from Secrets) ---
+          host: ${{ secrets.SSH_HOST }}
+          user: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+
+          # --- Pipeline Commands ---
+          first_ssh: |
+            echo "Starting deployment..."
+            echo "Connected from a GitHub Actions runner!"
+            cd /home/discord
+            cd Discord-music-bot
+            screen -X -S discordbot quit
+            git pull
+            cd ..
+            ./start.sh
