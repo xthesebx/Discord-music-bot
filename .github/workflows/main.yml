@@ -24,6 +24,6 @@ jobs:
             screen -X -S discordbot quit || true
             git fetch
             git checkout ${{ github.ref_name }}
-            git pull origin ${{origin.ref_name }}
+            git pull origin ${{ github.ref_name }}
             cd ..
             ./start.sh
