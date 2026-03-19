@@ -64,7 +64,7 @@ public class TrackScheduler {
 			}
 		}).start();
 		if (server.getPlayer().isEmpty() || server.getPlayer().get().getTrack() == null) {
-			server.getPlayer().ifPresentOrElse(player -> player.setTrack(tracks.get(0).makeClone()).subscribe(), () -> {
+			server.getPlayer().ifPresentOrElse(player -> player.setTrack(tracks.get(0).makeClone()).setVolume(server.getVolume()).subscribe(), () -> {
 				NewMain.client.getOrCreateLink(server.getGuildId()).createOrUpdatePlayer().setTrack(tracks.get(0)).setVolume(server.getVolume()).subscribe();
 			});
 			server.getAppInstances().values().forEach(instance -> instance.getAppQueue().nextQueue());
@@ -86,7 +86,7 @@ public class TrackScheduler {
 		queue.add(track);
 		server.getAppInstances().values().forEach(instance -> instance.getAppQueue().addQueue(track));
 		if (server.getPlayer().isEmpty() || server.getPlayer().get().getTrack() == null) {
-			server.getPlayer().ifPresentOrElse(player -> player.setTrack(track.makeClone()).subscribe(), () -> {
+			server.getPlayer().ifPresentOrElse(player -> player.setTrack(track.makeClone()).setVolume(server.getVolume()).subscribe(), () -> {
 				NewMain.client.getOrCreateLink(server.getGuildId()).createOrUpdatePlayer().setTrack(track.makeClone()).setVolume(server.getVolume()).setPaused(false).subscribe();
 			});
 			server.getAppInstances().values().forEach(instance -> instance.getAppQueue().nextQueue());

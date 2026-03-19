@@ -197,8 +197,8 @@ public class Server {
      */
     private int readVolume() {
         File f = new File("volumes/" + guildId);
-        f.getParentFile().mkdirs();
         if (!f.exists()) {
+            f.getParentFile().mkdirs();
             Writer.write("100", f);
         }
         return Integer.parseInt(Reader.read(f));
