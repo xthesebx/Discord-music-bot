@@ -5,11 +5,8 @@ import com.hawolt.logger.Logger;
 import com.seb.io.Reader;
 import com.seb.io.Writer;
 import dev.arbjerg.lavalink.client.*;
-import dev.arbjerg.lavalink.client.event.PlayerUpdateEvent;
-import dev.arbjerg.lavalink.client.event.TrackEndEvent;
-import dev.arbjerg.lavalink.client.event.TrackStartEvent;
+import dev.arbjerg.lavalink.client.event.*;
 import dev.arbjerg.lavalink.client.loadbalancing.builtin.VoiceRegionPenaltyProvider;
-import dev.arbjerg.lavalink.libraries.jda.JDAVoiceUpdateListener;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -32,6 +29,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * new Main Class after old one got deprecated
@@ -83,6 +83,10 @@ public class NewMain extends ListenerAdapter implements VoiceDispatchInterceptor
         new NewMain();
     }
 
+    JDA jda;
+    ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    public long statTimestamp;
+
     /**
      * basically just setting up jda
      *
@@ -96,20 +100,12 @@ public class NewMain extends ListenerAdapter implements VoiceDispatchInterceptor
         clientsecret = original.substring(original.indexOf("\n") + 1).substring(0, original.indexOf("\n"));
         spdc = original.substring(original.indexOf("\n") + 1).substring(original.indexOf("\n") + 1);
         apikey = Reader.read(new File("apikey.env"));
-        client = new LavalinkClient(Helpers.getUserIdFromToken(apikey.strip()));
+        createLavalink();
 
-        client.getLoadBalancer().addPenaltyProvider(new VoiceRegionPenaltyProvider());
-        JSONObject nodes = Reader.readJSON(new File("node.json"));
-        nodes.getJSONArray("nodes").forEach(node -> client.addNode(new NodeOptions.Builder()
-                .setName(((JSONObject) node).getString("name"))
-                .setServerUri(((JSONObject) node).getString("url"))
-                .setPassword(((JSONObject) node).getString("password")).build()).on(TrackStartEvent.class).subscribe((event -> {
-                    final LavalinkNode node1 = event.getNode();
-                    Logger.info("{}: track started: {}",
-                            node1.getName(),
-                            event.getTrack().getInfo());
-        })));
-        JDA jda = JDABuilder.createDefault(apikey.strip()).enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_TYPING, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_MEMBERS).setStatus(OnlineStatus.OFFLINE).setMemberCachePolicy(MemberCachePolicy.ALL).enableCache(CacheFlag.ACTIVITY, CacheFlag.ONLINE_STATUS).setVoiceDispatchInterceptor(new JDAVoiceUpdateListener(client)).build();
+        scheduler.scheduleAtFixedRate(() -> {
+            if (!client.getNodes().get(0).getAvailable()) reconnectLavalink();
+        }, 1,1, TimeUnit.SECONDS);
+        jda = JDABuilder.createDefault(apikey.strip()).enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_TYPING, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_MEMBERS).setStatus(OnlineStatus.OFFLINE).setMemberCachePolicy(MemberCachePolicy.ALL).enableCache(CacheFlag.ACTIVITY, CacheFlag.ONLINE_STATUS).setVoiceDispatchInterceptor(this).build();
         jda.addEventListener(this);
         jda.awaitReady();
         for (Guild guild : jda.getGuilds()) {
@@ -119,13 +115,47 @@ public class NewMain extends ListenerAdapter implements VoiceDispatchInterceptor
         jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.playing("some banger music!"));
         Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownHook(this)));
 
+
+        //map.get(event.getGuildId()).getAppInstances().values().forEach(instance -> );
+    }
+
+
+    public void reconnectLavalink() {
+        Logger.error("reconnect");
+        map.values().forEach(server -> server.leave());
+        client.close();
+        createLavalink();
+
+    }
+
+    private void createLavalink() {
+        client = new LavalinkClient(Helpers.getUserIdFromToken(apikey.strip()));
+
+        client.getLoadBalancer().addPenaltyProvider(new VoiceRegionPenaltyProvider());
+        JSONObject nodes = Reader.readJSON(new File("node.json"));
+        nodes.getJSONArray("nodes").forEach(node -> client.addNode(new NodeOptions.Builder()
+                .setName(((JSONObject) node).getString("name"))
+                .setServerUri(((JSONObject) node).getString("url"))
+                .setPassword(((JSONObject) node).getString("password")).build()).on(TrackStartEvent.class).subscribe((event -> {
+            final LavalinkNode node1 = event.getNode();
+            Logger.info("{}: track started: {}",
+                    node1.getName(),
+                    event.getTrack().getInfo());
+        })));
+        client.on(ClientEvent.class).subscribe(event -> {
+            if (event instanceof StatsEvent) {
+                statTimestamp = System.currentTimeMillis();
+            }
+        });
+
+        client.on(PlayerUpdateEvent.class).subscribe(Logger::debug);
         client.on(TrackEndEvent.class).subscribe(event -> Optional.ofNullable(map.get(event.getGuildId())).ifPresent(
                 guild -> guild.getTrackScheduler().onTrackEnd(event.getTrack(), event.getEndReason())
         ));
-        //map.get(event.getGuildId()).getAppInstances().values().forEach(instance -> );
-        client.on(PlayerUpdateEvent.class).subscribe(Logger::error);
-    }
 
+        map.values().forEach(server -> server.setLavalink(client));
+
+    }
 
     /**
      * {@inheritDoc}
@@ -168,7 +198,6 @@ public class NewMain extends ListenerAdapter implements VoiceDispatchInterceptor
 
     @Override
     public void onVoiceServerUpdate(@NotNull VoiceDispatchInterceptor.VoiceServerUpdate update) {
-
         map.get(update.getGuild().getIdLong()).onVoiceServerUpdate(update);
     }
 

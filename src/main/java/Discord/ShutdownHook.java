@@ -29,6 +29,7 @@ public class ShutdownHook implements Runnable {
             if (NewMain.client.getLinkIfCached(s) != null)
                 NewMain.client.getLinkIfCached(s).destroy();
             main.map.get(s).leave();
+            main.scheduler.shutdownNow();
         }
     }
 }

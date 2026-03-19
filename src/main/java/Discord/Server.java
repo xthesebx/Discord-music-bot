@@ -126,7 +126,14 @@ public class Server {
     private final AudioManager audioManager;
     private final TrackScheduler trackScheduler;
     private final DisconnectTimer dc;
-    private final LavalinkClient lavalink;
+
+    public void setLavalink(LavalinkClient lavalink) {
+        this.lavalink = lavalink;
+        lastVoiceState = null;
+        voiceState = null;
+    }
+
+    private LavalinkClient lavalink;
 
     /**
 
@@ -220,6 +227,7 @@ public class Server {
         VoiceChannel connectedChannel = channel.asVoiceChannel();
         // Checks if they are in a channel -- not being in a channel means that the variable = null.
         // Gets the audio manager.
+        lavalink.getOrCreateLink(guildId).destroy();
         lavalink.getOrCreateLink(guildId);
 
 
