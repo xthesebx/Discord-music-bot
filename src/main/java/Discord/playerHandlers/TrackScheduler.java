@@ -79,15 +79,16 @@ public class TrackScheduler {
 	 * @param track The track to play or add to queue.
 	 */
 	public void queue(Track track) {
+		Logger.error("in queue");
 		server.getDc().stopTimer();
+		Logger.error("dc");
 		// Calling startTrack with the noInterrupt set to true will start the track only if nothing is currently playing. If
 		// something is playing, it returns false and does nothing. In that case the player was already playing so this
 		// track goes to the queue instead.
 		queue.add(track);
 		server.getAppInstances().values().forEach(instance -> instance.getAppQueue().addQueue(track));
-		if (player == null || player.getTrack() == null) {
+		if (server.getPlayer().isEmpty() || server.getPlayer().get().getTrack() == null) {
 
-			Logger.error(server.getPlayer().isPresent());
 			server.getPlayer().ifPresentOrElse(player -> player.setTrack(track.makeClone()).subscribe(), () -> {
 				NewMain.client.getOrCreateLink(server.getGuildId()).createOrUpdatePlayer().setTrack(track.makeClone()).setVolume(server.getVolume()).setPaused(false).subscribe();
 			});

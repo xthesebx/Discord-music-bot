@@ -18,7 +18,9 @@ public class AppPlayCommand extends PlayMethods {
     @Override
     public void ontrackLoaded(@NonNull TrackLoaded trackLoaded) {
         trackScheduler.queue(trackLoaded.getTrack());
+        Logger.error("scheduled");
         servers.remove(server);
+        Logger.error("removed");
     }
 
     @Override

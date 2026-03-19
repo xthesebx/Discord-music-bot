@@ -1,7 +1,6 @@
 package Discord.commands;
 
 import Discord.Server;
-import com.github.topi314.lavalyrics.lyrics.AudioLyrics;
 import com.hawolt.logger.Logger;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 

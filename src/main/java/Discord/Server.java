@@ -12,9 +12,6 @@ import dev.arbjerg.lavalink.client.Link;
 import dev.arbjerg.lavalink.client.player.LavalinkPlayer;
 import dev.arbjerg.lavalink.client.player.Track;
 import dev.arbjerg.lavalink.protocol.v4.VoiceState;
-import dev.lavalink.youtube.clients.*;
-import moe.kyokobot.koe.*;
-import moe.kyokobot.koe.codec.udpqueue.UdpQueueFramePollerFactory;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
@@ -42,8 +39,6 @@ public class Server {
 
     Track[] tracks = new Track[5];
 
-
-    private final KoeClient koeClient;
 
     /**
      * setter for Volume
@@ -179,8 +174,6 @@ public class Server {
         this.guild = guild;
         guildId = guild.getIdLong();
         volume = readVolume();
-        Koe koe = Koe.koe(KoeOptions.builder().setFramePollerFactory(new UdpQueueFramePollerFactory()).create());
-        koeClient = koe.newClient(guild.getJDA().getSelfUser().getIdLong());
         /*
         can play local files too if wanted, not integrated rn
          */
@@ -228,7 +221,6 @@ public class Server {
         // Checks if they are in a channel -- not being in a channel means that the variable = null.
         // Gets the audio manager.
         lavalink.getOrCreateLink(guildId);
-        koeClient.createConnection(guildId);
 
 
         try {
@@ -258,12 +250,8 @@ public class Server {
      * @return a boolean
      */
     public boolean leave() {
-        if (koeClient.getConnection(guild.getIdLong()) == null) {
-            return false;
-        }
         // Disconnect from the channel.
         audioManager.closeAudioConnection();
-        koeClient.getConnection(guild.getIdLong()).disconnect();
         // Notify the user.
         getPlayer().ifPresent(player -> {
             player.setTrack(null);
@@ -352,16 +340,6 @@ public class Server {
             player.setPaused(true);
         });
         lavalink.getOrCreateLink(guildId);
-        var conn = koeClient.getConnection(update.getGuildIdLong());
-        if (conn != null) {
-            var info = new VoiceServerInfo(
-                    update.getSessionId(),
-                    update.getEndpoint(),
-                    update.getToken()
-            );
-            conn.connect(info);
-            conn.startAudioFramePolling();
-        }
         getPlayer().ifPresent(player -> player.setPaused(false));
 
         trackScheduler.ready = true;
@@ -369,7 +347,6 @@ public class Server {
 
     public boolean onVoiceStateUpdate(@NotNull VoiceDispatchInterceptor.VoiceStateUpdate update) {
         if (update.getVoiceState().getIdLong() == guild.getJDA().getSelfUser().getIdLong() && update.getChannel().getIdLong() == 0) {
-            koeClient.destroyConnection(update.getGuildIdLong());
         }
         return true;
     }
