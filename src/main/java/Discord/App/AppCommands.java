@@ -57,7 +57,7 @@ public class AppCommands {
         server.getPlayer().ifPresent(player -> {
             titles[0] = player.getTrack().getInfo().getTitle();
             authors[0] = player.getTrack().getInfo().getAuthor();
-            length[0] = String.valueOf(player.getTrack().getInfo().getLength());
+            length[0] = getLength(player.getTrack());
             urls[0] = player.getTrack().getInfo().getUri();
         });
         int i = 1;
