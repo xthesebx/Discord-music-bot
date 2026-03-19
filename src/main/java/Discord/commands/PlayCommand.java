@@ -51,17 +51,10 @@ public class PlayCommand extends BasicCommand {
         }
         event.deferReply().queue();
         link = PlayMethods.resolveLink(link);
-        if (link.contains("spotify") && link.contains("playlist")) {
-            try {
-                new SpotifyPlaylistLoader(server).loadPlaylist(link.substring(link.lastIndexOf("/") + 1, link.indexOf("?")));
-            } catch (Exception e) {
-                Logger.error(e);
-            }
-        } else {
-            final Link test = NewMain.client.getOrCreateLink(server.getGuildId());
+        final Link test = NewMain.client.getOrCreateLink(server.getGuildId());
 
-            PlayMethods.servers.add(server);
-            test.loadItem(link).subscribe(new DiscordPlayCommand(event, server));
-        }
+        PlayMethods.servers.add(server);
+        test.loadItem(link).subscribe(new DiscordPlayCommand(event, server));
+
     }
 }
