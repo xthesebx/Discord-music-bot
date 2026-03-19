@@ -53,7 +53,6 @@ public class AppInstance implements Runnable {
     }
 
     AppCommands appCommands;
-    LavalinkPlayer player;
 
     /**
      * <p>Constructor for AppInstance.</p>
@@ -73,18 +72,17 @@ public class AppInstance implements Runnable {
         this.server = server;
         this.uuid = uuid;
         this.appCommands = new AppCommands(server, this);
-        this.player = server.getPlayer().get();
     }
 
     public void onPlayerPause() {
-        out.println("paused " + player.getPosition());
+        server.getPlayer().ifPresent(player -> out.println("paused " + player.getPosition()));
     }
 
     public void onPlayerResume() {
         Logger.error("resume");
         try {
             //TODO: replace with proper handling, probably have to cache current playing song in app
-            out.println("resumed " + player.getPosition());
+            server.getPlayer().ifPresent(player -> out.println("resumed " + player.getPosition()));
         } catch (NullPointerException e) {
 
         } catch (Exception e) {
@@ -133,7 +131,7 @@ public class AppInstance implements Runnable {
                     out.println("hello");
                 } else {
                     switch (s) {
-                        case "playpause" -> player.setPaused(!player.getPaused()).subscribe();
+                        case "playpause" -> server.getPlayer().ifPresent(player -> player.setPaused(!player.getPaused()).subscribe());
                         case "nexttrack" -> server.getTrackScheduler().nextTrack();
                         case "join" -> {
                             try {
@@ -144,10 +142,12 @@ public class AppInstance implements Runnable {
                         }
                         case "leave" -> server.leave();
                         case "stop" -> {
-                            player.stopTrack().subscribe();
+                            server.getPlayer().ifPresent(player -> {
+                                player.stopTrack().subscribe();
+                                if (player.getPaused()) player.setPaused(false).subscribe();
+                            });
                             server.getDc().startTimer();
                             server.getAppInstances().values().forEach(AppInstance::setIdlePresence);
-                            if (player.getPaused()) player.setPaused(false).subscribe();
                             server.getTrackScheduler().repeating = RepeatState.NO_REPEAT;
                             server.getAppInstances().values().forEach(instance -> instance.appCommands.repeat());
                             server.getAppInstances().values().forEach(AppInstance::setIdlePresence);

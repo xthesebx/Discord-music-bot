@@ -24,7 +24,6 @@ public class AppCommands {
     JSONObject object = new JSONObject(), insert = new JSONObject();
     JSONArray queue = new JSONArray();
     Server server;
-    LavalinkPlayer player;
 
     /**
      * <p>Constructor for AppCommands.</p>
@@ -33,7 +32,6 @@ public class AppCommands {
      * @param instance a {@link Discord.App.AppInstance} object
      */
     public AppCommands(Server server, AppInstance instance) {
-        this.player = server.getPlayer().get();
         this.trackScheduler = server.getTrackScheduler();
         this.instance = instance;
         this.server = server;
@@ -56,10 +54,12 @@ public class AppCommands {
         if (trackScheduler.queue.isEmpty() && trackScheduler.queue2.isEmpty()) {
             return;
         }
-        titles[0] = player.getTrack().getInfo().getTitle();
-        authors[0] = player.getTrack().getInfo().getAuthor();
-        length[0] = String.valueOf(player.getTrack().getInfo().getLength());
-        urls[0] = player.getTrack().getInfo().getUri();
+        server.getPlayer().ifPresent(player -> {
+            titles[0] = player.getTrack().getInfo().getTitle();
+            authors[0] = player.getTrack().getInfo().getAuthor();
+            length[0] = String.valueOf(player.getTrack().getInfo().getLength());
+            urls[0] = player.getTrack().getInfo().getUri();
+        });
         int i = 1;
         for (Track e : trackScheduler.queue2) {
             titles[i] = e.getInfo().getTitle();
@@ -86,13 +86,13 @@ public class AppCommands {
         object.put("queue", queue);
         JSONObject pos = new JSONObject();
         if (!repeat) {
-            pos.put("position", player.getPosition());
+            server.getPlayer().ifPresent(player -> pos.put("position", player.getPosition()));
         } else {
             pos.put("position", System.currentTimeMillis());
         }
         pos.put("timestamp", System.currentTimeMillis());
         object.put("pos", pos);
-        object.put("paused", player.getPaused());
+        server.getPlayer().ifPresent(player -> object.put("paused", player.getPaused()));
         instance.debouncer.debounce("send", this::send, 1, TimeUnit.SECONDS);
         nextQueue();
     }
@@ -170,7 +170,7 @@ public class AppCommands {
      * <p>volume.</p>
      */
     public void volume() {
-        object.put("volume", player.getVolume());
+        server.getPlayer().ifPresent(player -> object.put("volume", player.getVolume()));
         instance.debouncer.debounce("send", this::send, 1, TimeUnit.SECONDS);
     }
 }
