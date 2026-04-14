@@ -106,6 +106,9 @@ public class AppInstance implements Runnable {
                     try {
                         server.join(server.getGuild().retrieveMemberVoiceStateById(server.members.get(uuid)).complete().getChannel());
                         String link = PlayMethods.resolveLink(s.substring(s.indexOf(" ") + 1));
+                        if (!link.contains("http")) {
+                            link = "spsearch:" + link;
+                        }
                         final Link test = NewMain.client.getOrCreateLink(server.getGuildId());
                         PlayMethods.servers.add(server);
                         test.loadItem(link).subscribe(new AppPlayCommand(server));
