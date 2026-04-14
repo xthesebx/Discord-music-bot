@@ -170,7 +170,7 @@ public class AppCommands {
      * <p>volume.</p>
      */
     public void volume() {
-        server.getPlayer().ifPresent(player -> object.put("volume", player.getVolume()));
+        server.getPlayer().ifPresent(player -> object.put("volume", server.getVolume()));
         instance.debouncer.debounce("send", this::send, 1, TimeUnit.SECONDS);
     }
 }
