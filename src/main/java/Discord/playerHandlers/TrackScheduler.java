@@ -59,7 +59,7 @@ public class TrackScheduler {
 		server.getDc().stopTimer();
 		queue.addAll(tracks);
 		new Thread(() -> {
-			for (Track track : queue) {
+			for (Track track : tracks) {
 				server.getAppInstances().values().forEach(instance -> instance.getAppQueue().addQueue(track));
 			}
 		}).start();
