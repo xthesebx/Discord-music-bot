@@ -138,7 +138,7 @@ public class NewMain extends ListenerAdapter implements VoiceDispatchInterceptor
                 .setServerUri(((JSONObject) node).getString("url"))
                 .setPassword(((JSONObject) node).getString("password")).build()).on(TrackStartEvent.class).subscribe((event -> {
             final LavalinkNode node1 = event.getNode();
-            Logger.info("{}: track started: {}",
+            Logger.debug("{}: track started: {}",
                     node1.getName(),
                     event.getTrack().getInfo());
         })));
