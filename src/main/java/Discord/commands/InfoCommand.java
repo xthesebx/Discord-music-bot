@@ -1,7 +1,7 @@
 package Discord.commands;
 
 import Discord.Server;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import dev.arbjerg.lavalink.client.player.LavalinkPlayer;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 /**
@@ -15,7 +15,7 @@ public class InfoCommand extends BasicCommand {
     /**
      * player to not have to retrieve it 10 times
      */
-    AudioPlayer player;
+    LavalinkPlayer player;
     /**
      * <p>Constructor for InfoCommand.</p>
      *
@@ -24,19 +24,19 @@ public class InfoCommand extends BasicCommand {
      */
     public InfoCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
-        this.player = server.getPlayer();
-        if (player.getPlayingTrack() == null) {
+        this.player = server.getPlayer().get();
+        if (player.getTrack() == null) {
             event.reply("Nothing is currently playing").queue();
             return;
         }
 
         //getting position in song and full duration
-        long poshour = (long) Math.floor((double) player.getPlayingTrack().getPosition() / 1000 / 60 / 60);
-        long posmin = (long) Math.floor(((double) player.getPlayingTrack().getPosition() / 1000 / 60) % 60);
-        long possec = (long) Math.floor(((double) player.getPlayingTrack().getPosition() / 1000) % 60);
-        long durhour = (long) Math.floor((double) player.getPlayingTrack().getDuration() / 1000 / 60 / 60);
-        long durmin = (long) Math.floor(((double) player.getPlayingTrack().getDuration() / 1000 / 60) % 60);
-        long dursec = (long) Math.floor(((double) player.getPlayingTrack().getDuration() / 1000) % 60);
+        long poshour = (long) Math.floor((double) player.getPosition() / 1000 / 60 / 60);
+        long posmin = (long) Math.floor(((double) player.getPosition() / 1000 / 60) % 60);
+        long possec = (long) Math.floor(((double) player.getPosition() / 1000) % 60);
+        long durhour = (long) Math.floor((double) player.getTrack().getInfo().getLength() / 1000 / 60 / 60);
+        long durmin = (long) Math.floor(((double) player.getTrack().getInfo().getLength() / 1000 / 60) % 60);
+        long dursec = (long) Math.floor(((double) player.getTrack().getInfo().getLength() / 1000) % 60);
         String poshours = String.valueOf(poshour);
         String posmins = String.valueOf(posmin);
         String possecs = String.valueOf(possec);
@@ -52,8 +52,8 @@ public class InfoCommand extends BasicCommand {
             time = poshours + ":" + posmins + ":" + possecs + "/" + durhours + ":" + durmins + ":" + dursecs + "```";
         else if (durmin > 0) time = posmins + ":" + possecs + "/" + durmins + ":" + dursecs;
         else time = possecs + "/" + dursecs + "```";
-        event.reply("```Currently playing: " + player.getPlayingTrack().getInfo().title +
-                " by: " + player.getPlayingTrack().getInfo().author +
-                " " + time + " link: " + player.getPlayingTrack().getInfo().uri + "```").queue();
+        event.reply("```Currently playing: " + player.getTrack().getInfo().getTitle() +
+                " by: " + player.getTrack().getInfo().getAuthor() +
+                " " + time + " link: " + player.getTrack().getInfo().getUri() + "```").queue();
     }
 }

@@ -41,7 +41,7 @@ public class JoinCommand extends BasicCommand {
                 return;
             }
         }
-        if (server.getPlayer().getPlayingTrack() != null) return;
+        if (server.getPlayer().get().getTrack() != null) return;
         server.getDc().startTimer();
     }
 }

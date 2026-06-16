@@ -2,7 +2,8 @@ package Discord.App;
 
 import Discord.Server;
 import Discord.playerHandlers.TrackScheduler;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import dev.arbjerg.lavalink.client.player.LavalinkPlayer;
+import dev.arbjerg.lavalink.client.player.Track;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -53,28 +54,30 @@ public class AppCommands {
         if (trackScheduler.queue.isEmpty() && trackScheduler.queue2.isEmpty()) {
             return;
         }
-        titles[0] = server.getPlayer().getPlayingTrack().getInfo().title;
-        authors[0] = server.getPlayer().getPlayingTrack().getInfo().author;
-        length[0] = getLength(server.getPlayer().getPlayingTrack());
-        urls[0] = server.getPlayer().getPlayingTrack().getInfo().uri;
+        server.getPlayer().ifPresent(player -> {
+            titles[0] = player.getTrack().getInfo().getTitle();
+            authors[0] = player.getTrack().getInfo().getAuthor();
+            length[0] = getLength(player.getTrack());
+            urls[0] = player.getTrack().getInfo().getUri();
+        });
         int i = 1;
-        for (AudioTrack e : trackScheduler.queue2) {
-            titles[i] = e.getInfo().title;
-            authors[i] = e.getInfo().author;
+        for (Track e : trackScheduler.queue2) {
+            titles[i] = e.getInfo().getTitle();
+            authors[i] = e.getInfo().getAuthor();
             length[i] = getLength(e);
-            urls[i] = e.getInfo().uri;
+            urls[i] = e.getInfo().getUri();
             i++;
         }
         int j = 0;
-        for (AudioTrack e : trackScheduler.queue) {
+        for (Track e : trackScheduler.queue) {
             if (j < trackScheduler.i) {
                 j++;
                 continue;
             }
-            titles[i] = e.getInfo().title;
-            authors[i] = e.getInfo().author;
+            titles[i] = e.getInfo().getTitle();
+            authors[i] = e.getInfo().getAuthor();
             length[i] = getLength(e);
-            urls[i] = e.getInfo().uri;
+            urls[i] = e.getInfo().getUri();
             i++;
         }
         for (j = 0; j < size; j++) {
@@ -83,38 +86,28 @@ public class AppCommands {
         object.put("queue", queue);
         JSONObject pos = new JSONObject();
         if (!repeat) {
-            pos.put("position", server.getPlayer().getPlayingTrack().getPosition());
+            server.getPlayer().ifPresent(player -> pos.put("position", player.getPosition()));
         } else {
             pos.put("position", System.currentTimeMillis());
         }
         pos.put("timestamp", System.currentTimeMillis());
         object.put("pos", pos);
-        object.put("paused", server.getPlayer().isPaused());
+        server.getPlayer().ifPresent(player -> object.put("paused", player.getPaused()));
         instance.debouncer.debounce("send", this::send, 1, TimeUnit.SECONDS);
         nextQueue();
     }
 
-    /**
-     * <p>addQueue.</p>
-     *
-     * @param track a {@link com.sedmelluq.discord.lavaplayer.track.AudioTrack} object
-     */
-    public void addQueue(AudioTrack track) {
+    public void addQueue(Track track) {
         String length = getLength(track);
-        queue.put(song(track.getInfo().title, track.getInfo().author, length, track.getInfo().uri));
+        queue.put(song(track.getInfo().getTitle(), track.getInfo().getAuthor(), length, track.getInfo().getUri()));
         object.put("queue", queue);
         instance.debouncer.debounce("send", this::send, 1, TimeUnit.SECONDS);
     }
 
-    /**
-     * <p>insertQueue.</p>
-     *
-     * @param track a {@link com.sedmelluq.discord.lavaplayer.track.AudioTrack} object
-     * @param pos a {@link java.lang.String} object
-     */
-    public void insertQueue(AudioTrack track, String pos) {
+
+    public void insertQueue(Track track, String pos) {
         String length = getLength(track);
-        insert.put(pos ,song(track.getInfo().title, track.getInfo().author, length, track.getInfo().uri));
+        insert.put(pos ,song(track.getInfo().getTitle(), track.getInfo().getAuthor(), length, track.getInfo().getUri()));
         object.put("insert", insert);
         instance.debouncer.debounce("send", this::send, 1, TimeUnit.SECONDS);
     }
@@ -157,8 +150,8 @@ public class AppCommands {
         insert.clear();
     }
 
-    private String getLength(AudioTrack track) {
-        long duration = track.getDuration() / 1000;
+    private String getLength(Track track) {
+        long duration = track.getInfo().getLength() / 1000;
         long minutes = (long) Math.floor((double) duration / 60);
         DecimalFormat format = new DecimalFormat("00");
         long seconds = (long) Math.floor(duration % 60);
@@ -177,7 +170,7 @@ public class AppCommands {
      * <p>volume.</p>
      */
     public void volume() {
-        object.put("volume", server.getPlayer().getVolume());
+        server.getPlayer().ifPresent(player -> object.put("volume", server.getVolume()));
         instance.debouncer.debounce("send", this::send, 1, TimeUnit.SECONDS);
     }
 }

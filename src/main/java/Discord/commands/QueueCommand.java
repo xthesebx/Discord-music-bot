@@ -2,7 +2,7 @@ package Discord.commands;
 
 import Discord.Server;
 import Discord.playerHandlers.TrackScheduler;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import dev.arbjerg.lavalink.client.player.Track;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.text.DecimalFormat;
@@ -34,10 +34,10 @@ public class QueueCommand extends BasicCommand {
         String[] authors = new String[size];
         String[] length = new String[size];
         int i = 0;
-        for (AudioTrack e : trackScheduler.queue2) {
-            titles[i] = e.getInfo().title;
-            authors[i] = e.getInfo().author;
-            long duration = e.getDuration() / 1000;
+        for (Track e : trackScheduler.queue2) {
+            titles[i] = e.getInfo().getTitle();
+            authors[i] = e.getInfo().getAuthor();
+            long duration = e.getInfo().getLength() / 1000;
             long minutes = (long) Math.floor((double) duration / 60);
             DecimalFormat format = new DecimalFormat("00");
             long seconds = (long) Math.floor(duration % 60);
@@ -45,14 +45,14 @@ public class QueueCommand extends BasicCommand {
             i++;
         }
         int j = 0;
-        for (AudioTrack e : trackScheduler.queue) {
+        for (Track e : trackScheduler.queue) {
             if (j < trackScheduler.i) {
                 j++;
                 continue;
             }
-            titles[i] = e.getInfo().title;
-            authors[i] = e.getInfo().author;
-            long duration = e.getDuration() / 1000;
+            titles[i] = e.getInfo().getTitle();
+            authors[i] = e.getInfo().getAuthor();
+            long duration = e.getInfo().getLength() / 1000;
             long minutes = (long) Math.floor((double) duration / 60);
             DecimalFormat format = new DecimalFormat("00");
             long seconds = (long) Math.floor(duration % 60);

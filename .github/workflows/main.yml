@@ -1,0 +1,28 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run SSH Deployment
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+          script: |
+            echo "Starting deployment..."
+            cd /home/discord/Discord-music-bot
+            screen -X -S discordbot quit || true
+            git fetch
+            git checkout ${{ github.ref_name }}
+            git pull origin ${{ github.ref_name }}
+            cd ..
+            ./start.sh

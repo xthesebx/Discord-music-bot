@@ -1,12 +1,12 @@
 package Discord.playerHandlers;
 
 import Discord.App.AppInstance;
+import Discord.NewMain;
 import Discord.Server;
 import com.hawolt.logger.Logger;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import dev.arbjerg.lavalink.client.player.LavalinkPlayer;
+import dev.arbjerg.lavalink.client.player.Track;
+import dev.arbjerg.lavalink.protocol.v4.Message;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
@@ -21,18 +21,19 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author xXTheSebXx
  * @version 1.0-SNAPSHOT
  */
-public class TrackScheduler extends AudioEventAdapter {
+public class TrackScheduler {
 
 	/**
 	 * the queue
 	 */
-	public final List<AudioTrack> queue;
+	public final List<Track> queue;
 	/**
 	 * the queue for requests from twitch stream in streamermode
 	 */
-	public final BlockingQueue<AudioTrack> queue2;
-	private final AudioPlayer player;
+	public final BlockingQueue<Track> queue2;
+	private LavalinkPlayer player;
 	private final Server server;
+	public boolean ready = false;
 
 	/**
 	 * boolean if its repeating mode
@@ -49,20 +50,25 @@ public class TrackScheduler extends AudioEventAdapter {
 	 */
 	public TrackScheduler(Server server) {
 		this.server = server;
-		this.player = server.getPlayer();
+		this.player = server.getPlayer().isPresent() ? server.getPlayer().get() : null;
 		this.queue = new ArrayList<>();
 		this.queue2 = new LinkedBlockingQueue<>();
 	}
 
-	public void queue(List<AudioTrack> tracks) {
+	public void queue(List<Track> tracks) {
 		server.getDc().stopTimer();
 		queue.addAll(tracks);
 		new Thread(() -> {
-			for (AudioTrack track : queue) {
+			for (Track track : tracks) {
 				server.getAppInstances().values().forEach(instance -> instance.getAppQueue().addQueue(track));
 			}
 		}).start();
-		if (player.startTrack(tracks.get(0).makeClone(), true)) server.getAppInstances().values().forEach(instance -> instance.getAppQueue().nextQueue());
+		if (server.getPlayer().isEmpty() || server.getPlayer().get().getTrack() == null) {
+			server.getPlayer().ifPresentOrElse(player -> player.setTrack(tracks.get(0).makeClone()).setVolume(server.getVolume()).subscribe(), () -> {
+				NewMain.client.getOrCreateLink(server.getGuildId()).createOrUpdatePlayer().setTrack(tracks.get(0)).setVolume(server.getVolume()).subscribe();
+			});
+			server.getAppInstances().values().forEach(instance -> instance.getAppQueue().nextQueue());
+		}
 	}
 	
 	/**
@@ -72,27 +78,24 @@ public class TrackScheduler extends AudioEventAdapter {
 	 *
 	 * @param track The track to play or add to queue.
 	 */
-	public void queue(AudioTrack track) {
+	public void queue(Track track) {
 		server.getDc().stopTimer();
 		// Calling startTrack with the noInterrupt set to true will start the track only if nothing is currently playing. If
 		// something is playing, it returns false and does nothing. In that case the player was already playing so this
 		// track goes to the queue instead.
 		queue.add(track);
 		server.getAppInstances().values().forEach(instance -> instance.getAppQueue().addQueue(track));
-		if (player.startTrack(track.makeClone(), true)) {
+		if (server.getPlayer().isEmpty() || server.getPlayer().get().getTrack() == null) {
+			server.getPlayer().ifPresentOrElse(player -> player.setTrack(track.makeClone()).setVolume(server.getVolume()).subscribe(), () -> {
+				NewMain.client.getOrCreateLink(server.getGuildId()).createOrUpdatePlayer().setTrack(track.makeClone()).setVolume(server.getVolume()).setPaused(false).subscribe();
+			});
 			server.getAppInstances().values().forEach(instance -> instance.getAppQueue().nextQueue());
 		}
 	}
 
 
-	/**
-	 * Song requests from twitch chat
-	 * get added to sperate queue
-	 *
-	 * @param track a {@link com.sedmelluq.discord.lavaplayer.track.AudioTrack} object
-	 */
-	public void request(AudioTrack track) {
-		if (!player.startTrack(track, true)) {
+	public void request(Track track) {
+		if (server.getPlayer().isPresent() && server.getPlayer().get().getTrack() != null) {
 			queue2.offer(track);
 		} else server.getAppInstances().values().forEach(instance -> instance.getAppQueue().nextQueue());
 		server.getAppInstances().values().forEach(instance -> instance.getAppQueue().insertQueue(track, String.valueOf(queue2.size() - 1)));
@@ -106,15 +109,16 @@ public class TrackScheduler extends AudioEventAdapter {
 	public void nextTrack() {
 		// Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
 		// giving null to startTrack, which is a valid argument and will simply stop the player.
+		player = server.getPlayer().get();
 		switch (repeating) {
 			case NO_REPEAT -> {
 				if (!queue2.isEmpty()) {
-					player.startTrack(queue2.poll(), false);
+					player.setTrack(queue2.poll()).subscribe();
 				} else if (i < queue.size()) {
-					player.startTrack(queue.get(i).makeClone(), false);
+					player.setTrack(queue.get(i).makeClone()).subscribe();
 					i++;
 				} else {
-					player.stopTrack();
+					player.stopTrack().subscribe();
 					i++;
 					server.getDc().startTimer();
 					server.getAppInstances().values().forEach(AppInstance::setIdlePresence);
@@ -122,22 +126,22 @@ public class TrackScheduler extends AudioEventAdapter {
 			}
 			case REPEAT_SINGLE -> {
 				if (!queue2.isEmpty()) {
-					player.startTrack(queue2.poll(), false);
+					player.setTrack(queue2.poll()).subscribe();
 				} else {
-					player.startTrack(queue.get(i - 1).makeClone(), false);
+					player.setTrack(queue.get(i - 1).makeClone()).subscribe();
 					server.getAppInstances().values().forEach(AppInstance::repeat);
 				}
 				return;
 			}
 			case REPEAT_QUEUE -> {
 				if (!queue2.isEmpty()) {
-					player.startTrack(queue2.poll(), false);
+					player.setTrack(queue2.poll()).subscribe();
 				} else if (i < queue.size()) {
-					player.startTrack(queue.get(i).makeClone(), false);
+					player.setTrack(queue.get(i).makeClone()).subscribe();
 					i++;
 				} else {
 					i = 0;
-					player.startTrack(queue.get(i).makeClone(), false);
+					player.setTrack(queue.get(i).makeClone()).subscribe();
 					server.getAppInstances().values().forEach(instance -> instance.getAppQueue().initQueue(true));
 					i++;
 				}
@@ -150,19 +154,18 @@ public class TrackScheduler extends AudioEventAdapter {
 	 * {@inheritDoc}
 	 * to start next track when track ended
 	 */
-	@Override
-	public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
+	public void onTrackEnd(Track track, Message.EmittedEvent.TrackEndEvent.AudioTrackEndReason endReason) {
 		// Only start the next track if the end reason is suitable for it (FINISHED or LOAD_FAILED)
 		//TODO: add a way to handle the error of failing to load something in a way that is okay for every source (requests, app, discord)
 		//TODO: probably have to add more info to the track which could cause issues, not sure how to do it rn.
-		if (endReason.mayStartNext) {
-			if (endReason.equals(AudioTrackEndReason.LOAD_FAILED)) {
+		if (endReason.getMayStartNext()) {
+			if (endReason.equals(Message.EmittedEvent.TrackEndEvent.AudioTrackEndReason.LOAD_FAILED)) {
 				server.getGuild().getJDA().retrieveUserById(277064996264083456L).complete().openPrivateChannel().complete().sendMessage("MUSIC BOT DYING PLS HELP").queue();
-				Logger.error("loading " + track.getInfo().title + " from source " + track.getInfo().uri +
+				Logger.error("loading " + track.getInfo().getTitle() + " from source " + track.getInfo().getUri() +
 						" failed. might be spotify issue or youtube dying again.");
 			}
 			nextTrack();
-		} else if (endReason.equals(AudioTrackEndReason.REPLACED)) {
+		} else if (endReason.equals(Message.EmittedEvent.TrackEndEvent.AudioTrackEndReason.REPLACED)) {
 			return;
 		} else {
 			queue.clear();
@@ -192,8 +195,8 @@ public class TrackScheduler extends AudioEventAdapter {
 	 * @param id a {@link org.json.JSONArray} object
 	 */
 	public void removeFromQueue (JSONArray id) {
-		AudioTrack[] temp2 = new AudioTrack[queue2.size()];
-		AudioTrack[] temp = new AudioTrack[queue.size()];
+		Track[] temp2 = new Track[queue2.size()];
+		Track[] temp = new Track[queue.size()];
 		queue2.toArray(temp2);
 		queue2.clear();
 		queue.toArray(temp);
@@ -206,10 +209,10 @@ public class TrackScheduler extends AudioEventAdapter {
 					} else temp[i - temp2.length + j.get() + this.i] = null;
 					j.getAndIncrement();
 				});
-		for (AudioTrack t : temp2) {
+		for (Track t : temp2) {
 			if (t != null) queue2.offer(t);
 		}
-		for (AudioTrack t : temp) {
+		for (Track t : temp) {
 			if (t != null) queue.add(t);
 		}
 	}
@@ -221,11 +224,11 @@ public class TrackScheduler extends AudioEventAdapter {
 	 * @param to a int
 	 */
 	public void move(int from, int to) {
-        List<AudioTrack> temp = new ArrayList<>(queue);
-        List<AudioTrack> temp2 = new ArrayList<>(queue2);
+        List<Track> temp = new ArrayList<>(queue);
+        List<Track> temp2 = new ArrayList<>(queue2);
 		queue.clear();
 		queue2.clear();
-		AudioTrack track;
+		Track track;
 		if (from < temp2.size()) {
 			track = temp2.get(from);
 			temp2.remove(from);
@@ -254,5 +257,10 @@ public class TrackScheduler extends AudioEventAdapter {
 			instance.getAppQueue().insertQueue(queue.get(i + 1), "1");
 		});
 		nextTrack();
+	}
+
+	public void clear() {
+		queue.clear();
+		queue2.clear();
 	}
 }

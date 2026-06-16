@@ -49,3 +49,4 @@ build/
 /youtubetoken.env
 /log.txt
 /slf4j/
+/node.json

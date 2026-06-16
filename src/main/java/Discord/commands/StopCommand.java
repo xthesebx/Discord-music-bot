@@ -1,9 +1,10 @@
 package Discord.commands;
 
 import Discord.App.AppInstance;
+import Discord.NewMain;
 import Discord.Server;
 import Discord.playerHandlers.RepeatState;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import dev.arbjerg.lavalink.client.player.LavalinkPlayer;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 /**
@@ -15,7 +16,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
  */
 public class StopCommand extends BasicCommand {
 
-    AudioPlayer player;
+    LavalinkPlayer player;
 
     /**
      * in case of /stop
@@ -25,17 +26,18 @@ public class StopCommand extends BasicCommand {
      */
     public StopCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
-        this.player = server.getPlayer();
+        this.player = NewMain.client.getOrCreateLink(server.getGuildId()).getCachedPlayer();
         server.getTrackScheduler().repeating = RepeatState.NO_REPEAT;
-        if (player.getPlayingTrack() == null) {
+        if (player.getTrack() == null) {
             event.reply("Player already stopped!").queue();
             return;
         }
-        player.stopTrack();
+        player.stopTrack().subscribe();
         server.getDc().startTimer();
         server.getAppInstances().values().forEach(AppInstance::setIdlePresence);
-        if (server.getPlayer().isPaused()) server.getPlayer().setPaused(false);
+        if (player.getPaused()) player.setPaused(false);
         server.getAppInstances().values().forEach(AppInstance::setIdlePresence);
+        server.getTrackScheduler().clear();
         event.reply("Stopped!").queue();
     }
 }

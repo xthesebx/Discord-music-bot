@@ -1,14 +1,16 @@
 package Discord.App;
 
+import Discord.NewMain;
 import Discord.commands.VolumeCommand;
+import Discord.playerHandlers.AppPlayCommand;
 import Discord.playerHandlers.PlayMethods;
 import Discord.Server;
 import Discord.commands.ShuffleCommand;
 import Discord.commands.StreamerModeCommands;
 import Discord.playerHandlers.RepeatState;
 import com.hawolt.logger.Logger;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
-import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
+import dev.arbjerg.lavalink.client.Link;
+import dev.arbjerg.lavalink.client.player.LavalinkPlayer;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -49,7 +51,6 @@ public class AppInstance implements Runnable {
     public AppCommands getAppQueue() {
         return appCommands;
     }
-    private final AudioEventAdapter listener;
 
     AppCommands appCommands;
 
@@ -71,28 +72,23 @@ public class AppInstance implements Runnable {
         this.server = server;
         this.uuid = uuid;
         this.appCommands = new AppCommands(server, this);
+    }
 
-        listener = new AudioEventAdapter() {
-            @Override
-            public void onPlayerPause(AudioPlayer player) {
-                out.println("paused " + server.getPlayer().getPlayingTrack().getPosition());
-            }
+    public void onPlayerPause() {
+        server.getPlayer().ifPresent(player -> out.println("paused " + player.getPosition()));
+    }
 
-            @Override
-            public void onPlayerResume(AudioPlayer player) {
-                Logger.error("resume");
-                try {
-                    //TODO: replace with proper handling, probably have to cache current playing song in app
-                    out.println("resumed " + server.getPlayer().getPlayingTrack().getPosition());
-                } catch (NullPointerException e) {
+    public void onPlayerResume() {
+        Logger.error("resume");
+        try {
+            //TODO: replace with proper handling, probably have to cache current playing song in app
+            server.getPlayer().ifPresent(player -> out.println("resumed " + player.getPosition()));
+        } catch (NullPointerException e) {
 
-                } catch (Exception e) {
-                    close();
-                    Logger.error(uuid + ": " + e);
-                }
-            }
-        };
-        server.getPlayer().addListener(listener);
+        } catch (Exception e) {
+            close();
+            Logger.error(uuid + ": " + e);
+        }
     }
 
     /** {@inheritDoc} */
@@ -109,7 +105,13 @@ public class AppInstance implements Runnable {
                 if (s.startsWith("play ")) {
                     try {
                         server.join(server.getGuild().retrieveMemberVoiceStateById(server.members.get(uuid)).complete().getChannel());
-                        PlayMethods.playApp(s.substring(s.indexOf(" ") + 1), server);
+                        String link = PlayMethods.resolveLink(s.substring(s.indexOf(" ") + 1));
+                        if (!link.contains("http")) {
+                            link = "spsearch:" + link;
+                        }
+                        final Link test = NewMain.client.getOrCreateLink(server.getGuildId());
+                        PlayMethods.servers.add(server);
+                        test.loadItem(link).subscribe(new AppPlayCommand(server));
                     } catch (ErrorResponseException e) {
                         Logger.debug("not in channel? : " + e);
                     }
@@ -132,7 +134,7 @@ public class AppInstance implements Runnable {
                     out.println("hello");
                 } else {
                     switch (s) {
-                        case "playpause" -> server.getPlayer().setPaused(!server.getPlayer().isPaused());
+                        case "playpause" -> server.getPlayer().ifPresent(player -> player.setPaused(!player.getPaused()).subscribe());
                         case "nexttrack" -> server.getTrackScheduler().nextTrack();
                         case "join" -> {
                             try {
@@ -143,10 +145,12 @@ public class AppInstance implements Runnable {
                         }
                         case "leave" -> server.leave();
                         case "stop" -> {
-                            server.getPlayer().stopTrack();
+                            server.getPlayer().ifPresent(player -> {
+                                player.stopTrack().subscribe();
+                                if (player.getPaused()) player.setPaused(false).subscribe();
+                            });
                             server.getDc().startTimer();
                             server.getAppInstances().values().forEach(AppInstance::setIdlePresence);
-                            if (server.getPlayer().isPaused()) server.getPlayer().setPaused(false);
                             server.getTrackScheduler().repeating = RepeatState.NO_REPEAT;
                             server.getAppInstances().values().forEach(instance -> instance.appCommands.repeat());
                             server.getAppInstances().values().forEach(AppInstance::setIdlePresence);
@@ -178,7 +182,6 @@ public class AppInstance implements Runnable {
             synchronized (server.getAppInstances()) {
                 server.getAppInstances().remove(this);
             }
-            server.getPlayer().removeListener(listener);
             clientSocket.close();
         } catch (IOException e) {
             Logger.error(e);
