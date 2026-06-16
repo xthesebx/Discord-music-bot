@@ -258,4 +258,9 @@ public class TrackScheduler {
 		});
 		nextTrack();
 	}
+
+	public void clear() {
+		queue.clear();
+		queue2.clear();
+	}
 }

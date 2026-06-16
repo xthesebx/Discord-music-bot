@@ -37,6 +37,7 @@ public class StopCommand extends BasicCommand {
         server.getAppInstances().values().forEach(AppInstance::setIdlePresence);
         if (player.getPaused()) player.setPaused(false);
         server.getAppInstances().values().forEach(AppInstance::setIdlePresence);
+        server.getTrackScheduler().clear();
         event.reply("Stopped!").queue();
     }
 }
