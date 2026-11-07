@@ -4,6 +4,9 @@ import Discord.App.AppListener;
 import com.hawolt.logger.Logger;
 import com.seb.io.Reader;
 import com.seb.io.Writer;
+import dev.arbjerg.lavalink.client.*;
+import dev.arbjerg.lavalink.client.event.*;
+import dev.arbjerg.lavalink.client.loadbalancing.builtin.VoiceRegionPenaltyProvider;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -12,26 +15,23 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.events.user.GenericUserEvent;
-import net.dv8tion.jda.api.events.user.UserActivityEndEvent;
-import net.dv8tion.jda.api.events.user.UserActivityStartEvent;
-import net.dv8tion.jda.api.events.user.update.GenericUserPresenceEvent;
-import net.dv8tion.jda.api.events.user.update.UserUpdateActivitiesEvent;
-import net.dv8tion.jda.api.events.user.update.UserUpdateActivityOrderEvent;
-import net.dv8tion.jda.api.events.user.update.UserUpdateOnlineStatusEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * new Main Class after old one got deprecated
@@ -40,11 +40,10 @@ import java.util.TimeZone;
  * @version 1.0-SNAPSHOT
  */
 public class NewMain extends ListenerAdapter implements VoiceDispatchInterceptor {
-    private final JDA jda;
     /**
      * map for the discord servers
      */
-    public final HashMap<String, Server> map = new HashMap<>();
+    public final HashMap<Long, Server> map = new HashMap<>();
     /** Constant <code>clientid</code>
      * Constant <code>clientsecret</code>
      * Constant <code>spdc</code>
@@ -58,7 +57,7 @@ public class NewMain extends ListenerAdapter implements VoiceDispatchInterceptor
     public static String clientid, clientsecret, spdc, apikey;
     /** Constant <code>APP_LISTENER</code> */
     public static final AppListener APP_LISTENER;
-
+    public static LavalinkClient client;
     static {
         try {
             APP_LISTENER = new AppListener();
@@ -84,6 +83,10 @@ public class NewMain extends ListenerAdapter implements VoiceDispatchInterceptor
         new NewMain();
     }
 
+    JDA jda;
+    ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    public long statTimestamp;
+
     /**
      * basically just setting up jda
      *
@@ -97,17 +100,62 @@ public class NewMain extends ListenerAdapter implements VoiceDispatchInterceptor
         clientsecret = original.substring(original.indexOf("\n") + 1).substring(0, original.indexOf("\n"));
         spdc = original.substring(original.indexOf("\n") + 1).substring(original.indexOf("\n") + 1);
         apikey = Reader.read(new File("apikey.env"));
+        createLavalink();
+
+        scheduler.scheduleAtFixedRate(() -> {
+            if (!client.getNodes().get(0).getAvailable()) reconnectLavalink();
+        }, 1,1, TimeUnit.SECONDS);
         jda = JDABuilder.createDefault(apikey.strip()).enableIntents(GatewayIntent.GUILD_MESSAGES, GatewayIntent.GUILD_MESSAGE_TYPING, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_MEMBERS).setStatus(OnlineStatus.OFFLINE).setMemberCachePolicy(MemberCachePolicy.ALL).enableCache(CacheFlag.ACTIVITY, CacheFlag.ONLINE_STATUS).setVoiceDispatchInterceptor(this).build();
         jda.addEventListener(this);
         jda.awaitReady();
         for (Guild guild : jda.getGuilds()) {
             Logger.debug(guild.getName());
-            map.put(guild.getId(), new Server(guild));
+            map.put(guild.getIdLong(), new Server(guild, client));
         }
         jda.getPresence().setPresence(OnlineStatus.ONLINE, Activity.playing("some banger music!"));
         Runtime.getRuntime().addShutdownHook(new Thread(new ShutdownHook(this)));
+
+
+        //map.get(event.getGuildId()).getAppInstances().values().forEach(instance -> );
     }
 
+
+    public void reconnectLavalink() {
+        Logger.error("reconnect");
+        map.values().forEach(server -> server.leave());
+        client.close();
+        createLavalink();
+
+    }
+
+    private void createLavalink() {
+        client = new LavalinkClient(Helpers.getUserIdFromToken(apikey.strip()));
+
+        client.getLoadBalancer().addPenaltyProvider(new VoiceRegionPenaltyProvider());
+        JSONObject nodes = Reader.readJSON(new File("node.json"));
+        nodes.getJSONArray("nodes").forEach(node -> client.addNode(new NodeOptions.Builder()
+                .setName(((JSONObject) node).getString("name"))
+                .setServerUri(((JSONObject) node).getString("url"))
+                .setPassword(((JSONObject) node).getString("password")).build()).on(TrackStartEvent.class).subscribe((event -> {
+            final LavalinkNode node1 = event.getNode();
+            Logger.debug("{}: track started: {}",
+                    node1.getName(),
+                    event.getTrack().getInfo());
+        })));
+        client.on(ClientEvent.class).subscribe(event -> {
+            if (event instanceof StatsEvent) {
+                statTimestamp = System.currentTimeMillis();
+            }
+        });
+
+        client.on(PlayerUpdateEvent.class).subscribe(Logger::debug);
+        client.on(TrackEndEvent.class).subscribe(event -> Optional.ofNullable(map.get(event.getGuildId())).ifPresent(
+                guild -> guild.getTrackScheduler().onTrackEnd(event.getTrack(), event.getEndReason())
+        ));
+
+        map.values().forEach(server -> server.setLavalink(client));
+
+    }
 
     /**
      * {@inheritDoc}
@@ -118,7 +166,7 @@ public class NewMain extends ListenerAdapter implements VoiceDispatchInterceptor
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         super.onSlashCommandInteraction(event);
         assert event.getGuild() != null;
-        map.get(event.getGuild().getId()).onSlashCommandInteraction(event);
+        map.get(event.getGuild().getIdLong()).onSlashCommandInteraction(event);
     }
 
     /**
@@ -130,7 +178,7 @@ public class NewMain extends ListenerAdapter implements VoiceDispatchInterceptor
     public void onButtonInteraction(@NotNull ButtonInteractionEvent event) {
         super.onButtonInteraction(event);
         assert event.getGuild() != null;
-        map.get(event.getGuild().getId()).onButtonInteraction(event);
+        map.get(event.getGuild().getIdLong()).onButtonInteraction(event);
     }
 
     /**
@@ -142,7 +190,7 @@ public class NewMain extends ListenerAdapter implements VoiceDispatchInterceptor
     public void onGuildJoin(@NotNull GuildJoinEvent event) {
         super.onGuildJoin(event);
         try {
-            map.put(event.getGuild().getId(), new Server(event.getGuild()));
+            map.put(event.getGuild().getIdLong(), new Server(event.getGuild(), client));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -150,13 +198,12 @@ public class NewMain extends ListenerAdapter implements VoiceDispatchInterceptor
 
     @Override
     public void onVoiceServerUpdate(@NotNull VoiceDispatchInterceptor.VoiceServerUpdate update) {
-
-        map.get(update.getGuild().getId()).onVoiceServerUpdate(update);
+        map.get(update.getGuild().getIdLong()).onVoiceServerUpdate(update);
     }
 
     @Override
     public boolean onVoiceStateUpdate(@NotNull VoiceDispatchInterceptor.VoiceStateUpdate update) {
-        return map.get(update.getGuild().getId()).onVoiceStateUpdate(update);
+        return map.get(update.getGuild().getIdLong()).onVoiceStateUpdate(update);
     }
 /*
     @Override

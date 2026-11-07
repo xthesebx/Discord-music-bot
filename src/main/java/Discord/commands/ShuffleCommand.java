@@ -2,7 +2,7 @@ package Discord.commands;
 
 import Discord.Server;
 import Discord.playerHandlers.PlayMethods;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import dev.arbjerg.lavalink.client.player.Track;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 
 import java.util.ArrayList;
@@ -42,14 +42,14 @@ public class ShuffleCommand extends BasicCommand {
             throw new RuntimeException(e);
           }
         }
-        List<AudioTrack> tracks = new ArrayList<>();
+        List<Track> tracks = new ArrayList<>();
         int size = server.getTrackScheduler().queue.size();
         for (int i = 0; i < size; i ++) {
             tracks.add(server.getTrackScheduler().queue.get(0));
             server.getTrackScheduler().queue.remove(0);
         }
         Collections.shuffle(tracks);
-        for (AudioTrack track : tracks) {
+        for (Track track : tracks) {
             server.getTrackScheduler().queue.add(track);
         }
         server.getTrackScheduler().i = 0;

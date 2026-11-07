@@ -1,10 +1,13 @@
 package Discord.twitchIntegration;
 
 
+import Discord.NewMain;
 import Discord.Server;
 import Discord.playerHandlers.PlayMethods;
+import Discord.playerHandlers.TwitchPlayCommand;
 import com.hawolt.logger.Logger;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
+import dev.arbjerg.lavalink.client.Link;
+import dev.arbjerg.lavalink.client.player.Track;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -63,11 +66,15 @@ public class ChatBotListener implements Runnable {
             try {
                 String s = in.readLine();
                 if (s.equals("song?")) {
-                    if (server.getPlayer().getPlayingTrack() == null)
+                    if (server.getPlayer().get().getTrack() == null)
                         out.println("no Song currently playing");
-                    else out.println(server.getPlayer().getPlayingTrack().getInfo().uri);
-                } else if (requests)
-                    PlayMethods.play(s, server);
+                    else out.println(server.getPlayer().get().getTrack().getInfo().getUri());
+                } else if (requests) {
+                    String link = PlayMethods.resolveLink(s);
+                    final Link test = NewMain.client.getOrCreateLink(server.getGuildId());
+                    PlayMethods.servers.add(server);
+                    test.loadItem(link).subscribe(new TwitchPlayCommand(server));
+                }
                 else out.println("requests are currently disabled");
             } catch (IOException e) {
                 if (e instanceof SocketException) {
@@ -104,13 +111,8 @@ public class ChatBotListener implements Runnable {
         }
     }
 
-    /**
-     * <p>addedRequest.</p>
-     *
-     * @param track a {@link com.sedmelluq.discord.lavaplayer.track.AudioTrack} object
-     */
-    public void addedRequest(AudioTrack track) {
-        out.println("added \"" + track.getInfo().title + "\" to queue");
+    public void addedRequest(Track track) {
+        out.println("added \"" + track.getInfo().getTitle() + "\" to queue");
     }
     public void print(String s) {
         out.println(s);
