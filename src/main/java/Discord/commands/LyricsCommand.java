@@ -20,6 +20,9 @@ public class LyricsCommand extends BasicCommand {
      * @param event  received event to reply to it and handle the options
      * @param server the server it came from to make things easier
      */
+
+    //TODO access api https://github.com/topi314/LavaLyrics#get-current-playing-track-lyrics
+
     public LyricsCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
         StringBuilder lyrics = new StringBuilder("```");

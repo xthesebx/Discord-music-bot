@@ -270,7 +270,6 @@ public class Server {
             chatBotListener.disconnect(false);
             streamer = null;
         }
-        trackScheduler.repeating = RepeatState.NO_REPEAT;
         trackScheduler.clear();
         appInstances.values().forEach(instance -> instance.getAppQueue().repeat());
         appInstances.values().forEach(AppInstance::setIdlePresence);

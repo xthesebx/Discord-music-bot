@@ -27,7 +27,6 @@ public class StopCommand extends BasicCommand {
     public StopCommand(SlashCommandInteractionEvent event, Server server) {
         super(event, server);
         this.player = NewMain.client.getOrCreateLink(server.getGuildId()).getCachedPlayer();
-        server.getTrackScheduler().repeating = RepeatState.NO_REPEAT;
         if (player.getTrack() == null) {
             event.reply("Player already stopped!").queue();
             return;

@@ -148,6 +148,7 @@ public class TrackScheduler {
 			}
 		}
 		server.getAppInstances().values().forEach(instance -> instance.getAppQueue().nextQueue());
+		if (player.getTrack() != null && server.getDc().active) server.getDc().stopTimer();
 	}
 	
 	/**
@@ -262,5 +263,7 @@ public class TrackScheduler {
 	public void clear() {
 		queue.clear();
 		queue2.clear();
+		i = 1;
+		repeating = RepeatState.NO_REPEAT;
 	}
 }
